@@ -288,7 +288,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
         h_diff_Eint_vs_true_Eint->Fill(int_energy_true, int_energy_true_trklen - int_energy_true);
       }
       // true initial sliceID
-      true_ini_sliceID = int(floor( (pi::plim - hadana.true_ffKE)/pi::Eslicewidth +0.5)); // ignore incomplete slices
+      true_ini_sliceID = int(ceil( (pi::plim - hadana.true_ffKE)/pi::Eslicewidth )); // ignore incomplete slices
       //if (true_ini_sliceID <= -99) true_ini_sliceID = -99;
       if (true_ini_sliceID < 0) true_ini_sliceID = -1; // both physical and unphysical underflow
       if (true_ini_sliceID >= pi::nthinslices) true_ini_sliceID = pi::nthinslices; // overflow (Eff<pi::Eslicewidth)
@@ -389,7 +389,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
 
       int_energy_reco = bb.KEAtLength(inc_energy_reco, hadana.reco_trklen);
       // reco initial sliceID
-      reco_ini_sliceID = int(floor( (pi::plim - inc_energy_reco)/pi::Eslicewidth +0.5));
+      reco_ini_sliceID = int(ceil( (pi::plim - inc_energy_reco)/pi::Eslicewidth ));
       if (reco_ini_sliceID < 0) reco_ini_sliceID = -1;
       if (reco_ini_sliceID >= pi::nthinslices) reco_ini_sliceID = pi::nthinslices;
       // reco interaction sliceID
