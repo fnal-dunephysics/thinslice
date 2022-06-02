@@ -301,6 +301,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
       /*if (true_sliceID < true_ini_sliceID) {
         true_ini_sliceID = -1;
         true_sliceID = -1;
+        //if (hadana.reco_trklen>30) cout<<"@@@@@"<<hadana.reco_trklen<<"\t"<<hadana.true_trklen<<endl;
       } // if true_sliceID==-1, this event should not be used when calculating true XS (but should it be used in unfolding???)*/
 
       if (evt.true_beam_PDG == 211){
@@ -403,6 +404,8 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
       }
       // ignore incomplete slices
       /*if (reco_sliceID < reco_ini_sliceID) {
+        //cout<<"$$$"<<hadana.reco_trklen<<"\t"<<hadana.true_trklen<<endl;
+        //cout<<"$"<<int_energy_reco<<"\t"<<hadana.true_ffKE<<endl;
         reco_ini_sliceID = -1;
         reco_sliceID = -1;
       } // if reco_sliceID==-1, this event should not be used when calculating reco XS*/
@@ -431,6 +434,16 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
 
   double weight = g4rw * bkgw;
   if (evt.MC){
+    if (true_sliceID < true_ini_sliceID) {
+      return;
+      //true_sliceID = -1;
+      //true_ini_sliceID = -1;
+    }
+    /*if (reco_sliceID < reco_ini_sliceID) {
+      reco_sliceID = -1;
+      reco_ini_sliceID = -1;
+      reco_end_sliceID = -1;
+    }*/
     if (evt.true_beam_PDG == 211){ // true pion beam incident event
       if (isTestSample){ // fake data
         h_truesliceid_pion_all->Fill(true_sliceID, g4rw);
@@ -481,6 +494,9 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
         else{
           if (!isTestSample) uf.response_SliceID_Int.Miss(true_sliceID, weight);
         }
+      }
+      else { // pion decay
+        //if (hadana.PassPiCuts(evt) && evt.reco_beam_true_byE_matched) cout<<*evt.true_beam_endProcess<<"\t"<<hadana.reco_trklen<<"\t"<<hadana.true_trklen<<endl;
       }
     }
     if (hadana.PassPiCuts(evt)){ // the event passed full selections
@@ -793,6 +809,8 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random){
     }
     else{
       if (!hadana.isSelectedPart(evt)) continue;
+      //if (!hadana.PassPandoraSliceCut(evt)) continue;
+      //if (!hadana.PassCaloSizeCut(evt)) continue;
     }
     
     hadana.ProcessEvent(evt); // hadana.pitype is assigned in this step

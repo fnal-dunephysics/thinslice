@@ -72,7 +72,7 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
       totalcosmics = hcosmics[i]->Integral();
     }
   }
-  //std::cout<<totaldata<<" "<<totalmc<<std::endl;
+  //std::cout<<"$$$$$"<<totaldata<<"\t"<<totalmc<<"\t"<<totalcosmics<<std::endl;
   first = false;
   
   TH1D *htotmc;
@@ -102,7 +102,7 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
   max = TMath::Max(max, hcosmics[cut]->GetMaximum());
   hs->SetMaximum(1.2*max);
   hs->Draw("hist");
-  hs->SetTitle(hdata[cut]->GetTitle());
+  //hs->SetTitle(hdata[cut]->GetTitle());
   hs->GetXaxis()->SetTitle(xtitle.c_str());
   hs->GetXaxis()->SetTitleSize(0);
   hs->GetXaxis()->SetLabelSize(0);
@@ -230,7 +230,7 @@ void plot1dslice(string name, int cut, string xtitle, string ytitle){
     double max = TMath::Max(hs->GetMaximum(), hdata[j][cut]->GetMaximum());
     hs->SetMaximum(1.2*max);
     hs->Draw("hist");
-    hs->SetTitle(hdata[j][cut]->GetTitle());
+    //hs->SetTitle(hdata[j][cut]->GetTitle());
     hs->GetXaxis()->SetTitle(xtitle.c_str());
     hs->GetXaxis()->SetTitleSize(0);
     hs->GetXaxis()->SetLabelSize(0);

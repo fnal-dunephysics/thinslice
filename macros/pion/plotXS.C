@@ -4,7 +4,7 @@ void plotXS(){
 
   gStyle->SetOptStat(0);
 
-  TFile *file = TFile::Open("../../build/XS.root");
+  TFile *file = TFile::Open("../../build/XSMC.root");
   
   TH1D *h_sel_data = (TH1D*)file->Get("hdata");
   TH1D *h_sel_sig_int = (TH1D*)file->Get("hsignal");
