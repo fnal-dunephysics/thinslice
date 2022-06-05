@@ -31,4 +31,9 @@
 *.out
 *.app
 
+# user
+*.root
+*.pdf
+*.png
+
 *~

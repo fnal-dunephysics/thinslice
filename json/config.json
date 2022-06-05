@@ -1,7 +1,6 @@
 {
-    "datafile" : "root://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/dune/tape_backed/dunepro/protodune-sp/root-tuple/2022/detector/physics/PDSPProd4/00/00/52/19/PDSPProd4_data_1GeV_reco2_ntuple_v09_41_00_04.root",
-    //"datafile" : "root://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/dune/scratch/users/yinrui/PDSP_G4rw/pduneana_MC.root",
-    "mcfile" : "root://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/dune/scratch/users/yinrui/PDSP_G4rw/pduneana_MC.root",
+    "datafile" : "root://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/dune/tape_backed/dunepro/protodune-sp/root-tuple/2022/detector/physics/PDSPProd4/00/00/52/19/PDSPProd4_data_1GeV_reco2_ntuple_v09_41_00_04.root/pduneana",
+    "mcfile" : "root://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/dune/scratch/users/yinrui/PDSP_G4rw/pduneana_MC.root/pduneana",
     "mcoutfile" : "mcprod4a.root",
     "dataoutfile" : "data.root",
     "cosmicsoutfile" : "cosmics.root"

@@ -435,15 +435,16 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
   double weight = g4rw * bkgw;
   if (evt.MC){
     if (true_sliceID < true_ini_sliceID) {
-      return;
-      //true_sliceID = -1;
-      //true_ini_sliceID = -1;
+      //return;
+      true_sliceID = -1;
+      true_ini_sliceID = -1;
     }
-    /*if (reco_sliceID < reco_ini_sliceID) {
+    if (reco_sliceID < reco_ini_sliceID) {
+      //return;
       reco_sliceID = -1;
       reco_ini_sliceID = -1;
       reco_end_sliceID = -1;
-    }*/
+    }
     if (evt.true_beam_PDG == 211){ // true pion beam incident event
       if (isTestSample){ // fake data
         h_truesliceid_pion_all->Fill(true_sliceID, g4rw);
@@ -784,12 +785,17 @@ void ThinSlice::CalcXS(const Unfold & uf){
   //h_trueinisliceid_pion_uf = (TH1D*) unfold_Ini.Hreco();
 }
 
-void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random){
+void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, bool savetree){
 
   BookHistograms();
 
-  //Long64_t nentries = evt.fChain->GetEntriesFast();
-  if (nentries == -1) nentries = evt.fChain->GetEntries();
+  TTree *oldtree = (TTree*)evt.fChain;
+  if (nentries == -1) nentries = oldtree->GetEntries();
+  
+  TFile *newfile;
+  if (evt.MC) newfile = new TFile("newtree_MC.root","recreate");
+  else  newfile = new TFile("newtree_data.root","recreate");
+  TTree *newtree = oldtree->CloneTree(0);
   
   Long64_t nbytes = 0, nb = 0;
   TRandom3 *r3 = new TRandom3(0);
@@ -798,9 +804,10 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random){
     Long64_t jentry = num;
     if (random) jentry = TMath::FloorNint(r3->Rndm()*302141);
     //cout<<jentry<<endl;
+    bool fillnewtree = false;
     Long64_t ientry = evt.LoadTree(jentry);
     if (ientry < 0) break;
-    nb = evt.fChain->GetEntry(jentry);   nbytes += nb;
+    nb = oldtree->GetEntry(jentry);   nbytes += nb;
     // if (Cut(ientry) < 0) continue;
     //std::cout<<evt.run<<" "<<evt.event<<" "<<evt.MC<<" "<<evt.reco_beam_true_byE_matched<<" "<<evt.true_beam_PDG<<" "<<(*evt.true_beam_endProcess)<<std::endl;
     //std::cout<<GetParType(ana)<<std::endl;
@@ -809,11 +816,17 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random){
     }
     else{
       if (!hadana.isSelectedPart(evt)) continue;
-      //if (!hadana.PassPandoraSliceCut(evt)) continue;
-      //if (!hadana.PassCaloSizeCut(evt)) continue;
     }
     
     hadana.ProcessEvent(evt); // hadana.pitype is assigned in this step
+    if (!selectCosmics) {
+      /*if (!hadana.PassPandoraSliceCut(evt)) continue;
+      if (!hadana.PassCaloSizeCut(evt)) continue;
+      if (!hadana.PassBeamQualityCut(evt)) continue;
+      if (!hadana.PassProtonCut()) continue;
+      if (!hadana.PassMichelScoreCut()) continue;
+      if (!hadana.PassAPA3Cut(evt)) continue;*/
+    }
     
     double weight = CalWeight(evt, hadana.pitype); // muon reweight; momentum reweight (to reconcile real data and MC)
     double g4rw = 1; // geant4reweight (to fake data for test; it turns out it should also be applied to true MC to make unfolding reliable)
@@ -846,7 +859,7 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random){
       }
       else { // true MC
         g4rw = CalG4RW(evt, weiarr_mc);
-        bkgw = CalBkgW(evt);
+        bkgw = CalBkgW(evt, 1., 1., 1.);
       }
     }
     ProcessEvent(evt, uf, g4rw, bkgw);
@@ -866,6 +879,7 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random){
               FillHistograms(pi::kMichelScore, evt, weight);
               if (hadana.PassAPA3Cut(evt)){
                 FillHistograms(pi::kAPA3, evt, weight);
+                fillnewtree = true;
               }
             }
           }
@@ -887,8 +901,16 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random){
     FillSliceHist(evt, 1, weight, 0);
     FillSliceHist(evt, 2, weight, 0);
     FillSliceHist(evt, 3, weight, 0);
+    
+    if (fillnewtree && savetree) {
+      oldtree->GetEntry(jentry);
+      newtree->Fill();
+    }
   }
+  newtree->AutoSave();
+  delete newfile;
   
+  outputFile->cd();
   uf.SaveHistograms();
   CalcXS(uf);
   SaveHistograms();

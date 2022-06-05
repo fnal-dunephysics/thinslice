@@ -1,7 +1,5 @@
 {
-    //"datafile" : "/dune/app/users/yinrui/thinslice/build/data.root",
     "datafile" : "data.root",
-    //"mcfile" : "/dune/app/users/yinrui/thinslice/build/mcprod4a.root",
     "mcfile" : "mcprod4a.root",
     "outfile" : "bkgfits.root"
 }

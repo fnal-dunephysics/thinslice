@@ -45,11 +45,11 @@ int main(int argc, char ** argv){
   //chain->Add("/data/tjyang/dune/pduneana_Prod4_1GeV_5_8_21.root/pduneana/beamana");
 
   //mcchain->Add("pduneana_mc.root/pduneana/beamana"); // test
-  mcchain->Add(Form("%s/pduneana/beamana", root["mcfile"].asString().c_str()));
+  mcchain->Add(Form("%s/beamana", root["mcfile"].asString().c_str()));
 
   TChain *datachain = new TChain();
   //datachain->Add("pduneana.root/pduneana/beamana"); // test
-  datachain->Add(Form("%s/pduneana/beamana", root["datafile"].asString().c_str()));
+  datachain->Add(Form("%s/beamana", root["datafile"].asString().c_str()));
 
   Unfold uf(pi::nthinslices+2, -1, pi::nthinslices+1);
 
@@ -57,7 +57,7 @@ int main(int argc, char ** argv){
 
   ThinSlice mcths;
   mcths.SetOutputFileName(root["mcoutfile"].asString());
-  mcths.Run(mcevt, uf, -1);
+  mcths.Run(mcevt, uf, -1, false, true);
 
   anavar dataevt(datachain);
 
