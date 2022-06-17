@@ -24,6 +24,8 @@ class ThinSlice {
   int true_sliceID;
   int reco_ini_sliceID;
   int true_ini_sliceID;
+  double ini_energy_reco;
+  //double ini_energy_true;
   double int_energy_reco;
   double int_energy_true;
 
@@ -35,7 +37,7 @@ class ThinSlice {
   TH1D *true_incE[pi::nthinslices];
   TH1D *reco_AngCorr;
   TH1D *true_AngCorr;
-
+  
   TH1D *h_truesliceid_pion_all;
   TH1D *h_trueinisliceid_pion_all;
   TH1D *h_truesliceid_pion_uf;
@@ -54,6 +56,12 @@ class ThinSlice {
   double true_interactions[pi::nthinslices];
   double true_incidents[pi::nthinslices];
 
+  // energy used to calculate slice ID
+  TH1D *hini_recoE[pi::nCuts][pi::nIntTypes+1];
+  TH1D *hint_recoE[pi::nCuts][pi::nIntTypes+1];
+  TH1D *hini_trueE[pi::nCuts][pi::nIntTypes+1];
+  TH1D *hint_trueE[pi::nCuts][pi::nIntTypes+1];
+  
   TH1D *hreco_beam_type[pi::nCuts][pi::nIntTypes+1];
   TH1D *hreco_reconstructable_beam_event[pi::nCuts][pi::nIntTypes+1];
   

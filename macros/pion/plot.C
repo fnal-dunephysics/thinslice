@@ -102,7 +102,7 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
   max = TMath::Max(max, hcosmics[cut]->GetMaximum());
   hs->SetMaximum(1.2*max);
   hs->Draw("hist");
-  //hs->SetTitle(hdata[cut]->GetTitle());
+  hs->SetTitle(hdata[cut]->GetTitle());
   hs->GetXaxis()->SetTitle(xtitle.c_str());
   hs->GetXaxis()->SetTitleSize(0);
   hs->GetXaxis()->SetLabelSize(0);
@@ -230,7 +230,7 @@ void plot1dslice(string name, int cut, string xtitle, string ytitle){
     double max = TMath::Max(hs->GetMaximum(), hdata[j][cut]->GetMaximum());
     hs->SetMaximum(1.2*max);
     hs->Draw("hist");
-    //hs->SetTitle(hdata[j][cut]->GetTitle());
+    hs->SetTitle(hdata[j][cut]->GetTitle());
     hs->GetXaxis()->SetTitle(xtitle.c_str());
     hs->GetXaxis()->SetTitleSize(0);
     hs->GetXaxis()->SetLabelSize(0);
@@ -364,6 +364,8 @@ void plot(){
     plot1d("hdeltay", i, "#Deltay/#sigma_{y}", "Events");
     plot1d("hdeltaz", i, "#Deltaz/#sigma_{z}", "Events");
     plot1d("hcostheta", i, "cos#theta", "Events");
+    plot1d("hini_recoE", i, "Reco initial energy (MeV)", "Events");
+    plot1d("hint_recoE", i, "Reco interacting energy (MeV)", "Events");
     plot1d("hreco_trklen", i, "Reco track length (cm)", "Events");
     plot1d("hreco_beam_startX_SCE", i, "Reco track start X (cm)", "Events");
     plot1d("hreco_beam_startY_SCE", i, "Reco track start Y (cm)", "Events");

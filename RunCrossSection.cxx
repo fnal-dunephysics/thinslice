@@ -63,7 +63,7 @@ int main(int argc, char ** argv){
 
   ThinSlice dataths;
   dataths.SetOutputFileName(root["dataoutfile"].asString());
-  dataths.Run(dataevt, uf, -1);
+  dataths.Run(dataevt, uf, -1, false, true);
 
   ThinSlice cosmicsths;
   cosmicsths.SetSelectCosmics(true);

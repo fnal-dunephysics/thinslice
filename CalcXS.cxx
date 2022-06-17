@@ -138,7 +138,7 @@ int main(int argc, char** argv){
     hdata->SetBinContent(j+1, hsliceID[0]->GetBinContent(bin));
     hdata->SetBinError(j+1, hsliceID[0]->GetBinError(bin));
     double nmc = 0;
-    for (int i = 1; i < pi::nIntTypes+1; ++i){
+    for (int i = 1; i <= pi::nIntTypes; ++i){
       nmc += hsliceID[i]->GetBinContent(bin);
     }
     hmc->SetBinContent(j+1, nmc);
@@ -147,7 +147,7 @@ int main(int argc, char** argv){
     hdata_inc->SetBinContent(j+1, hincsliceID[0]->GetBinContent(bin));
     hdata_inc->SetBinError(j+1, hincsliceID[0]->GetBinError(bin));
     nmc = 0;
-    for (int i = 1; i < pi::nIntTypes+1; ++i){
+    for (int i = 1; i <= pi::nIntTypes; ++i){
       nmc += hincsliceID[i]->GetBinContent(bin);
     }
     hmc_inc->SetBinContent(j+1, nmc);
@@ -156,7 +156,7 @@ int main(int argc, char** argv){
     hdata_ini->SetBinContent(j+1, hinisliceID[0]->GetBinContent(bin));
     hdata_ini->SetBinError(j+1, hinisliceID[0]->GetBinError(bin));
     nmc = 0;
-    for (int i = 1; i < pi::nIntTypes+1; ++i){
+    for (int i = 1; i <= pi::nIntTypes; ++i){
       nmc += hinisliceID[i]->GetBinContent(bin);
     }
     hmc_ini->SetBinContent(j+1, nmc);
@@ -337,11 +337,11 @@ int main(int argc, char** argv){
   
   // unfolding
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
-  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 8);
+  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 20);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
-  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 8);
+  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 20);
   RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
-  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 8);
+  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 40);
   
   TH1D *hsiginc_uf;
   TH1D *hsignal_uf;
@@ -372,13 +372,13 @@ int main(int argc, char** argv){
     err_ini[i] = hsigini_uf->GetBinError(i+2);
     Nina[i] = hsiginc_uf->GetBinContent(i+2);
     err_ina[i] = hsiginc_uf->GetBinError(i+2);
-    for (int j = i; j<=pi::nthinslices; ++j){
-      Ninc[i] += hsiginc_uf->GetBinContent(j+2);
-      err_inc[i] += pow(hsiginc_uf->GetBinError(j+2),2);
-    }
-    for (int j = i+1; j<=pi::nthinslices; ++j){
-      Ninc[i] -= hsigini_uf->GetBinContent(j+2);
+    for (int j = 0; j<=i; ++j){
+      Ninc[i] += hsigini_uf->GetBinContent(j+2);
       err_inc[i] += pow(hsigini_uf->GetBinError(j+2),2);
+    }
+    for (int j = 0; j<=i-1; ++j){
+      Ninc[i] -= hsiginc_uf->GetBinContent(j+2);
+      err_inc[i] += pow(hsiginc_uf->GetBinError(j+2),2);
     }
     err_inc[i] = sqrt(err_inc[i]);
   }
@@ -463,13 +463,13 @@ int main(int argc, char** argv){
     err_ini_t[i] = hval_trueini->GetBinError(i+2);
     Nina_t[i] = hval_trueinc->GetBinContent(i+2);
     err_ina_t[i] = hval_trueinc->GetBinError(i+2);
-    for (int j = i; j<=pi::nthinslices; ++j){
-      Ninc_t[i] += hval_trueinc->GetBinContent(j+2);
-      err_inc_t[i] += pow(hval_trueinc->GetBinError(j+2),2);
-    }
-    for (int j = i+1; j<=pi::nthinslices; ++j){
-      Ninc_t[i] -= hval_trueini->GetBinContent(j+2);
+    for (int j = 0; j<=i; ++j){
+      Ninc_t[i] += hval_trueini->GetBinContent(j+2);
       err_inc_t[i] += pow(hval_trueini->GetBinError(j+2),2);
+    }
+    for (int j = 0; j<=i-1; ++j){
+      Ninc_t[i] -= hval_trueinc->GetBinContent(j+2);
+      err_inc_t[i] += pow(hval_trueinc->GetBinError(j+2),2);
     }
     err_inc_t[i] = sqrt(err_inc_t[i]);
   }

@@ -219,7 +219,8 @@ bool HadAna::PassBeamQualityCut(const anavar& evt, bool has_angle_cut, bool has_
 bool HadAna::PassAPA3Cut(const anavar& evt) const{ // only use track in the first TPC
 
   if (evt.reco_beam_calo_endZ > 220) return false;
-  if (reco_trklen < 30) return false;
+  //if (reco_trklen > 220) return false;
+  //if (reco_trklen < 30) return false;
   return true;
 }
 
@@ -425,7 +426,7 @@ void HadAna::ProcessEvent(const anavar& evt){
       reco_trklen_accum[i] = reco_trklen;
     }
     // front-face energy
-    true_ffKE = 999999.;
+    true_ffKE = -999999.;
     if (start_idx >= 0) true_ffKE = (*evt.true_beam_traj_KE)[start_idx+1] + 2.18*(true_trklen_accum)[start_idx+1];
   }
   
