@@ -15,6 +15,7 @@ ThinSlice::ThinSlice(){
   hadana.InitPi();
   selectCosmics = false;
   bb.SetPdgCode(211);
+  bb_mu.SetPdgCode(13);
 }
 
 void ThinSlice::BookHistograms(){
@@ -239,6 +240,10 @@ void ThinSlice::BookHistograms(){
   h_diff_Eint = new TH1D("h_diff_Eint","h_diff_Eint;MeV", 100, -100, 100);
   h_diff_Eint->Sumw2();
   h_diff_Eint_vs_true_Eint = new TH2D("h_diff_Eint_vs_true_Eint","h_diff_Eint_vs_true_Eint;MeV;MeV", 100, 0, 1000, 100, -100, 100);
+  h_trklen_noint = new TH1D("h_trklen_noint","h_trklen_noint;ratio", 100, 0, 1.2);
+  h_trklen_noint->Sumw2();
+  h_trklen_noint_mu = new TH1D("h_trklen_noint_mu","h_trklen_noint_mu;ratio", 100, 0, 1.2);
+  h_trklen_noint_mu->Sumw2();
 
    for (int i = 0; i<pi::nthinslices; ++i){
      true_interactions[i] = 0;
@@ -281,6 +286,12 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
           double true_beam_startKE = sqrt(pow(evt.true_beam_startP*1000,2)+pow(pimass,2)) - pimass;
           h_diff_startKE_vs_Einst->Fill(beam_inst_KE, beam_inst_KE - true_beam_startKE);
           h_true_upstream_Eloss->Fill(hadana.true_ffKE, true_beam_startKE - hadana.true_ffKE);
+          
+          if (evt.reco_beam_true_byE_matched)
+            h_trklen_noint->Fill(hadana.reco_trklen/bb.RangeFromKE(beam_inst_KE - 12.74));
+        }
+        if (abs(evt.true_beam_PDG) == 13 && evt.reco_beam_true_byE_matched) {
+          h_trklen_noint_mu->Fill(hadana.reco_trklen/bb_mu.RangeFromKE(beam_inst_KE - 12.74));
         }
         
         int traj_max = evt.true_beam_traj_Z->size()-1;
@@ -302,12 +313,12 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
       true_ini_sliceID = int(ceil( (pi::plim - hadana.true_ffKE)/pi::Eslicewidth )); // ignore incomplete slices
       //if (true_ini_sliceID <= -99) true_ini_sliceID = -99;
       if (true_ini_sliceID < 0) true_ini_sliceID = 0; // physical underflow
-      if (true_ini_sliceID >= pi::nthinslices) true_ini_sliceID = pi::nthinslices; // overflow (Eff<pi::Eslicewidth)
+      if (true_ini_sliceID >= pi::nthinslices) true_ini_sliceID = pi::nthinslices-1; // overflow (Eff<pi::Eslicewidth)
       // true interaction sliceID
       true_sliceID = int(floor( (pi::plim-int_energy_true)/pi::Eslicewidth ));
       //if (true_sliceID <= -99) true_sliceID = -99;
       if (true_sliceID < 0) true_sliceID = 0; // physical underflow
-      if (true_sliceID >= pi::nthinslices) true_sliceID = pi::nthinslices; // overflow (int_energy_true <= 0)
+      if (true_sliceID >= pi::nthinslices) true_sliceID = pi::nthinslices-1; // overflow (int_energy_true <= 0)
       // ignore incomplete slices
       /*if (true_sliceID < true_ini_sliceID) {
         true_ini_sliceID = -1;
@@ -392,24 +403,25 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
     }
 
     if (!evt.reco_beam_calo_wire->empty()){
-      ini_energy_reco = beam_inst_KE - 12.74;// + r3->Gaus(5,35);
+      if (hadana.reco_trklen>0)
+        ini_energy_reco = beam_inst_KE - 12.74;// + r3->Gaus(5,35);
       /*if (beam_inst_KE < 800) ini_energy_reco = beam_inst_KE - 0.95; // 0.9465 \pm 0.3051
       else if (beam_inst_KE < 850) ini_energy_reco = beam_inst_KE - 7.12; // 7.119 \pm 0.210
       else if (beam_inst_KE < 900) ini_energy_reco = beam_inst_KE - 11.87; // 11.87 \pm 0.22
       else if (beam_inst_KE < 950) ini_energy_reco = beam_inst_KE - 17.31; // 17.31 \pm 0.27
       else ini_energy_reco = beam_inst_KE - 29.28; // 29.28 \pm 0.37*/
-
-      int_energy_reco = bb.KEAtLength(ini_energy_reco, hadana.reco_trklen);
+      if (hadana.reco_trklen>0)
+        int_energy_reco = bb.KEAtLength(ini_energy_reco, hadana.reco_trklen);
       // reco initial sliceID
       reco_ini_sliceID = int(ceil( (pi::plim - ini_energy_reco)/pi::Eslicewidth ));
       if (reco_ini_sliceID < 0) reco_ini_sliceID = 0;
-      if (reco_ini_sliceID >= pi::nthinslices) reco_ini_sliceID = pi::nthinslices;
+      if (reco_ini_sliceID >= pi::nthinslices) reco_ini_sliceID = pi::nthinslices-1;
       // reco interaction sliceID
       reco_sliceID = int(floor( (pi::plim-int_energy_reco)/pi::Eslicewidth ));
       if (reco_sliceID < 0) reco_sliceID = 0;
       //if (hadana.reco_trklen < 0) reco_sliceID = -1;
       if (reco_sliceID >= pi::nthinslices) { // overflow (int_energy_reco <= 0)
-        reco_sliceID = pi::nthinslices;
+        reco_sliceID = pi::nthinslices-1;
         //cout<<"reco_sliceID >= pi::nthinslices"<<int_energy_reco<<endl;
         //cout<<ini_energy_reco<<"\t"<<hadana.reco_trklen<<endl;
       }
@@ -442,7 +454,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
     //for(int i=0;i<evt.reco_beam_incidentEnergies->size();i++) cout<<(*evt.reco_beam_incidentEnergies)[i]<<"\t";
     //cout<<endl<<int_energy_reco<<endl; // very different with the last point of evt.reco_beam_incidentEnergies
   }
-
+  // ignore incomplete slices
   if (true_sliceID < true_ini_sliceID) {
     //return;
     true_sliceID = -1;
@@ -454,16 +466,17 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
     reco_ini_sliceID = -1;
     reco_end_sliceID = -1;
   }
-  if (hadana.true_ffKE == -999999) true_ini_sliceID = -1;
-  if (int_energy_true == -999999) true_sliceID = -1;
-  if (ini_energy_reco == -999999) reco_ini_sliceID = -1;
+  // upstream interactions
+  if (hadana.true_ffKE == -999999) true_ini_sliceID = pi::nthinslices;
+  if (int_energy_true == -999999) true_sliceID = pi::nthinslices;
+  if (ini_energy_reco == -999999) reco_ini_sliceID = pi::nthinslices;
   if (int_energy_reco == -999999) {
-    reco_sliceID = -1;
-    reco_end_sliceID = -1;
+    reco_sliceID = pi::nthinslices;
+    reco_end_sliceID = pi::nthinslices;
   }
   double weight = g4rw * bkgw;
   if (evt.MC){
-    if (evt.true_beam_PDG == 211){ // true pion beam incident event
+    if (evt.true_beam_PDG == 211 && hadana.true_trklen > 0){ // true pion beam entering the TPC
       if (isTestSample){ // fake data
         h_truesliceid_pion_all->Fill(true_sliceID, g4rw);
         h_trueinisliceid_pion_all->Fill(true_ini_sliceID, g4rw);

@@ -18,6 +18,7 @@ class ThinSlice {
 
   HadAna hadana;
   BetheBloch bb;
+  BetheBloch bb_mu;
 
   int reco_sliceID;
   int reco_end_sliceID; // differ with reco_sliceID if reco_beam_calo_endZ > 220
@@ -150,6 +151,8 @@ class ThinSlice {
   TH2D *h_true_upstream_Eloss;
   TH1D *h_diff_Eint;
   TH2D *h_diff_Eint_vs_true_Eint;
+  TH1D *h_trklen_noint;
+  TH1D *h_trklen_noint_mu;
 
   std::string fOutputFileName;
   TFile *outputFile;
