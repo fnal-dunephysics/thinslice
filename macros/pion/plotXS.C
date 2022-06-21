@@ -43,6 +43,7 @@ void plotXS(){
   h_sel_sig_inc->SetMarkerColor(3);
   h_sel_sig_inc->DrawCopy("same");
   hval_sel_sig_inc->SetLineColor(2);
+  //hval_sel_sig_inc->Scale(h_sel_sig_inc->Integral()/hval_sel_sig_inc->Integral());
   hval_sel_sig_inc->Draw("same hist");
   TLegend *leg1 = new TLegend(0.5,0.6,0.8,0.9);
   leg1->SetFillStyle(0);
@@ -59,6 +60,7 @@ void plotXS(){
   h_sel_sig_inc->DrawCopy("same");
   hval_sel_sig_inc_uf->SetLineColor(2);
   hval_sel_sig_inc_uf->SetMarkerColor(2);
+  //hval_sel_sig_inc_uf->Scale(h_sel_sig_inc_uf->Integral()/hval_sel_sig_inc_uf->Integral());
   hval_sel_sig_inc_uf->Draw("same hist");
   TLegend *leg2 = new TLegend(0.5,0.6,0.8,0.9);
   leg2->SetFillStyle(0);
@@ -75,6 +77,7 @@ void plotXS(){
   h_sel_sig_int->SetMarkerColor(3);
   h_sel_sig_int->DrawCopy("same");
   hval_sel_sig_int->SetLineColor(2);
+  //hval_sel_sig_int->Scale(h_sel_sig_int->Integral()/hval_sel_sig_int->Integral());
   hval_sel_sig_int->Draw("same hist");
   TLegend *leg3 = new TLegend(0.5,0.6,0.8,0.9);
   leg3->SetFillStyle(0);
@@ -91,6 +94,7 @@ void plotXS(){
   h_sel_sig_int->DrawCopy("same");
   hval_sel_sig_int_uf->SetLineColor(2);
   hval_sel_sig_int_uf->SetMarkerColor(2);
+  //hval_sel_sig_int_uf->Scale(h_sel_sig_int_uf->Integral()/hval_sel_sig_int_uf->Integral());
   hval_sel_sig_int_uf->Draw("same hist");
   TLegend *leg4 = new TLegend(0.5,0.6,0.8,0.9);
   leg4->SetFillStyle(0);
@@ -107,6 +111,7 @@ void plotXS(){
   h_sel_sig_ini->SetMarkerColor(3);
   h_sel_sig_ini->DrawCopy("same");
   hval_sel_sig_ini->SetLineColor(2);
+  //hval_sel_sig_ini->Scale(h_sel_sig_ini->Integral()/hval_sel_sig_ini->Integral());
   hval_sel_sig_ini->Draw("same hist");
   TLegend *leg5 = new TLegend(0.5,0.6,0.8,0.9);
   leg5->SetFillStyle(0);
@@ -124,6 +129,7 @@ void plotXS(){
   h_sel_sig_ini->DrawCopy("same");
   hval_sel_sig_ini_uf->SetLineColor(2);
   hval_sel_sig_ini_uf->SetMarkerColor(2);
+  //hval_sel_sig_ini_uf->Scale(h_sel_sig_ini_uf->Integral()/hval_sel_sig_ini_uf->Integral());
   hval_sel_sig_ini_uf->Draw("same hist");
   TLegend *leg6 = new TLegend(0.5,0.6,0.8,0.9);
   leg6->SetFillStyle(0);
@@ -131,6 +137,9 @@ void plotXS(){
   leg6->AddEntry(h_sel_sig_ini_uf,"After unfolding","ple");
   leg6->AddEntry(hval_sel_sig_ini_uf,"True pions","l");
   leg6->Draw();
+  /*for (int i=1; i<=22; ++i) {
+    cout<<h_sel_sig_ini_uf->GetBinContent(i)<<"\t"<<h_sel_sig_ini_uf->GetBinError(i)<<endl;
+  }*/
 
   // incident histogram
   TCanvas *c7 = new TCanvas("c7","c7");
@@ -217,7 +226,7 @@ void plotXS(){
   double chi2 = 0;
   int nbins = 0;
   cout<<"KE\tData XS\t\tData XS_err\t\tMC XS\t\tMC XS_err\t\tChi2"<<endl;
-  for (int i=0; i<20; ++i) {
+  for (int i=1; i<19; ++i) {
     double KE = 975 - 50*i;
     double xs_curve = total_inel_KE->Eval(KE);
     double xs_MC = gr_truexs->GetPointY(i);

@@ -15,6 +15,8 @@
 #include <string>
 #include "RooUnfoldResponse.h"
 #include "RooUnfoldBayes.h"
+#include "RooUnfoldSvd.h"
+#include "RooUnfoldBinByBin.h"
 #include "TH2D.h"
 #include "BetheBloch.h"
 
@@ -337,11 +339,11 @@ int main(int argc, char** argv){
   
   // unfolding
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
-  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 20);
+  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 4);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
-  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 20);
+  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 4);
   RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
-  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 40);
+  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 4);
   
   TH1D *hsiginc_uf;
   TH1D *hsignal_uf;
@@ -352,6 +354,19 @@ int main(int argc, char** argv){
   hsignal_uf->SetNameTitle("hsignal_uf", "Unfolded interaction signal;Slice ID;Events");
   hsigini_uf = (TH1D*)unfold_Ini.Hreco();
   hsigini_uf->SetNameTitle("hsigini_uf", "Unfolded initial signal;Slice ID;Events");
+  //hsigini_uf->Scale(hsiginc_uf->Integral()/hsigini_uf->Integral());
+  TMatrixD cov_matrix_inc = unfold_Inc.Ereco();
+  TH2D *covariance_inc = new TH2D(cov_matrix_inc);
+  covariance_inc->Write("covariance_inc");
+  TMatrixD cov_matrix_int = unfold_Int.Ereco();
+  TH2D *covariance_int = new TH2D(cov_matrix_int);
+  covariance_int->Write("covariance_int");
+  TMatrixD cov_matrix_ini = unfold_Ini.Ereco();
+  TH2D *covariance_ini = new TH2D(cov_matrix_ini);
+  covariance_ini->Write("covariance_ini");
+  /*TVectorD covar_diag = unfold_Inc.ErecoV();
+  TH1D *cov_diag = new TH1D(covar_diag);
+  cov_diag->Write("Mcov_diag");*/
   
   // get Ninc, Nint, Nini
   double Ninc[pi::nthinslices] = {0};
@@ -443,10 +458,13 @@ int main(int argc, char** argv){
   TH1D *hval_sigini_reco = (TH1D*)fmc->Get("h_recoinisliceid_pion_cuts");
   hval_sigini_reco->Write("hval_sigini_reco");
   TH1D *hval_trueinc = (TH1D*)fmc->Get("h_truesliceid_pion_all");
+  //hval_trueinc->Scale(hsiginc_uf->Integral(2,-1)/hval_trueinc->Integral(2,-1));
   hval_trueinc->Write("hval_trueinc");
   TH1D *hval_trueint = (TH1D*)fmc->Get("h_truesliceid_pioninelastic_all");
+  //hval_trueint->Scale(hsignal_uf->Integral(2,-1)/hval_trueint->Integral(2,-1));
   hval_trueint->Write("hval_trueint");
   TH1D *hval_trueini = (TH1D*)fmc->Get("h_trueinisliceid_pion_all");
+  //hval_trueini->Scale(hsigini_uf->Integral(2,-1)/hval_trueini->Integral(2,-1));
   hval_trueini->Write("hval_trueini");
   double Ninc_t[pi::nthinslices] = {0};
   double Nint_t[pi::nthinslices] = {0};
