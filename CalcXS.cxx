@@ -9,6 +9,7 @@
 #include "TGraphErrors.h"
 #include "TVectorD.h"
 #include "TSystem.h"
+#include "TStyle.h"
 #include "json/json.h"
 #include <fstream>
 #include <iostream>
@@ -339,11 +340,11 @@ int main(int argc, char** argv){
   
   // unfolding
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
-  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 4);
+  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 20);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
-  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 4);
+  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 20);
   RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
-  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 4);
+  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 20);
   
   TH1D *hsiginc_uf;
   TH1D *hsignal_uf;
@@ -355,15 +356,71 @@ int main(int argc, char** argv){
   hsigini_uf = (TH1D*)unfold_Ini.Hreco();
   hsigini_uf->SetNameTitle("hsigini_uf", "Unfolded initial signal;Slice ID;Events");
   //hsigini_uf->Scale(hsiginc_uf->Integral()/hsigini_uf->Integral());
+  
   TMatrixD cov_matrix_inc = unfold_Inc.Ereco();
   TH2D *covariance_inc = new TH2D(cov_matrix_inc);
   covariance_inc->Write("covariance_inc");
+  TH2D *correlation_inc = (TH2D*)covariance_inc->Clone();
+  vector<double> sigma_inc;
+  for (int i=1; i<=covariance_inc->GetNbinsX(); ++i) {
+    sigma_inc.push_back(sqrt(covariance_inc->GetBinContent(i,i)));
+  }
+  for (int i=1; i<=covariance_inc->GetNbinsX(); ++i) {
+    for (int j=1; j<=covariance_inc->GetNbinsY(); ++j) {
+      if (covariance_inc->GetBinContent(i,j) == 0) correlation_inc->SetBinContent(i, j, 0);
+      else correlation_inc->SetBinContent(i, j, covariance_inc->GetBinContent(i,j)/sigma_inc.at(i-1)/sigma_inc.at(j-1));
+    }
+  }
+  // Draw correlation matrices option
+  /*const Int_t NRGBs = 3;
+  const Int_t NCont = 200;
+  Double_t stops[NRGBs] = { 0.0, 0.5, 1.0};
+  Double_t red[NRGBs]   = { 0.0, 1.0, 1.0};
+  Double_t green[NRGBs]   = { 0.0, 1.0, 0.0};
+  Double_t blue[NRGBs]   = { 1.0, 1.0, 0.0};
+  TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+  gStyle->SetNumberContours(NCont);
+  const Double_t mymin = -1;
+  const Double_t mymax = 1;
+  Double_t levels[NCont];
+  for(int i = 1; i < NCont; i++) {
+    levels[i] = mymin + (mymax - mymin) / (NCont - 1) * (i);
+  }
+  levels[0] = -1;
+  correlation_inc->SetContour((sizeof(levels)/sizeof(Double_t)), levels);*/
+  correlation_inc->Write("correlation_inc");
+  
   TMatrixD cov_matrix_int = unfold_Int.Ereco();
   TH2D *covariance_int = new TH2D(cov_matrix_int);
   covariance_int->Write("covariance_int");
+  TH2D *correlation_int = (TH2D*)covariance_int->Clone();
+  vector<double> sigma_int;
+  for (int i=1; i<=covariance_int->GetNbinsX(); ++i) {
+    sigma_int.push_back(sqrt(covariance_int->GetBinContent(i,i)));
+  }
+  for (int i=1; i<=covariance_int->GetNbinsX(); ++i) {
+    for (int j=1; j<=covariance_int->GetNbinsY(); ++j) {
+      if (covariance_int->GetBinContent(i,j) == 0) correlation_int->SetBinContent(i, j, 0);
+      else correlation_int->SetBinContent(i, j, covariance_int->GetBinContent(i,j)/sigma_int.at(i-1)/sigma_int.at(j-1));
+    }
+  }
+  correlation_int->Write("correlation_int");
+  
   TMatrixD cov_matrix_ini = unfold_Ini.Ereco();
   TH2D *covariance_ini = new TH2D(cov_matrix_ini);
   covariance_ini->Write("covariance_ini");
+  TH2D *correlation_ini = (TH2D*)covariance_ini->Clone();
+  vector<double> sigma_ini;
+  for (int i=1; i<=covariance_ini->GetNbinsX(); ++i) {
+    sigma_ini.push_back(sqrt(covariance_ini->GetBinContent(i,i)));
+  }
+  for (int i=1; i<=covariance_ini->GetNbinsX(); ++i) {
+    for (int j=1; j<=covariance_ini->GetNbinsY(); ++j) {
+      if (covariance_ini->GetBinContent(i,j) == 0) correlation_ini->SetBinContent(i, j, 0);
+      else correlation_ini->SetBinContent(i, j, covariance_ini->GetBinContent(i,j)/sigma_ini.at(i-1)/sigma_ini.at(j-1));
+    }
+  }
+  correlation_ini->Write("correlation_ini");
   /*TVectorD covar_diag = unfold_Inc.ErecoV();
   TH1D *cov_diag = new TH1D(covar_diag);
   cov_diag->Write("Mcov_diag");*/
