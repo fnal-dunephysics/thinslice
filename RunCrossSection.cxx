@@ -51,24 +51,26 @@ int main(int argc, char ** argv){
   //datachain->Add("pduneana.root/pduneana/beamana"); // test
   datachain->Add(Form("%s/beamana", root["datafile"].asString().c_str()));
 
-  Unfold uf(pi::nthinslices+2, -1, pi::nthinslices+1);
+  TH1D* hist_reco = new TH1D("hist_reco","hist_reco", pi::reco_nbins, pi::reco_bins);
+  TH1D* hist_true = new TH1D("hist_reco","hist_reco", pi::true_nbins, pi::true_bins);
+  Unfold uf(hist_reco, hist_true);
 
   anavar mcevt(mcchain);
 
   ThinSlice mcths;
   mcths.SetOutputFileName(root["mcoutfile"].asString());
-  mcths.Run(mcevt, uf, -1, false, true);
+  mcths.Run(mcevt, uf, -1, false, false);
 
   anavar dataevt(datachain);
 
   ThinSlice dataths;
   dataths.SetOutputFileName(root["dataoutfile"].asString());
-  dataths.Run(dataevt, uf, -1, false, true);
+  dataths.Run(dataevt, uf, -1, false, false);
 
-  ThinSlice cosmicsths;
+  /*ThinSlice cosmicsths;
   cosmicsths.SetSelectCosmics(true);
   cosmicsths.SetOutputFileName(root["cosmicsoutfile"].asString());
-  cosmicsths.Run(dataevt, uf, -1);
+  cosmicsths.Run(dataevt, uf, -1);*/
 
   return 0;
 

@@ -19,7 +19,10 @@ int main(){
   TChain *datachain = new TChain();
   datachain->Add("/dune/data/users/calcuttj/pduneana_Prod4_1GeV_5387_5_12_21.root/pduneana/beamana");
 
-  Unfold uf(p::nthinslices+2, -1, p::nthinslices+1);
+  //Unfold uf(p::nthinslices+2, -1, p::nthinslices+1, p::nthinslices+2, -1, p::nthinslices+1);
+  TH1D* hist_reco = new TH1D("hist_reco","hist_reco", pi::reco_nbins, pi::reco_bins);
+  TH1D* hist_true = new TH1D("hist_reco","hist_reco", pi::true_nbins, pi::true_bins);
+  Unfold uf(hist_reco, hist_true);
 
   anavar mcevt(mcchain);
 

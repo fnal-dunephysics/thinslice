@@ -34,17 +34,17 @@ void ThinSlice::BookHistograms(){
   reco_AngCorr->Sumw2();
   true_AngCorr->Sumw2();
 
-  h_truesliceid_pion_all = new TH1D("h_truesliceid_pion_all","h_truesliceid_pion_all;True SliceID", pi::nthinslices + 2, -1, pi::nthinslices + 1);
-  h_trueinisliceid_pion_all = new TH1D("h_trueinisliceid_pion_all","h_trueinisliceid_pion_all;True SliceID", pi::nthinslices + 2, -1, pi::nthinslices + 1);
-  h_truesliceid_pion_cuts = new TH1D("h_truesliceid_pion_cuts","h_truesliceid_pion_cuts;True SliceID", pi::nthinslices + 2, -1, pi::nthinslices + 1);
-  h_trueinisliceid_pion_cuts = new TH1D("h_trueinisliceid_pion_cuts","h_trueinisliceid_pion_cuts;True SliceID", pi::nthinslices + 2, -1, pi::nthinslices + 1);
-  h_truesliceid_pioninelastic_all = new TH1D("h_truesliceid_pioninelastic_all","h_truesliceid_pioninelastic_all;True SliceID", pi::nthinslices + 2, -1, pi::nthinslices + 1);
-  h_truesliceid_pioninelastic_cuts = new TH1D("h_truesliceid_pioninelastic_cuts","h_truesliceid_pioninelastic_cuts;True SliceID", pi::nthinslices + 2, -1, pi::nthinslices + 1);
-  h_recosliceid_allevts_cuts = new TH1D("h_recosliceid_allevts_cuts","h_recosliceid_allevts_cuts;Reco SliceID", pi::nthinslices + 2, -1, pi::nthinslices + 1);
-  h_recoinisliceid_allevts_cuts = new TH1D("h_recoinisliceid_allevts_cuts","h_recoinisliceid_allevts_cuts;Reco SliceID", pi::nthinslices + 2, -1, pi::nthinslices + 1);
-  h_recosliceid_pion_cuts = new TH1D("h_recosliceid_pion_cuts","h_recosliceid_pion_cuts;Reco SliceID", pi::nthinslices + 2, -1, pi::nthinslices + 1);
-  h_recoinisliceid_pion_cuts = new TH1D("h_recoinisliceid_pion_cuts","h_recoinisliceid_pion_cuts;Reco SliceID", pi::nthinslices + 2, -1, pi::nthinslices + 1);
-  h_recosliceid_pioninelastic_cuts = new TH1D("h_recosliceid_pioninelastic_cuts","h_recosliceid_pioninelastic_cuts;Reco SliceID", pi::nthinslices + 2, -1, pi::nthinslices + 1);
+  h_truesliceid_pion_all = new TH1D("h_truesliceid_pion_all","h_truesliceid_pion_all;True SliceID", pi::true_nbins, pi::true_bins);
+  h_trueinisliceid_pion_all = new TH1D("h_trueinisliceid_pion_all","h_trueinisliceid_pion_all;True SliceID", pi::true_nbins, pi::true_bins);
+  h_truesliceid_pion_cuts = new TH1D("h_truesliceid_pion_cuts","h_truesliceid_pion_cuts;True SliceID", pi::true_nbins, pi::true_bins);
+  h_trueinisliceid_pion_cuts = new TH1D("h_trueinisliceid_pion_cuts","h_trueinisliceid_pion_cuts;True SliceID", pi::true_nbins, pi::true_bins);
+  h_truesliceid_pioninelastic_all = new TH1D("h_truesliceid_pioninelastic_all","h_truesliceid_pioninelastic_all;True SliceID", pi::true_nbins, pi::true_bins);
+  h_truesliceid_pioninelastic_cuts = new TH1D("h_truesliceid_pioninelastic_cuts","h_truesliceid_pioninelastic_cuts;True SliceID", pi::true_nbins, pi::true_bins);
+  h_recosliceid_allevts_cuts = new TH1D("h_recosliceid_allevts_cuts","h_recosliceid_allevts_cuts;Reco SliceID", pi::reco_nbins, pi::reco_bins);
+  h_recoinisliceid_allevts_cuts = new TH1D("h_recoinisliceid_allevts_cuts","h_recoinisliceid_allevts_cuts;Reco SliceID", pi::reco_nbins, pi::reco_bins);
+  h_recosliceid_pion_cuts = new TH1D("h_recosliceid_pion_cuts","h_recosliceid_pion_cuts;Reco SliceID", pi::reco_nbins, pi::reco_bins);
+  h_recoinisliceid_pion_cuts = new TH1D("h_recoinisliceid_pion_cuts","h_recoinisliceid_pion_cuts;Reco SliceID", pi::reco_nbins, pi::reco_bins);
+  h_recosliceid_pioninelastic_cuts = new TH1D("h_recosliceid_pioninelastic_cuts","h_recosliceid_pioninelastic_cuts;Reco SliceID", pi::reco_nbins, pi::reco_bins);
 
   h_truesliceid_pion_all->Sumw2();
   h_trueinisliceid_pion_all->Sumw2();
@@ -83,18 +83,18 @@ void ThinSlice::BookHistograms(){
       hreco_vs_true_beam_endZ_SCE[i][j]= new TH2D(Form("hreco_vs_true_beam_endZ_SCE_%d_%d",i,j), Form("%s, %s;true_beam_endZ_SCE (cm);reco_beam_endZ_SCE (cm)", pi::cutName[i], pi::intTypeName[j]), 70, -100, 600, 70, -100, 600);
       hreco_true_vs_true_beam_endZ_SCE[i][j]= new TH2D(Form("hreco_true_vs_true_beam_endZ_SCE_%d_%d",i,j), Form("%s, %s;true_beam_endZ_SCE (cm);reco - true_beam_endZ_SCE (cm)", pi::cutName[i], pi::intTypeName[j]), 70, -100, 600, 100, -100, 100);
 
-      htrue_sliceID[i][j] = new TH1D(Form("htrue_sliceID_%d_%d",i,j),Form("true_sliceID, %s, %s;true_sliceID (cm)", pi::cutName[i], pi::intTypeName[j]), pi::nthinslices+2, -1, pi::nthinslices+1);
+      htrue_sliceID[i][j] = new TH1D(Form("htrue_sliceID_%d_%d",i,j),Form("true_sliceID, %s, %s;true_sliceID (cm)", pi::cutName[i], pi::intTypeName[j]), pi::true_nbins, pi::true_bins);
       htrue_sliceID[i][j]->Sumw2();
-      hreco_sliceID[i][j] = new TH1D(Form("hreco_sliceID_%d_%d",i,j),Form("reco_sliceID, %s, %s;reco_sliceID", pi::cutName[i], pi::intTypeName[j]), pi::nthinslices+2, -1, pi::nthinslices+1);
+      hreco_sliceID[i][j] = new TH1D(Form("hreco_sliceID_%d_%d",i,j),Form("reco_sliceID, %s, %s;reco_sliceID", pi::cutName[i], pi::intTypeName[j]), pi::reco_nbins, pi::reco_bins);
       hreco_sliceID[i][j]->Sumw2();
-      hreco_incsliceID[i][j] = new TH1D(Form("hreco_incsliceID_%d_%d",i,j),Form("reco_incsliceID, %s, %s;reco_incsliceID", pi::cutName[i], pi::intTypeName[j]), pi::nthinslices+2, -1, pi::nthinslices+1);
+      hreco_incsliceID[i][j] = new TH1D(Form("hreco_incsliceID_%d_%d",i,j),Form("reco_incsliceID, %s, %s;reco_incsliceID", pi::cutName[i], pi::intTypeName[j]), pi::reco_nbins, pi::reco_bins);
       hreco_incsliceID[i][j]->Sumw2();
-      hreco_inisliceID[i][j] = new TH1D(Form("hreco_inisliceID_%d_%d",i,j),Form("reco_inisliceID, %s, %s;reco_inisliceID", pi::cutName[i], pi::intTypeName[j]), pi::nthinslices+2, -1, pi::nthinslices+1);
+      hreco_inisliceID[i][j] = new TH1D(Form("hreco_inisliceID_%d_%d",i,j),Form("reco_inisliceID, %s, %s;reco_inisliceID", pi::cutName[i], pi::intTypeName[j]), pi::reco_nbins, pi::reco_bins);
       hreco_inisliceID[i][j]->Sumw2();
       hreco_true_sliceID[i][j] = new TH1D(Form("hreco_true_sliceID_%d_%d",i,j), Form("reco_true_sliceID, %s, %s;reco_sliceID - true_sliceID", pi::cutName[i], pi::intTypeName[j]), 20, -10, 10);
       hreco_true_sliceID[i][j]->Sumw2();
-      hreco_vs_true_sliceID[i][j]= new TH2D(Form("hreco_vs_true_sliceID_%d_%d",i,j), Form("%s, %s;true_sliceID;reco_sliceID", pi::cutName[i], pi::intTypeName[j]), pi::nthinslices+2, -1, pi::nthinslices+1, pi::nthinslices+2, -1, pi::nthinslices+1);
-      hreco_true_vs_true_sliceID[i][j]= new TH2D(Form("hreco_true_vs_true_sliceID_%d_%d",i,j), Form("%s, %s;true_sliceID;reco_sliceID - true_sliceID", pi::cutName[i], pi::intTypeName[j]), pi::nthinslices+2, -1, pi::nthinslices+1, 20, -10, 10);
+      hreco_vs_true_sliceID[i][j]= new TH2D(Form("hreco_vs_true_sliceID_%d_%d",i,j), Form("%s, %s;true_sliceID;reco_sliceID", pi::cutName[i], pi::intTypeName[j]), pi::true_nbins, pi::true_bins, pi::reco_nbins, pi::reco_bins);
+      hreco_true_vs_true_sliceID[i][j]= new TH2D(Form("hreco_true_vs_true_sliceID_%d_%d",i,j), Form("%s, %s;true_sliceID;reco_sliceID - true_sliceID", pi::cutName[i], pi::intTypeName[j]), pi::true_nbins, pi::true_bins, 20, -10, 10);
 
       hmediandEdx[i][j] = new TH1D(Form("hmediandEdx_%d_%d",i,j), Form("mediandEdx, %s, %s;Median dE/dx (MeV/cm)", pi::cutName[i], pi::intTypeName[j]), 100, 0, 5);
       hmediandEdx[i][j]->Sumw2();
@@ -124,7 +124,7 @@ void ThinSlice::BookHistograms(){
       hdaughter_michel_score_bkg[i][j]->Sumw2();
       hcostheta_bkg[i][j] = new TH1D(Form("hcostheta_bkg_%d_%d",i,j), Form("costheta_bkg, %s, %s;cos#theta", pi::cutName[i], pi::intTypeName[j]), 75, 0.85, 1);
       hcostheta_bkg[i][j]->Sumw2();
-      for (int k = 0; k<pi::nthinslices; ++k){
+      for (int k = 0; k<pi::reco_nbins-1; ++k){
         hmediandEdxSlice[k][i][j] = new TH1D(Form("hmediandEdxSlice_%d_%d_%d",k,i,j), Form("mediandEdx, %s, %s, sliceID = %d;Median dE/dx (MeV/cm)", pi::cutName[i], pi::intTypeName[j], k), 14, 1, 8);
         hmediandEdxSlice[k][i][j]->Sumw2();
         
@@ -245,7 +245,7 @@ void ThinSlice::BookHistograms(){
   h_trklen_noint_mu = new TH1D("h_trklen_noint_mu","h_trklen_noint_mu;ratio", 100, 0, 1.2);
   h_trklen_noint_mu->Sumw2();
 
-   for (int i = 0; i<pi::nthinslices; ++i){
+   for (int i = 0; i<pi::true_nbins-1; ++i){
      true_interactions[i] = 0;
      true_incidents[i] = 0;
    }
@@ -310,15 +310,21 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
         h_diff_Eint_vs_true_Eint->Fill(int_energy_true, int_energy_true_trklen - int_energy_true);
       }
       // true initial sliceID
-      true_ini_sliceID = int(ceil( (pi::plim - hadana.true_ffKE)/pi::Eslicewidth )); // ignore incomplete slices
+      for (true_ini_sliceID=0; true_ini_sliceID<=pi::true_nbins-2; ++true_ini_sliceID) {
+        if (hadana.true_ffKE > pi::true_KE[true_ini_sliceID]) break;
+      }
+      //true_ini_sliceID = int(ceil( (pi::plim - hadana.true_ffKE)/pi::Eslicewidth_t )); // ignore incomplete slices
       //if (true_ini_sliceID <= -99) true_ini_sliceID = -99;
-      if (true_ini_sliceID < 0) true_ini_sliceID = 0; // physical underflow
-      if (true_ini_sliceID >= pi::nthinslices) true_ini_sliceID = pi::nthinslices-1; // overflow (Eff<pi::Eslicewidth)
+      //if (true_ini_sliceID < 0) true_ini_sliceID = 0; // physical underflow
+      //if (true_ini_sliceID >= pi::true_nbins-2) true_ini_sliceID = pi::true_nbins-2; // overflow (Eff<pi::Eslicewidth)
       // true interaction sliceID
-      true_sliceID = int(floor( (pi::plim-int_energy_true)/pi::Eslicewidth ));
+      for (true_sliceID=0; true_sliceID<=pi::true_nbins-2; ++true_sliceID) {
+        if (int_energy_true > pi::true_KE[true_sliceID+1]) break;
+      }
+      //true_sliceID = int(floor( (pi::plim-int_energy_true)/pi::Eslicewidth_t ));
       //if (true_sliceID <= -99) true_sliceID = -99;
-      if (true_sliceID < 0) true_sliceID = 0; // physical underflow
-      if (true_sliceID >= pi::nthinslices) true_sliceID = pi::nthinslices-1; // overflow (int_energy_true <= 0)
+      //if (true_sliceID < 0) true_sliceID = 0; // physical underflow
+      //if (true_sliceID >= pi::true_nbins-2) true_sliceID = pi::true_nbins-2; // overflow (int_energy_true <= 0)
       // ignore incomplete slices
       /*if (true_sliceID < true_ini_sliceID) {
         true_ini_sliceID = -1;
@@ -330,7 +336,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
         int starti = true_ini_sliceID;
         if (starti == -1) starti = 0;
         for (int i = starti; i<=true_sliceID; ++i){
-          if (i<pi::nthinslices) ++true_incidents[i]; // count incident events
+          if (i<pi::true_nbins-1) ++true_incidents[i]; // count incident events
         }
         
         if ((*evt.true_beam_endProcess) == "pi+Inelastic"){
@@ -413,18 +419,24 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
       if (hadana.reco_trklen>0)
         int_energy_reco = bb.KEAtLength(ini_energy_reco, hadana.reco_trklen);
       // reco initial sliceID
-      reco_ini_sliceID = int(ceil( (pi::plim - ini_energy_reco)/pi::Eslicewidth ));
-      if (reco_ini_sliceID < 0) reco_ini_sliceID = 0;
-      if (reco_ini_sliceID >= pi::nthinslices) reco_ini_sliceID = pi::nthinslices-1;
+      for (reco_ini_sliceID=0; reco_ini_sliceID<=pi::reco_nbins-2; ++reco_ini_sliceID) {
+        if (ini_energy_reco > pi::reco_KE[reco_ini_sliceID]) break;
+      }
+      //reco_ini_sliceID = int(ceil( (pi::plim - ini_energy_reco)/pi::Eslicewidth ));
+      //if (reco_ini_sliceID < 0) reco_ini_sliceID = 0;
+      //if (reco_ini_sliceID >= pi::reco_nbins-2) reco_ini_sliceID = pi::reco_nbins-2;
       // reco interaction sliceID
-      reco_sliceID = int(floor( (pi::plim-int_energy_reco)/pi::Eslicewidth ));
-      if (reco_sliceID < 0) reco_sliceID = 0;
+      for (reco_sliceID=0; reco_sliceID<=pi::reco_nbins-2; ++reco_sliceID) {
+        if (int_energy_reco > pi::reco_KE[reco_sliceID]) break;
+      }
+      //reco_sliceID = int(floor( (pi::plim-int_energy_reco)/pi::Eslicewidth ));
+      //if (reco_sliceID < 0) reco_sliceID = 0;
       //if (hadana.reco_trklen < 0) reco_sliceID = -1;
-      if (reco_sliceID >= pi::nthinslices) { // overflow (int_energy_reco <= 0)
-        reco_sliceID = pi::nthinslices-1;
+      //if (reco_sliceID >= pi::reco_nbins-2) { // overflow (int_energy_reco <= 0)
+      //  reco_sliceID = pi::reco_nbins-2;
         //cout<<"reco_sliceID >= pi::nthinslices"<<int_energy_reco<<endl;
         //cout<<ini_energy_reco<<"\t"<<hadana.reco_trklen<<endl;
-      }
+      //}
       // ignore incomplete slices
       /*if (reco_sliceID < reco_ini_sliceID) {
         //cout<<"$$$"<<hadana.reco_trklen<<"\t"<<hadana.true_trklen<<endl;
@@ -467,12 +479,12 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
     reco_end_sliceID = -1;
   }
   // upstream interactions
-  if (hadana.true_ffKE == -999999) true_ini_sliceID = pi::nthinslices;
-  if (int_energy_true == -999999) true_sliceID = pi::nthinslices;
-  if (ini_energy_reco == -999999) reco_ini_sliceID = pi::nthinslices;
+  if (hadana.true_ffKE == -999999) true_ini_sliceID = pi::true_nbins-2;
+  if (int_energy_true == -999999) true_sliceID = pi::true_nbins-2;
+  if (ini_energy_reco == -999999) reco_ini_sliceID = pi::reco_nbins-2;
   if (int_energy_reco == -999999) {
-    reco_sliceID = pi::nthinslices;
-    reco_end_sliceID = pi::nthinslices;
+    reco_sliceID = pi::reco_nbins-2;
+    reco_end_sliceID = pi::reco_nbins-2;
   }
   double weight = g4rw * bkgw;
   if (evt.MC){
@@ -720,7 +732,7 @@ void ThinSlice::FillSliceHist(const anavar & evt, int constraint_type, double we
       FillHistVec1D(hcostheta_bkg[cut], hadana.beam_costh, hadana.pitype, weight, true, false);
     }
     // in each slice
-    if (reco_sliceID>=0 && reco_sliceID<pi::nthinslices){
+    if (reco_sliceID>=0 && reco_sliceID<pi::reco_nbins-1){
       if (constraint_type == 1) { // muon
         FillHistVec1D(hdaughter_michel_scoreSlice[reco_sliceID][cut], hadana.daughter_michel_score, hadana.pitype, weight, false, false);
       }
@@ -747,28 +759,28 @@ void ThinSlice::SaveHistograms(){
 
 void ThinSlice::CalcXS(const Unfold & uf){
 
-  double slcid[pi::nthinslices] = {0};
-  double Eslice[pi::nthinslices] = {0};
-  double Einterval[pi::nthinslices] = {0};
-  double dEdx[pi::nthinslices] = {0};
-  double avg_trueincE[pi::nthinslices] = {0};
-  double avg_recoincE[pi::nthinslices] = {0};
-  double err_trueincE[pi::nthinslices] = {0};
-  double err_recoincE[pi::nthinslices] = {0};
-  double reco_trueincE[pi::nthinslices] = {0};
-  double err_reco_trueincE[pi::nthinslices] = {0};
-  double truexs[pi::nthinslices] = {0};
-  double err_truexs[pi::nthinslices] = {0};
+  double slcid[pi::true_nbins-1] = {0};
+  double Eslice[pi::true_nbins-1] = {0};
+  double Einterval[pi::true_nbins-1] = {0};
+  double dEdx[pi::true_nbins-1] = {0};
+  double avg_trueincE[pi::true_nbins-1] = {0};
+  double avg_recoincE[pi::true_nbins-1] = {0};
+  double err_trueincE[pi::true_nbins-1] = {0};
+  double err_recoincE[pi::true_nbins-1] = {0};
+  double reco_trueincE[pi::true_nbins-1] = {0};
+  double err_reco_trueincE[pi::true_nbins-1] = {0};
+  double truexs[pi::true_nbins-1] = {0};
+  double err_truexs[pi::true_nbins-1] = {0};
   double true_cosangle = 1.;
 
   double NA=6.02214076e23;
   double MAr=39.95; //gmol
   double Density = 1.4; // 1.396 g/cm^3
-  for (int i = 0; i<pi::nthinslices; ++i){
+  for (int i = 0; i<pi::true_nbins-1; ++i){
     
     slcid[i] = i;
-    Eslice[i] = pi::plim - (i+0.5)*pi::Eslicewidth;
-    Einterval[i] = pi::Eslicewidth/2;
+    Eslice[i] = (pi::true_KE[i]+pi::true_KE[i+1])/2;
+    Einterval[i] = (pi::true_KE[i]-pi::true_KE[i+1])/2;
     dEdx[i] = bb.meandEdx(Eslice[i]); // MeV/cm
     //cout<<dEdx[i]<<"\t";
     avg_trueincE[i] = true_incE[i]->GetMean();
@@ -780,8 +792,8 @@ void ThinSlice::CalcXS(const Unfold & uf){
     //std::cout<<i<<" "<<avg_trueincE[i]<<std::endl;
     if (true_incidents[i] && true_interactions[i]){
       //true_cosangle = true_AngCorr->GetMean(); // no need to include angle correction
-      truexs[i] = dEdx[i]*MAr/(Density*NA*pi::Eslicewidth/true_cosangle)*log(true_incidents[i]/(true_incidents[i]-true_interactions[i]))*1e27;
-      err_truexs[i] = dEdx[i]*MAr/(Density*NA*pi::Eslicewidth/true_cosangle)*1e27*sqrt(true_interactions[i]+pow(true_interactions[i],2)/true_incidents[i])/true_incidents[i];
+      truexs[i] = dEdx[i]*MAr/(Density*NA*2*Einterval[i]/true_cosangle)*log(true_incidents[i]/(true_incidents[i]-true_interactions[i]))*1e27;
+      err_truexs[i] = dEdx[i]*MAr/(Density*NA*2*Einterval[i]/true_cosangle)*1e27*sqrt(true_interactions[i]+pow(true_interactions[i],2)/true_incidents[i])/true_incidents[i];
     }
   }
 
@@ -793,7 +805,7 @@ void ThinSlice::CalcXS(const Unfold & uf){
   gr_recoincE->Write("gr_recoincE");
   gr_reco_trueincE->Write("gr_reco_trueincE");
 
-  TGraphErrors *gr_truexs = new TGraphErrors(pi::nthinslices, &(Eslice[0]), &(truexs[0]), &(Einterval[0]), &(err_truexs[0]));
+  TGraphErrors *gr_truexs = new TGraphErrors(pi::true_nbins-1, &(Eslice[0]), &(truexs[0]), &(Einterval[0]), &(err_truexs[0]));
   
   gr_truexs->Write("gr_truexs");
 

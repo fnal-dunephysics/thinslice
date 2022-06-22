@@ -57,7 +57,7 @@ void plotXS(){
   h_sel_sig_inc_uf->SetMarkerColor(4);
   h_sel_sig_inc_uf->SetTitle("All Pions; True SliceID; Events");
   h_sel_sig_inc_uf->Draw();
-  h_sel_sig_inc->DrawCopy("same");
+  //h_sel_sig_inc->DrawCopy("same");
   hval_sel_sig_inc_uf->SetLineColor(2);
   hval_sel_sig_inc_uf->SetMarkerColor(2);
   //hval_sel_sig_inc_uf->Scale(h_sel_sig_inc_uf->Integral()/hval_sel_sig_inc_uf->Integral());
@@ -91,7 +91,7 @@ void plotXS(){
   h_sel_sig_int_uf->SetMarkerColor(4);
   h_sel_sig_int_uf->SetTitle("Pion Inelastic Scatterings; True SliceID; Events");
   h_sel_sig_int_uf->Draw();
-  h_sel_sig_int->DrawCopy("same");
+  //h_sel_sig_int->DrawCopy("same");
   hval_sel_sig_int_uf->SetLineColor(2);
   hval_sel_sig_int_uf->SetMarkerColor(2);
   //hval_sel_sig_int_uf->Scale(h_sel_sig_int_uf->Integral()/hval_sel_sig_int_uf->Integral());
@@ -126,7 +126,7 @@ void plotXS(){
   h_sel_sig_ini_uf->SetTitle("All Pions; True SliceID; Events");
   h_sel_sig_ini_uf->SetMinimum(0);
   h_sel_sig_ini_uf->Draw();
-  h_sel_sig_ini->DrawCopy("same");
+  //h_sel_sig_ini->DrawCopy("same");
   hval_sel_sig_ini_uf->SetLineColor(2);
   hval_sel_sig_ini_uf->SetMarkerColor(2);
   //hval_sel_sig_ini_uf->Scale(h_sel_sig_ini_uf->Integral()/hval_sel_sig_ini_uf->Integral());
@@ -226,8 +226,8 @@ void plotXS(){
   double chi2 = 0;
   int nbins = 0;
   cout<<"KE\tData XS\t\tData XS_err\t\tMC XS\t\tMC XS_err\t\tChi2"<<endl;
-  for (int i=1; i<19; ++i) {
-    double KE = 975 - 50*i;
+  for (int i=1; i<pi::true_nbins-2; ++i) {
+    double KE = (pi::true_KE[i+1]+pi::true_KE[i])/2;
     double xs_curve = total_inel_KE->Eval(KE);
     double xs_MC = gr_truexs->GetPointY(i);
     double xserr_MC = gr_truexs->GetErrorY(i);

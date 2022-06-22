@@ -76,12 +76,12 @@ int main(int argc, char** argv){
   cout<<"Pion scaling factor: "<<(*sf_spi)[0]<<"+-"<<(*sf_spi)[1]<<endl;
 
   TH1D *hsliceID[pi::nIntTypes+1];
-  TH1D *hdata = new TH1D("hdata","Data;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1); // h_recosliceid_allevts_cuts (hreco_sliceID_6_0)
-  TH1D *hproton = new TH1D("hproton","Proton background;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hmu = new TH1D("hmu","Muon background;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hspi = new TH1D("hspi","Secondary pion background;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hpiel = new TH1D("hpiel","Pion elastic;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hother = new TH1D("hother","Other backgrounds;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
+  TH1D *hdata = new TH1D("hdata","Data;Slice ID;Events",pi::reco_nbins,pi::reco_bins); // h_recosliceid_allevts_cuts (hreco_sliceID_6_0)
+  TH1D *hproton = new TH1D("hproton","Proton background;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hmu = new TH1D("hmu","Muon background;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hspi = new TH1D("hspi","Secondary pion background;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hpiel = new TH1D("hpiel","Pion elastic;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hother = new TH1D("hother","Other backgrounds;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
   hdata->Sumw2();
   hproton->Sumw2();
   hmu->Sumw2();
@@ -90,12 +90,12 @@ int main(int argc, char** argv){
   hother->Sumw2();
   
   TH1D *hincsliceID[pi::nIntTypes+1];
-  TH1D *hdata_inc = new TH1D("hdata_inc","Data_inc;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hproton_inc = new TH1D("hproton_inc","Proton_inc background;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hmu_inc = new TH1D("hmu_inc","Muon_inc background;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hspi_inc = new TH1D("hspi_inc","Secondary pion_inc background;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  //TH1D *hpiel_inc = new TH1D("hpiel_inc","Pion elastic_inc;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hother_inc = new TH1D("hother_inc","Other_inc backgrounds;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
+  TH1D *hdata_inc = new TH1D("hdata_inc","Data_inc;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hproton_inc = new TH1D("hproton_inc","Proton_inc background;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hmu_inc = new TH1D("hmu_inc","Muon_inc background;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hspi_inc = new TH1D("hspi_inc","Secondary pion_inc background;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  //TH1D *hpiel_inc = new TH1D("hpiel_inc","Pion elastic_inc;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hother_inc = new TH1D("hother_inc","Other_inc backgrounds;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
   hdata_inc->Sumw2();
   hproton_inc->Sumw2();
   hmu_inc->Sumw2();
@@ -104,12 +104,12 @@ int main(int argc, char** argv){
   hother_inc->Sumw2();
   
   TH1D *hinisliceID[pi::nIntTypes+1];
-  TH1D *hdata_ini = new TH1D("hdata_ini","Data_ini;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hproton_ini = new TH1D("hproton_ini","Proton_ini background;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hmu_ini = new TH1D("hmu_ini","Muon_ini background;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hspi_ini = new TH1D("hspi_ini","Secondary pion_ini background;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  //TH1D *hpiel_ini = new TH1D("hpiel_ini","Pion elastic_ini;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
-  TH1D *hother_ini = new TH1D("hother_ini","Other_ini backgrounds;Slice ID;Events",pi::nthinslices+2,-1,pi::nthinslices+1);
+  TH1D *hdata_ini = new TH1D("hdata_ini","Data_ini;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hproton_ini = new TH1D("hproton_ini","Proton_ini background;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hmu_ini = new TH1D("hmu_ini","Muon_ini background;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hspi_ini = new TH1D("hspi_ini","Secondary pion_ini background;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  //TH1D *hpiel_ini = new TH1D("hpiel_ini","Pion elastic_ini;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
+  TH1D *hother_ini = new TH1D("hother_ini","Other_ini backgrounds;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
   hdata_ini->Sumw2();
   hproton_ini->Sumw2();
   hmu_ini->Sumw2();
@@ -130,13 +130,13 @@ int main(int argc, char** argv){
       hinisliceID[i] = (TH1D*)fmc->Get(Form("hreco_inisliceID_%d_%d",pi::nCuts-1,i));
     }
   }
-  TH1D *hmc = new TH1D("hmc","MC;Slice ID;Events",hsliceID[0]->GetNbinsX(),-1,hsliceID[0]->GetNbinsX()-1);
+  TH1D *hmc = new TH1D("hmc","MC;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
   hmc->Sumw2();
-  TH1D *hmc_inc = new TH1D("hmc_inc","MC_inc;Slice ID;Events",hsliceID[0]->GetNbinsX(),-1,hsliceID[0]->GetNbinsX()-1);
+  TH1D *hmc_inc = new TH1D("hmc_inc","MC_inc;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
   hmc_inc->Sumw2();
-  TH1D *hmc_ini = new TH1D("hmc_ini","MC_ini;Slice ID;Events",hsliceID[0]->GetNbinsX(),-1,hsliceID[0]->GetNbinsX()-1);
+  TH1D *hmc_ini = new TH1D("hmc_ini","MC_ini;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
   hmc_ini->Sumw2();
-  for (int j = 0; j < pi::nthinslices+2; ++j){
+  for (int j = 0; j < pi::reco_nbins; ++j){
     int bin = hsliceID[0]->FindBin(j-0.5);
     hdata->SetBinContent(j+1, hsliceID[0]->GetBinContent(bin));
     hdata->SetBinError(j+1, hsliceID[0]->GetBinError(bin));
@@ -181,7 +181,7 @@ int main(int argc, char** argv){
       hinisliceID[i]->Multiply(hinisliceID[0]);
       hinisliceID[i]->Divide(hmc_ini);
     }
-    for (int j = 0; j < pi::nthinslices+2; ++j){
+    for (int j = 0; j < pi::reco_nbins; ++j){
       int bin = hsliceID[i]->FindBin(j-0.5);
       if (i!=0){
         double binc;
@@ -340,11 +340,11 @@ int main(int argc, char** argv){
   
   // unfolding
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
-  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 20);
+  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 4);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
-  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 20);
+  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 4);
   RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
-  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 20);
+  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 4);
   
   TH1D *hsiginc_uf;
   TH1D *hsignal_uf;
@@ -426,17 +426,17 @@ int main(int argc, char** argv){
   cov_diag->Write("Mcov_diag");*/
   
   // get Ninc, Nint, Nini
-  double Ninc[pi::nthinslices] = {0};
-  double Nint[pi::nthinslices] = {0};
-  double Nini[pi::nthinslices] = {0};
-  double Nina[pi::nthinslices] = {0};
-  double err_inc[pi::nthinslices] = {0};
-  double err_int[pi::nthinslices] = {0};
-  double err_ini[pi::nthinslices] = {0};
-  double err_ina[pi::nthinslices] = {0};
-  double SliceID[pi::nthinslices] = {0};
+  double Ninc[pi::true_nbins-1] = {0};
+  double Nint[pi::true_nbins-1] = {0};
+  double Nini[pi::true_nbins-1] = {0};
+  double Nina[pi::true_nbins-1] = {0};
+  double err_inc[pi::true_nbins-1] = {0};
+  double err_int[pi::true_nbins-1] = {0};
+  double err_ini[pi::true_nbins-1] = {0};
+  double err_ina[pi::true_nbins-1] = {0};
+  double SliceID[pi::true_nbins-1] = {0};
 
-  for (int i = 0; i<pi::nthinslices; ++i){
+  for (int i = 0; i<pi::true_nbins-1; ++i){
     SliceID[i] = i+1;
     Nint[i] = hsignal_uf->GetBinContent(i+2);
     err_int[i] = hsignal_uf->GetBinError(i+2);
@@ -454,16 +454,16 @@ int main(int argc, char** argv){
     }
     err_inc[i] = sqrt(err_inc[i]);
   }
-  TGraphErrors *gr_inc = new TGraphErrors(pi::nthinslices, SliceID, Ninc, 0, err_inc);
+  TGraphErrors *gr_inc = new TGraphErrors(pi::true_nbins-1, SliceID, Ninc, 0, err_inc);
   gr_inc->SetNameTitle("gr_inc", "Incident number;Slice ID;Events");
   gr_inc->Write();
-  TGraphErrors *gr_int = new TGraphErrors(pi::nthinslices, SliceID, Nint, 0, err_int);
+  TGraphErrors *gr_int = new TGraphErrors(pi::true_nbins-1, SliceID, Nint, 0, err_int);
   gr_int->SetNameTitle("gr_int", "Interaction number;Slice ID;Events");
   gr_int->Write();
-  TGraphErrors *gr_ini = new TGraphErrors(pi::nthinslices, SliceID, Nini, 0, err_ini);
+  TGraphErrors *gr_ini = new TGraphErrors(pi::true_nbins-1, SliceID, Nini, 0, err_ini);
   gr_ini->SetNameTitle("gr_ini", "Initial number;Slice ID;Events");
   gr_ini->Write();
-  TGraphErrors *gr_ina = new TGraphErrors(pi::nthinslices, SliceID, Nina, 0, err_ina);
+  TGraphErrors *gr_ina = new TGraphErrors(pi::true_nbins-1, SliceID, Nina, 0, err_ina);
   gr_ina->SetNameTitle("gr_ina", "Interaction_allpion number;Slice ID;Events");
   gr_ina->Write();
   /*TGraphErrors *gr_trueincE = (TGraphErrors*)fmc->Get("gr_trueincE");
@@ -478,19 +478,19 @@ int main(int argc, char** argv){
   double NA=6.02214076e23;
   double MAr=39.95; //gmol
   double Density = 1.4; // g/cm^3
-  double xs[pi::nthinslices] = {0};
-  double err_xs[pi::nthinslices] = {0};
-  double KE[pi::nthinslices] = {0};
-  double err_KE[pi::nthinslices] = {0};
-  double dEdx[pi::nthinslices] = {0};
-  for (int i = 0; i<pi::nthinslices; ++i){
-    KE[i] = pi::plim - (i+0.5)*pi::Eslicewidth;
-    err_KE[i] = pi::Eslicewidth/2;
+  double xs[pi::true_nbins-1] = {0};
+  double err_xs[pi::true_nbins-1] = {0};
+  double KE[pi::true_nbins-1] = {0};
+  double err_KE[pi::true_nbins-1] = {0};
+  double dEdx[pi::true_nbins-1] = {0};
+  for (int i = 0; i<pi::true_nbins-1; ++i){
+    KE[i] = (pi::true_KE[i]+pi::true_KE[i+1])/2;
+    err_KE[i] = (pi::true_KE[i]-pi::true_KE[i+1])/2;
     dEdx[i] = bb.meandEdx(KE[i]); // MeV/cm
-    xs[i] = dEdx[i]*MAr/(Density*NA*pi::Eslicewidth)*log(Ninc[i]/(Ninc[i]-Nint[i]))*1e27;
-    err_xs[i] = dEdx[i]*MAr/(Density*NA*pi::Eslicewidth)*sqrt(pow(Nint[i]*err_inc[i]/Ninc[i]/(Ninc[i]-Nint[i]),2)+pow(err_int[i]/(Ninc[i]-Nint[i]),2))*1e27;
+    xs[i] = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*log(Ninc[i]/(Ninc[i]-Nint[i]))*1e27;
+    err_xs[i] = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*sqrt(pow(Nint[i]*err_inc[i]/Ninc[i]/(Ninc[i]-Nint[i]),2)+pow(err_int[i]/(Ninc[i]-Nint[i]),2))*1e27;
   }
-  TGraphErrors *gr_recoxs = new TGraphErrors(pi::nthinslices, KE, xs, err_KE, err_xs);
+  TGraphErrors *gr_recoxs = new TGraphErrors(pi::true_nbins-1, KE, xs, err_KE, err_xs);
   gr_recoxs->SetNameTitle("gr_recoxs", "Reco cross-section;Energy (MeV); Cross-section (mb)");
   gr_recoxs->Write();
   /*TFile f2("../files/exclusive_xsec.root");
@@ -523,15 +523,15 @@ int main(int argc, char** argv){
   TH1D *hval_trueini = (TH1D*)fmc->Get("h_trueinisliceid_pion_all");
   //hval_trueini->Scale(hsigini_uf->Integral(2,-1)/hval_trueini->Integral(2,-1));
   hval_trueini->Write("hval_trueini");
-  double Ninc_t[pi::nthinslices] = {0};
-  double Nint_t[pi::nthinslices] = {0};
-  double Nini_t[pi::nthinslices] = {0};
-  double Nina_t[pi::nthinslices] = {0};
-  double err_inc_t[pi::nthinslices] = {0};
-  double err_int_t[pi::nthinslices] = {0};
-  double err_ini_t[pi::nthinslices] = {0};
-  double err_ina_t[pi::nthinslices] = {0};
-  for (int i = 0; i<pi::nthinslices; ++i){
+  double Ninc_t[pi::true_nbins-1] = {0};
+  double Nint_t[pi::true_nbins-1] = {0};
+  double Nini_t[pi::true_nbins-1] = {0};
+  double Nina_t[pi::true_nbins-1] = {0};
+  double err_inc_t[pi::true_nbins-1] = {0};
+  double err_int_t[pi::true_nbins-1] = {0};
+  double err_ini_t[pi::true_nbins-1] = {0};
+  double err_ina_t[pi::true_nbins-1] = {0};
+  for (int i = 0; i<pi::true_nbins-1; ++i){
     Nint_t[i] = hval_trueint->GetBinContent(i+2);
     err_int_t[i] = hval_trueint->GetBinError(i+2);
     Nini_t[i] = hval_trueini->GetBinContent(i+2);
@@ -548,25 +548,25 @@ int main(int argc, char** argv){
     }
     err_inc_t[i] = sqrt(err_inc_t[i]);
   }
-  TGraphErrors *gr_inc_t = new TGraphErrors(pi::nthinslices, SliceID, Ninc_t, 0, err_inc_t);
+  TGraphErrors *gr_inc_t = new TGraphErrors(pi::true_nbins-1, SliceID, Ninc_t, 0, err_inc_t);
   gr_inc_t->SetNameTitle("gr_inc_t", "Incident number;Slice ID;Events");
   gr_inc_t->Write();
-  TGraphErrors *gr_int_t = new TGraphErrors(pi::nthinslices, SliceID, Nint_t, 0, err_int_t);
+  TGraphErrors *gr_int_t = new TGraphErrors(pi::true_nbins-1, SliceID, Nint_t, 0, err_int_t);
   gr_int_t->SetNameTitle("gr_int_t", "Interaction number;Slice ID;Events");
   gr_int_t->Write();
-  TGraphErrors *gr_ini_t = new TGraphErrors(pi::nthinslices, SliceID, Nini_t, 0, err_ini_t);
+  TGraphErrors *gr_ini_t = new TGraphErrors(pi::true_nbins-1, SliceID, Nini_t, 0, err_ini_t);
   gr_ini_t->SetNameTitle("gr_ini_t", "Initial number;Slice ID;Events");
   gr_ini_t->Write();
-  TGraphErrors *gr_ina_t = new TGraphErrors(pi::nthinslices, SliceID, Nina_t, 0, err_ina_t);
+  TGraphErrors *gr_ina_t = new TGraphErrors(pi::true_nbins-1, SliceID, Nina_t, 0, err_ina_t);
   gr_ina_t->SetNameTitle("gr_ina_t", "Interaction_allpion number;Slice ID;Events");
   gr_ina_t->Write();
-  double xs_t[pi::nthinslices] = {0};
-  double err_xs_t[pi::nthinslices] = {0};
-  for (int i = 0; i<pi::nthinslices; ++i){
-    xs_t[i] = dEdx[i]*MAr/(Density*NA*pi::Eslicewidth)*log(Ninc_t[i]/(Ninc_t[i]-Nint_t[i]))*1e27;
-    err_xs_t[i] = dEdx[i]*MAr/(Density*NA*pi::Eslicewidth)*sqrt(pow(Nint_t[i]*err_inc_t[i]/Ninc_t[i]/(Ninc_t[i]-Nint_t[i]),2)+pow(err_int_t[i]/(Ninc_t[i]-Nint_t[i]),2))*1e27;
+  double xs_t[pi::true_nbins-1] = {0};
+  double err_xs_t[pi::true_nbins-1] = {0};
+  for (int i = 0; i<pi::true_nbins-1; ++i){
+    xs_t[i] = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*log(Ninc_t[i]/(Ninc_t[i]-Nint_t[i]))*1e27;
+    err_xs_t[i] = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*sqrt(pow(Nint_t[i]*err_inc_t[i]/Ninc_t[i]/(Ninc_t[i]-Nint_t[i]),2)+pow(err_int_t[i]/(Ninc_t[i]-Nint_t[i]),2))*1e27;
   }
-  TGraphErrors *gr_truexs = new TGraphErrors(pi::nthinslices, KE, xs_t, err_KE, err_xs_t);
+  TGraphErrors *gr_truexs = new TGraphErrors(pi::true_nbins-1, KE, xs_t, err_KE, err_xs_t);
   gr_truexs->SetNameTitle("gr_truexs", "Reco cross-section;Energy (MeV); Cross-section (mb)");
   gr_truexs->Write();
   TGraphErrors *gr_truexs_allMC = (TGraphErrors*)fmc->Get("gr_truexs");

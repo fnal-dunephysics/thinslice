@@ -1,22 +1,23 @@
 #include "Unfold.h"
+#include "SliceParams.h"
 
-Unfold::Unfold(int nb, double xlo, double xhi)
-  : response_SliceID_Int(nb, xlo, xhi)
-  , response_SliceID_Inc(nb, xlo, xhi)
-  , response_SliceID_Ini(nb, xlo, xhi)
+Unfold::Unfold(TH1D* hist_reco, TH1D* hist_true)
+  : response_SliceID_Int(hist_reco, hist_true)
+  , response_SliceID_Inc(hist_reco, hist_true)
+  , response_SliceID_Ini(hist_reco, hist_true)
 {
 
   response_SliceID_Int.UseOverflow(false);
   response_SliceID_Inc.UseOverflow(false);
   response_SliceID_Ini.UseOverflow(false);
 
-  eff_num_Int = new TH1D("eff_num_Int", "eff_num_Int", nb, xlo, xhi);
-  eff_den_Int = new TH1D("eff_den_Int", "eff_den_Int", nb, xlo, xhi);
-  eff_num_Inc = new TH1D("eff_num_Inc", "eff_num_Inc", nb, xlo, xhi);
-  eff_den_Inc = new TH1D("eff_den_Inc", "eff_den_Inc", nb, xlo, xhi);
-  pur_num_Int = new TH1D("pur_num_Int", "pur_num_Int", nb, xlo, xhi);
-  pur_num_Inc = new TH1D("pur_num_Inc", "pur_num_Inc", nb, xlo, xhi);
-  pur_den     = new TH1D("pur_den",     "pur_den",     nb, xlo, xhi);
+  eff_num_Int = new TH1D("eff_num_Int", "eff_num_Int", pi::true_nbins, pi::true_bins);
+  eff_den_Int = new TH1D("eff_den_Int", "eff_den_Int", pi::true_nbins, pi::true_bins);
+  eff_num_Inc = new TH1D("eff_num_Inc", "eff_num_Inc", pi::true_nbins, pi::true_bins);
+  eff_den_Inc = new TH1D("eff_den_Inc", "eff_den_Inc", pi::true_nbins, pi::true_bins);
+  pur_num_Int = new TH1D("pur_num_Int", "pur_num_Int", pi::reco_nbins, pi::reco_bins);
+  pur_num_Inc = new TH1D("pur_num_Inc", "pur_num_Inc", pi::reco_nbins, pi::reco_bins);
+  pur_den     = new TH1D("pur_den",     "pur_den",     pi::reco_nbins, pi::reco_bins);
 
   eff_num_Int->Sumw2();
   eff_den_Int->Sumw2();
