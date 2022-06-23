@@ -211,9 +211,13 @@ void plotXS(){
   gr_recoxs->GetYaxis()->SetTitle("#sigma_{inelastic} (mb)");
   gr_recoxs->GetYaxis()->SetRangeUser(0, 1000);
   gr_recoxs->SetLineWidth(2);
+  gr_recoxs->RemovePoint(pi::true_nbins-2); // the last is used as overflow
+  gr_recoxs->RemovePoint(0); // the first is used as underflow
   gr_recoxs->Draw("ape");
   gr_truexs->SetMarkerColor(3);
   gr_truexs->SetLineColor(3);
+  gr_truexs->RemovePoint(pi::true_nbins-2);
+  gr_truexs->RemovePoint(0);
   gr_truexs->Draw("pe");
   total_inel_KE->SetLineColor(2);
   

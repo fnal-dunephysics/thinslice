@@ -409,8 +409,11 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
     }
 
     if (!evt.reco_beam_calo_wire->empty()){
-      if (hadana.reco_trklen>0)
-        ini_energy_reco = beam_inst_KE - 12.74;// + r3->Gaus(5,35);
+      if (hadana.reco_trklen>0) {
+        ini_energy_reco = beam_inst_KE - 12.74;
+        //if (isTestSample)
+          //ini_energy_reco += r3->Gaus(20,40);
+      }
       /*if (beam_inst_KE < 800) ini_energy_reco = beam_inst_KE - 0.95; // 0.9465 \pm 0.3051
       else if (beam_inst_KE < 850) ini_energy_reco = beam_inst_KE - 7.12; // 7.119 \pm 0.210
       else if (beam_inst_KE < 900) ini_energy_reco = beam_inst_KE - 11.87; // 11.87 \pm 0.22
@@ -884,22 +887,23 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
         1,1,1,1,1,1,1,1,1,1,
         1,1,1,1,1,1,1,1,1,1,
       };
-      double weiarr_mc[20] = {
-        1,1,1,1,1,1,1,1,1,1,
-        1,1,1,1,1,1,1,1,1,1,
-      };
       /*double weiarr_fd[20] = {
-        1.80, 1.80, 1.80, 1.80, 1.70,
-        1.60, 1.50, 1.40, 1.30, 1.20,
-        1.10, 1.00, 0.90, 0.84, 0.78,
-        0.80, 0.83, 0.85, 0.86, 0.90,
+       0.80, 0.80, 0.80, 0.80, 0.80,
+       0.85, 0.88, 0.90, 0.92, 0.94,
+       0.96, 0.98, 1.00, 1.05, 1.10,
+       1.13, 1.15, 1.17, 1.18, 1.20,
       };
-      double weiarr_mc[20] = {
-        1.80, 1.80, 1.80, 1.80, 1.70,
-        1.60, 1.50, 1.40, 1.30, 1.20,
+      double weiarr_fd[20] = {
+        1.50, 1.50, 1.50, 1.50, 1.50,
+        1.50, 1.50, 1.40, 1.30, 1.20,
         1.10, 1.00, 0.90, 0.84, 0.78,
         0.80, 0.83, 0.85, 0.86, 0.90,
       };*/
+      double weiarr_mc[20] = {
+        1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,
+      };
+      
       if (hadana.pitype == 0) { // fake data
         g4rw = CalG4RW(evt, weiarr_fd);
         bkgw = CalBkgW(evt, 1., 1., 1.);

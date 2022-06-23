@@ -340,11 +340,11 @@ int main(int argc, char** argv){
   
   // unfolding
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
-  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 4);
+  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 20);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
-  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 4);
+  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 20);
   RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
-  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 4);
+  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 20);
   
   TH1D *hsiginc_uf;
   TH1D *hsignal_uf;
@@ -452,6 +452,14 @@ int main(int argc, char** argv){
       Ninc[i] -= hsiginc_uf->GetBinContent(j+2);
       err_inc[i] += pow(hsiginc_uf->GetBinError(j+2),2);
     }
+    /*for (int j = i; j<pi::true_nbins-1; ++j){
+      Ninc[i] += hsiginc_uf->GetBinContent(j+2);
+      err_inc[i] += pow(hsiginc_uf->GetBinError(j+2),2);
+    }
+    for (int j = i+1; j<pi::true_nbins-1; ++j){
+      Ninc[i] -= hsigini_uf->GetBinContent(j+2);
+      err_inc[i] += pow(hsigini_uf->GetBinError(j+2),2);
+    }*/
     err_inc[i] = sqrt(err_inc[i]);
   }
   TGraphErrors *gr_inc = new TGraphErrors(pi::true_nbins-1, SliceID, Ninc, 0, err_inc);
@@ -546,6 +554,14 @@ int main(int argc, char** argv){
       Ninc_t[i] -= hval_trueinc->GetBinContent(j+2);
       err_inc_t[i] += pow(hval_trueinc->GetBinError(j+2),2);
     }
+    /*for (int j = i; j<pi::true_nbins-1; ++j){
+      Ninc_t[i] += hval_trueinc->GetBinContent(j+2);
+      err_inc_t[i] += pow(hval_trueinc->GetBinError(j+2),2);
+    }
+    for (int j = i+1; j<pi::true_nbins-1; ++j){
+      Ninc_t[i] -= hval_trueini->GetBinContent(j+2);
+      err_inc_t[i] += pow(hval_trueini->GetBinError(j+2),2);
+    }*/
     err_inc_t[i] = sqrt(err_inc_t[i]);
   }
   TGraphErrors *gr_inc_t = new TGraphErrors(pi::true_nbins-1, SliceID, Ninc_t, 0, err_inc_t);
