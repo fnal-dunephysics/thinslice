@@ -1,15 +1,17 @@
 #include "Unfold.h"
 #include "SliceParams.h"
 
-Unfold::Unfold(TH1D* hist_reco, TH1D* hist_true)
-  : response_SliceID_Int(hist_reco, hist_true)
-  , response_SliceID_Inc(hist_reco, hist_true)
-  , response_SliceID_Ini(hist_reco, hist_true)
+Unfold::Unfold(TH2D* hist_reco, TH2D* hist_true)
+  : response_SliceID_Int(hist_reco->ProjectionX(), hist_true->ProjectionX())
+  , response_SliceID_Inc(hist_reco->ProjectionX(), hist_true->ProjectionX())
+  , response_SliceID_Ini(hist_reco->ProjectionX(), hist_true->ProjectionX())
+  , response_SliceID_2D(hist_reco, hist_true)
 {
 
   response_SliceID_Int.UseOverflow(false);
   response_SliceID_Inc.UseOverflow(false);
   response_SliceID_Ini.UseOverflow(false);
+  response_SliceID_2D.UseOverflow(false);
 
   eff_num_Int = new TH1D("eff_num_Int", "eff_num_Int", pi::true_nbins, pi::true_bins);
   eff_den_Int = new TH1D("eff_den_Int", "eff_den_Int", pi::true_nbins, pi::true_bins);
@@ -64,8 +66,12 @@ void Unfold::SaveHistograms(){
   TH2D *hini = (TH2D*)response_SliceID_Ini.Hresponse();
   hini->SetTitle("Initial; Reco Slice ID; True Slice ID");
   hini->Write("hresponse_SliceID_Ini");
+  TH2D *h2D = (TH2D*)response_SliceID_2D.Hresponse();
+  h2D->SetTitle("2D; Reco Slice ID; True Slice ID");
+  h2D->Write("hresponse_SliceID_2D");
 
   response_SliceID_Int.Write("response_SliceID_Int");
   response_SliceID_Inc.Write("response_SliceID_Inc");
   response_SliceID_Ini.Write("response_SliceID_Ini");
+  response_SliceID_2D.Write("response_SliceID_2D");
 }

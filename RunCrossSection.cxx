@@ -51,8 +51,8 @@ int main(int argc, char ** argv){
   //datachain->Add("pduneana.root/pduneana/beamana"); // test
   datachain->Add(Form("%s/beamana", root["datafile"].asString().c_str()));
 
-  TH1D* hist_reco = new TH1D("hist_reco","hist_reco", pi::reco_nbins, pi::reco_bins);
-  TH1D* hist_true = new TH1D("hist_reco","hist_reco", pi::true_nbins, pi::true_bins);
+  TH2D* hist_reco = new TH2D("hist_reco","hist_reco", pi::reco_nbins, pi::reco_bins, pi::reco_nbins, pi::reco_bins);
+  TH2D* hist_true = new TH2D("hist_true","hist_true", pi::true_nbins, pi::true_bins, pi::true_nbins, pi::true_bins);
   Unfold uf(hist_reco, hist_true);
 
   anavar mcevt(mcchain);
@@ -61,13 +61,13 @@ int main(int argc, char ** argv){
   mcths.SetOutputFileName(root["mcoutfile"].asString());
   mcths.Run(mcevt, uf, -1, false, false);
 
-  anavar dataevt(datachain);
+  /*anavar dataevt(datachain);
 
   ThinSlice dataths;
   dataths.SetOutputFileName(root["dataoutfile"].asString());
   dataths.Run(dataevt, uf, -1, false, false);
 
-  /*ThinSlice cosmicsths;
+  ThinSlice cosmicsths;
   cosmicsths.SetSelectCosmics(true);
   cosmicsths.SetOutputFileName(root["cosmicsoutfile"].asString());
   cosmicsths.Run(dataevt, uf, -1);*/

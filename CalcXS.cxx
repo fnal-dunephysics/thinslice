@@ -116,18 +116,27 @@ int main(int argc, char** argv){
   hspi_ini->Sumw2();
   //hpiel_ini->Sumw2();
   hother_ini->Sumw2();
-
+  
+  TH2D *h2DsliceID[pi::nIntTypes+1];
+  TH2D *hdata_2D = new TH2D("hdata_2D","Data_2D;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
+  TH2D *hproton_2D = new TH2D("hproton_2D","Proton_2D background;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
+  TH2D *hmu_2D = new TH2D("hmu_2D","Muon_2D background;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
+  TH2D *hspi_2D = new TH2D("hspi_2D","Secondary pion_2D background;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
+  TH2D *hother_2D = new TH2D("hother_2D","Other_2D backgrounds;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
+  
   // first loop to get total number of events
   for (int i = 0; i < pi::nIntTypes+1; ++i){
     if (i==0){
       hsliceID[i] = (TH1D*)fdata->Get(Form("hreco_sliceID_%d_%d",pi::nCuts-1,i));
       hincsliceID[i] = (TH1D*)fdata->Get(Form("hreco_incsliceID_%d_%d",pi::nCuts-1,i));
       hinisliceID[i] = (TH1D*)fdata->Get(Form("hreco_inisliceID_%d_%d",pi::nCuts-1,i));
+      h2DsliceID[i] = (TH2D*)fdata->Get(Form("hreco_2DsliceID_%d_%d",pi::nCuts-1,i));
     }
     else {
       hsliceID[i] = (TH1D*)fmc->Get(Form("hreco_sliceID_%d_%d",pi::nCuts-1,i));
       hincsliceID[i] = (TH1D*)fmc->Get(Form("hreco_incsliceID_%d_%d",pi::nCuts-1,i));
       hinisliceID[i] = (TH1D*)fmc->Get(Form("hreco_inisliceID_%d_%d",pi::nCuts-1,i));
+      h2DsliceID[i] = (TH2D*)fmc->Get(Form("hreco_2DsliceID_%d_%d",pi::nCuts-1,i));
     }
   }
   TH1D *hmc = new TH1D("hmc","MC;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
@@ -136,6 +145,7 @@ int main(int argc, char** argv){
   hmc_inc->Sumw2();
   TH1D *hmc_ini = new TH1D("hmc_ini","MC_ini;Slice ID;Events",pi::reco_nbins,pi::reco_bins);
   hmc_ini->Sumw2();
+  TH2D *hmc_2D = new TH2D("hmc_2D","MC_2D;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
   for (int j = 0; j < pi::reco_nbins; ++j){
     int bin = hsliceID[0]->FindBin(j-0.5);
     hdata->SetBinContent(j+1, hsliceID[0]->GetBinContent(bin));
@@ -164,6 +174,18 @@ int main(int argc, char** argv){
     }
     hmc_ini->SetBinContent(j+1, nmc);
     hmc_ini->SetBinError(j+1, sqrt(nmc));
+    
+    for (int k = 0; k < pi::reco_nbins; ++k){
+      int bink = hsliceID[0]->FindBin(k-0.5);
+      hdata_2D->SetBinContent(j+1, k+1, h2DsliceID[0]->GetBinContent(bin, bink));
+      hdata_2D->SetBinError(j+1, k+1, h2DsliceID[0]->GetBinError(bin, bink));
+      nmc = 0;
+      for (int i = 1; i <= pi::nIntTypes; ++i){
+        nmc += h2DsliceID[i]->GetBinContent(bin, bink);
+      }
+      hmc_2D->SetBinContent(j+1, k+1, nmc);
+      hmc_2D->SetBinError(j+1, k+1, sqrt(nmc));
+    }
   }
 
   // second loop to fill histograms
@@ -180,6 +202,8 @@ int main(int argc, char** argv){
       hincsliceID[i]->Divide(hmc_inc);
       hinisliceID[i]->Multiply(hinisliceID[0]);
       hinisliceID[i]->Divide(hmc_ini);
+      h2DsliceID[i]->Multiply(h2DsliceID[0]);
+      h2DsliceID[i]->Divide(hmc_2D);
     }
     for (int j = 0; j < pi::reco_nbins; ++j){
       int bin = hsliceID[i]->FindBin(j-0.5);
@@ -213,6 +237,18 @@ int main(int argc, char** argv){
                       + pow(hinisliceID[i]->GetBinContent(bin)*(*sf_mu)[1],2));
           hmu_ini->SetBinContent(j+1, binc);
           hmu_ini->SetBinError(j+1, bine);
+          
+          for (int k = 0; k < pi::reco_nbins; ++k){
+            int bink = hsliceID[i]->FindBin(k-0.5);
+            binc = hmu_2D->GetBinContent(bin, bink);
+            bine = hmu_2D->GetBinError(bin, bink);
+            binc += h2DsliceID[i]->GetBinContent(bin, bink)*(*sf_mu)[0];
+            bine = sqrt(pow(bine,2)
+                        + pow(h2DsliceID[i]->GetBinError(bin, bink)*(*sf_mu)[0],2)
+                        + pow(h2DsliceID[i]->GetBinContent(bin, bink)*(*sf_mu)[1],2));
+            hmu_2D->SetBinContent(j+1, k+1, binc);
+            hmu_2D->SetBinError(j+1, k+1, bine);
+          }
         }
         else if (i == pi::kMIDp){
           binc = hproton->GetBinContent(bin);
@@ -241,6 +277,18 @@ int main(int argc, char** argv){
                       + pow(hinisliceID[i]->GetBinContent(bin)*(*sf_p)[1],2));
           hproton_ini->SetBinContent(j+1, binc);
           hproton_ini->SetBinError(j+1, bine);
+          
+          for (int k = 0; k < pi::reco_nbins; ++k){
+            int bink = hsliceID[i]->FindBin(k-0.5);
+            binc = hproton_2D->GetBinContent(bin, bink);
+            bine = hproton_2D->GetBinError(bin, bink);
+            binc += h2DsliceID[i]->GetBinContent(bin, bink)*(*sf_p)[0];
+            bine = sqrt(pow(bine,2)
+                        + pow(h2DsliceID[i]->GetBinError(bin, bink)*(*sf_p)[0],2)
+                        + pow(h2DsliceID[i]->GetBinContent(bin, bink)*(*sf_p)[1],2));
+            hproton_2D->SetBinContent(j+1, k+1, binc);
+            hproton_2D->SetBinError(j+1, k+1, bine);
+          }
         }
         else if (i == pi::kMIDpi){
           binc = hspi->GetBinContent(bin);
@@ -269,6 +317,18 @@ int main(int argc, char** argv){
                       + pow(hinisliceID[i]->GetBinContent(bin)*(*sf_spi)[1],2));
           hspi_ini->SetBinContent(j+1, binc);
           hspi_ini->SetBinError(j+1, bine);
+          
+          for (int k = 0; k < pi::reco_nbins; ++k){
+            int bink = hsliceID[i]->FindBin(k-0.5);
+            binc = hspi_2D->GetBinContent(bin, bink);
+            bine = hspi_2D->GetBinError(bin, bink);
+            binc += h2DsliceID[i]->GetBinContent(bin, bink)*(*sf_spi)[0];
+            bine = sqrt(pow(bine,2)
+                        + pow(h2DsliceID[i]->GetBinError(bin, bink)*(*sf_spi)[0],2)
+                        + pow(h2DsliceID[i]->GetBinContent(bin, bink)*(*sf_spi)[1],2));
+            hspi_2D->SetBinContent(j+1, k+1, binc);
+            hspi_2D->SetBinError(j+1, k+1, bine);
+          }
         }
         else if (i == pi::kPiElas){
           binc = hpiel->GetBinContent(bin);
@@ -311,6 +371,17 @@ int main(int argc, char** argv){
                       + pow(hinisliceID[i]->GetBinError(bin),2));
           hother_ini->SetBinContent(j+1, binc);
           hother_ini->SetBinError(j+1, bine);
+          
+          for (int k = 0; k < pi::reco_nbins; ++k){
+            int bink = hsliceID[i]->FindBin(k-0.5);
+            binc = hother_2D->GetBinContent(bin, bink);
+            bine = hother_2D->GetBinError(bin, bink);
+            binc += h2DsliceID[i]->GetBinContent(bin, bink);
+            bine = sqrt(pow(bine,2)
+                        + pow(h2DsliceID[i]->GetBinError(bin, bink),2));
+            hother_2D->SetBinContent(j+1, k+1, binc);
+            hother_2D->SetBinError(j+1, k+1, bine);
+          }
         }
       }
     }
@@ -338,17 +409,29 @@ int main(int argc, char** argv){
   hsigini->Add(hspi_ini,-1);
   hsigini->Add(hother_ini,-1);
   
-  // unfolding
-  RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
-  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 20);
-  RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
-  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 20);
-  RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
-  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 20);
+  TH2D *hsig2D = (TH2D*)hdata_2D->Clone("hsig2D");
+  hsig2D->SetTitle("All pion 2D;Slice ID;Events");
+  hsig2D->Add(hmu_2D,-1);
+  hsig2D->Add(hproton_2D,-1);
+  hsig2D->Add(hspi_2D,-1);
+  hsig2D->Add(hother_2D,-1);
   
+  // unfolding
+  RooUnfoldResponse *response_SliceID_2D = (RooUnfoldResponse*)fmc->Get("response_SliceID_2D");
+  RooUnfoldBayes unfold_2D (response_SliceID_2D, hsig2D, 4);
+  RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
+  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 4);
+  RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
+  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 4);
+  RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
+  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 4);
+  
+  TH2D *hsig2D_uf;
   TH1D *hsiginc_uf;
   TH1D *hsignal_uf;
   TH1D *hsigini_uf;
+  hsig2D_uf = (TH2D*)unfold_2D.Hreco();
+  hsig2D_uf->SetNameTitle("hsig2D_uf", "Unfolded 2D signal;Slice ID;Events");
   hsiginc_uf = (TH1D*)unfold_Inc.Hreco();
   hsiginc_uf->SetNameTitle("hsiginc_uf", "Unfolded incident signal;Slice ID;Events");
   hsignal_uf = (TH1D*)unfold_Int.Hreco();
@@ -356,6 +439,9 @@ int main(int argc, char** argv){
   hsigini_uf = (TH1D*)unfold_Ini.Hreco();
   hsigini_uf->SetNameTitle("hsigini_uf", "Unfolded initial signal;Slice ID;Events");
   //hsigini_uf->Scale(hsiginc_uf->Integral()/hsigini_uf->Integral());
+  //hsigini_uf = hsig2D_uf->ProjectionX();
+  //hsiginc_uf = hsig2D_uf->ProjectionY();
+  //hsignal_uf = hsiginc_uf;
   
   TMatrixD cov_matrix_inc = unfold_Inc.Ereco();
   TH2D *covariance_inc = new TH2D(cov_matrix_inc);
