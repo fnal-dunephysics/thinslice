@@ -84,7 +84,7 @@ class ThinSlice {
   //TH1D *htrue_inisliceID[pi::nCuts][pi::nIntTypes+1];
   TH1D *hreco_incsliceID[pi::nCuts][pi::nIntTypes+1];
   TH1D *hreco_inisliceID[pi::nCuts][pi::nIntTypes+1];
-  TH2D *hreco_2DsliceID[pi::nCuts][pi::nIntTypes+1];
+  TH3D *hreco_3DsliceID[pi::nCuts][pi::nIntTypes+1];
   TH1D *hreco_true_sliceID[pi::nCuts][pi::nIntTypes+1];
   TH2D *hreco_vs_true_sliceID[pi::nCuts][pi::nIntTypes+1];
   TH2D *hreco_true_vs_true_sliceID[pi::nCuts][pi::nIntTypes+1];

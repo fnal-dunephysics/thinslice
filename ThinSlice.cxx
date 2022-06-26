@@ -91,7 +91,7 @@ void ThinSlice::BookHistograms(){
       hreco_incsliceID[i][j]->Sumw2();
       hreco_inisliceID[i][j] = new TH1D(Form("hreco_inisliceID_%d_%d",i,j),Form("reco_inisliceID, %s, %s;reco_inisliceID", pi::cutName[i], pi::intTypeName[j]), pi::reco_nbins, pi::reco_bins);
       hreco_inisliceID[i][j]->Sumw2();
-      hreco_2DsliceID[i][j] = new TH2D(Form("hreco_2DsliceID_%d_%d",i,j),Form("reco_2DsliceID, %s, %s;reco_2DsliceID", pi::cutName[i], pi::intTypeName[j]), pi::reco_nbins, pi::reco_bins, pi::reco_nbins, pi::reco_bins);
+      hreco_3DsliceID[i][j] = new TH3D(Form("hreco_3DsliceID_%d_%d",i,j),Form("reco_3DsliceID, %s, %s;reco_3DsliceID", pi::cutName[i], pi::intTypeName[j]), pi::reco_nbins, pi::reco_bins, pi::reco_nbins, pi::reco_bins, pi::reco_nbins, pi::reco_bins);
       hreco_true_sliceID[i][j] = new TH1D(Form("hreco_true_sliceID_%d_%d",i,j), Form("reco_true_sliceID, %s, %s;reco_sliceID - true_sliceID", pi::cutName[i], pi::intTypeName[j]), 20, -10, 10);
       hreco_true_sliceID[i][j]->Sumw2();
       hreco_vs_true_sliceID[i][j]= new TH2D(Form("hreco_vs_true_sliceID_%d_%d",i,j), Form("%s, %s;true_sliceID;reco_sliceID", pi::cutName[i], pi::intTypeName[j]), pi::true_nbins, pi::true_bins, pi::reco_nbins, pi::reco_bins);
@@ -493,6 +493,12 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
   double weight = g4rw * bkgw;
   if (evt.MC){
     if (evt.true_beam_PDG == 211 && hadana.true_trklen > 0){ // true pion beam entering the TPC
+      double true_int_sliceID = true_sliceID;
+      double reco_int_sliceID = reco_sliceID;
+      if (!((*evt.true_beam_endProcess) == "pi+Inelastic")) {
+        true_int_sliceID = -1;
+        reco_int_sliceID = -1;
+      }
       if (isTestSample){ // fake data
         h_truesliceid_pion_all->Fill(true_sliceID, g4rw);
         h_trueinisliceid_pion_all->Fill(true_ini_sliceID, g4rw);
@@ -512,14 +518,14 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
           uf.pur_num_Inc->Fill(reco_sliceID);
           uf.response_SliceID_Inc.Fill(reco_end_sliceID, true_sliceID, g4rw);
           uf.response_SliceID_Ini.Fill(reco_ini_sliceID, true_ini_sliceID, g4rw);
-          uf.response_SliceID_2D.Fill(reco_ini_sliceID, reco_end_sliceID, true_ini_sliceID, true_sliceID, g4rw);
+          uf.response_SliceID_3D.Fill(reco_ini_sliceID, reco_end_sliceID, reco_end_sliceID, true_ini_sliceID, true_sliceID, true_int_sliceID, g4rw);
         }
       }
       else { // this beam pion event is not selected
         if (!isTestSample) {
           uf.response_SliceID_Inc.Miss(true_sliceID, weight); // missed event need bkgw
           uf.response_SliceID_Ini.Miss(true_ini_sliceID, weight);
-          uf.response_SliceID_2D.Miss(true_ini_sliceID, true_sliceID, weight);
+          uf.response_SliceID_3D.Miss(true_ini_sliceID, true_sliceID, true_int_sliceID, weight);
         }
       }
       
@@ -590,7 +596,7 @@ void ThinSlice::FillHistograms(int cut, const anavar & evt, double weight){
       FillHistVec1D(hreco_sliceID[cut], reco_sliceID, hadana.pitype, weight);
       FillHistVec1D(hreco_incsliceID[cut], reco_end_sliceID, hadana.pitype, weight);
       FillHistVec1D(hreco_inisliceID[cut], reco_ini_sliceID, hadana.pitype, weight);
-      FillHistVec2D(hreco_2DsliceID[cut], reco_ini_sliceID, reco_end_sliceID, hadana.pitype, weight);
+      FillHistVec3D(hreco_3DsliceID[cut], reco_ini_sliceID, reco_end_sliceID, reco_sliceID, hadana.pitype, weight);
       FillHistVec1D(hreco_true_sliceID[cut], reco_sliceID - true_sliceID, hadana.pitype, weight);
       FillHistVec2D(hreco_vs_true_sliceID[cut], true_sliceID, reco_sliceID, hadana.pitype, weight);
       FillHistVec2D(hreco_true_vs_true_sliceID[cut], true_sliceID, reco_sliceID - true_sliceID, hadana.pitype, weight);

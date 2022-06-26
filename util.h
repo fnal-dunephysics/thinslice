@@ -3,6 +3,7 @@
 
 #include "TH1D.h"
 #include "TH2D.h"
+#include "TH3D.h"
 #include "EventType.h"
 #include "TProfile.h"
 
@@ -14,6 +15,8 @@ double CalG4RW(const anavar & evt, double weight[]);
 void FillHistVec1D(TH1D *hist[pi::nIntTypes+1], const double &value, const int &partype, double weight=1, bool fill_underflow=true, bool fill_overflow=true);
 
 void FillHistVec2D(TH2D *hist[pi::nIntTypes+1], const double &value1, const double &value2, const int &partype, double weight=1);
+
+void FillHistVec3D(TH3D *hist[pi::nIntTypes+1], const double &value1, const double &value2, const double &value3, const int &partype, double weight=1);
 
 void FillProfVec(TProfile *profile[pi::nIntTypes+1], const double &value1, const double &value2, const int &partype);
 

@@ -51,8 +51,8 @@ int main(int argc, char ** argv){
   //datachain->Add("pduneana.root/pduneana/beamana"); // test
   datachain->Add(Form("%s/beamana", root["datafile"].asString().c_str()));
 
-  TH2D* hist_reco = new TH2D("hist_reco","hist_reco", pi::reco_nbins, pi::reco_bins, pi::reco_nbins, pi::reco_bins);
-  TH2D* hist_true = new TH2D("hist_true","hist_true", pi::true_nbins, pi::true_bins, pi::true_nbins, pi::true_bins);
+  TH3D* hist_reco = new TH3D("hist_reco","hist_reco", pi::reco_nbins, pi::reco_bins, pi::reco_nbins, pi::reco_bins, pi::reco_nbins, pi::reco_bins);
+  TH3D* hist_true = new TH3D("hist_true","hist_true", pi::true_nbins, pi::true_bins, pi::true_nbins, pi::true_bins, pi::true_nbins, pi::true_bins);
   Unfold uf(hist_reco, hist_true);
 
   anavar mcevt(mcchain);

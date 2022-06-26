@@ -132,6 +132,12 @@ void FillHistVec2D(TH2D *hist[pi::nIntTypes+1], const double &value1, const doub
     hist[partype]->Fill(value1, value2, weight);
   }
 }
+void FillHistVec3D(TH3D *hist[pi::nIntTypes+1], const double &value1, const double &value2, const double &value3, const int &partype, double weight){
+  //hist[0]->Fill(value1, value2);
+  if (partype>=0 && partype < pi::nIntTypes+1){
+    hist[partype]->Fill(value1, value2, value3, weight);
+  }
+}
 void FillProfVec(TProfile *profile[pi::nIntTypes+1], const double &value1, const double &value2, const int &partype){
   //hist[0]->Fill(value1, value2);
   if (partype>=0 && partype < pi::nIntTypes+1){

@@ -4,17 +4,18 @@
 #include "RooUnfoldResponse.h"
 #include "RooUnfoldBayes.h"
 #include "TH2D.h"
+#include "TH3D.h"
 
 class Unfold {
   
  public:
 
-  Unfold(TH2D* hist_reco, TH2D* hist_true);
+  Unfold(TH3D* hist_reco, TH3D* hist_true);
 
   RooUnfoldResponse response_SliceID_Int;  //Interaction
   RooUnfoldResponse response_SliceID_Inc;  //Incident
   RooUnfoldResponse response_SliceID_Ini;  //Initial
-  RooUnfoldResponse response_SliceID_2D;  //2D Initial vs Incident
+  RooUnfoldResponse response_SliceID_3D;  //3D Initial vs Incident vs Interacting
 
   TH1D *eff_num_Int; //Interaction efficiency numerator
   TH1D *eff_den_Int; //Interaction efficiency denominator
