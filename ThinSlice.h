@@ -146,6 +146,7 @@ class ThinSlice {
   TH1D *h_beam_inst_KE;
   TH1D *h_true_ffKE;
   TH1D *h_upstream_Eloss;
+  TH1D *h_upstream_Eloss_mu;
   TH2D *h_upstream_Eloss_vs_true_Eff;
   TH2D *h_upstream_Eloss_vs_Einst;
   TH2D *h_diff_startKE_vs_Einst;
