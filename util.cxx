@@ -13,10 +13,10 @@ double CalWeight(const anavar & evt, const int &partype){
   
   double mufrac = 1.;//1.58;
   
-  double mom_mu0 = 1.0111;
-  double mom_sigma0 = 0.0725;
-  double mom_mu = 1.0323;
-  double mom_sigma = 0.0718;
+  double mom_mu0 = 1.0031953419820514;
+  double mom_sigma0 = 0.0669145504342396;
+  double mom_mu = 1.01641;
+  double mom_sigma = 0.07111;
   double wlimit = 1e-5;
   
   if (evt.MC) {
@@ -26,9 +26,9 @@ double CalWeight(const anavar & evt, const int &partype){
     }
 
     // momentum reweight (outlier weights are set to 1e-5)
-    double deno = exp(-pow((evt.beam_inst_P-mom_mu0)/mom_sigma0,2)/2);
+    double deno = exp(-pow((evt.true_beam_startP-mom_mu0)/mom_sigma0,2)/2);
     if (deno < wlimit) deno = wlimit;
-    double numo = exp(-pow((evt.beam_inst_P-mom_mu)/mom_sigma,2)/2);
+    double numo = exp(-pow((evt.true_beam_startP-mom_mu)/mom_sigma,2)/2);
     if (numo < wlimit) numo = wlimit;
     weight *= numo;
     weight /= deno;
