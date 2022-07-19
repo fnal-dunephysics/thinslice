@@ -266,11 +266,12 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
   reco_ini_sliceID = -99;
   true_ini_sliceID = -99;
   ini_energy_reco = -999999.;
-  //ini_energy_true = -999999.;
+  ini_energy_true = hadana.true_ffKE;
   int_energy_reco = -999999.;
   int_energy_true = -999999.;
 
   TRandom3 *r3 = new TRandom3(0);
+  double rdm_gaus = 0;//r3->Gaus(20,40);
   isTestSample = (hadana.pitype == pi::kData); // fake data
   //if (evt.MC && evt.event%2 == 0) isTestSample = false;
 
@@ -279,27 +280,27 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
   double mumass = 105.66;
   double beam_inst_KE_mu = sqrt(pow(evt.beam_inst_P*1000,2)+pow(mumass,2)) - mumass;
   if (hadana.PassBeamQualityCut(evt) && evt.reco_beam_vertex_michel_score_weight_by_charge>0.6) {
-    h_trklen_noint_mu->Fill(hadana.reco_trklen/bb_mu.RangeFromKE(beam_inst_KE - 12.74));
-    h_trklen_noint->Fill(hadana.true_trklen/bb_mu.RangeFromKE(hadana.true_ffKE));
+    h_trklen_noint_mu->Fill(hadana.reco_trklen/bb_mu.RangeFromKE(beam_inst_KE - 13.));
+    h_trklen_noint->Fill(hadana.true_trklen/bb_mu.RangeFromKE(ini_energy_true));
   }
   
   if (hadana.fAllTrackCheck) {} // removed for not in use
   else {//not using all track reconstruction
     if (evt.MC){
-      if (hadana.true_ffKE > -999999) { // entered TPC
+      if (ini_energy_true > -999999) { // entered TPC
         if (evt.true_beam_PDG == 211 && evt.reco_beam_true_byE_matched) {
           h_beam_inst_KE->Fill(beam_inst_KE);
-          h_true_ffKE->Fill(hadana.true_ffKE);
-          h_upstream_Eloss->Fill(beam_inst_KE - hadana.true_ffKE);
-          h_upstream_Eloss_vs_true_Eff->Fill(hadana.true_ffKE, beam_inst_KE - hadana.true_ffKE);
-          h_upstream_Eloss_vs_Einst->Fill(beam_inst_KE, beam_inst_KE - hadana.true_ffKE);
+          h_true_ffKE->Fill(ini_energy_true);
+          h_upstream_Eloss->Fill(beam_inst_KE - ini_energy_true);
+          h_upstream_Eloss_vs_true_Eff->Fill(ini_energy_true, beam_inst_KE - ini_energy_true);
+          h_upstream_Eloss_vs_Einst->Fill(beam_inst_KE, beam_inst_KE - ini_energy_true);
           double true_beam_startKE = sqrt(pow(evt.true_beam_startP*1000,2)+pow(pimass,2)) - pimass;
           h_diff_startKE_vs_Einst->Fill(beam_inst_KE, beam_inst_KE - true_beam_startKE);
-          h_true_upstream_Eloss->Fill(hadana.true_ffKE, true_beam_startKE - hadana.true_ffKE);
+          h_true_upstream_Eloss->Fill(ini_energy_true, true_beam_startKE - ini_energy_true);
           
         }
         if (evt.true_beam_PDG == -13 && evt.reco_beam_true_byE_matched) {
-          h_upstream_Eloss_mu->Fill(beam_inst_KE_mu - hadana.true_ffKE);
+          h_upstream_Eloss_mu->Fill(beam_inst_KE_mu - ini_energy_true);
         }
         
         int traj_max = evt.true_beam_traj_Z->size()-1;
@@ -313,15 +314,19 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
           int_energy_true = (*evt.true_beam_traj_KE)[temp] - 2.1*((hadana.true_trklen_accum)[traj_max]-(hadana.true_trklen_accum)[temp]); // 2.1 MeV/cm
           //cout<<"int_energy_true"<<(*evt.true_beam_traj_KE)[temp]<<"\t"<<sqrt(pow(evt.true_beam_endP*1000,2)+pow(139.57,2)) - 139.57<<endl; // almost the same
         }
-        double int_energy_true_trklen = bb.KEAtLength(hadana.true_ffKE, hadana.true_trklen);
+        double int_energy_true_trklen = bb.KEAtLength(ini_energy_true, hadana.true_trklen);
         h_diff_Eint->Fill(int_energy_true_trklen - int_energy_true);
         h_diff_Eint_vs_true_Eint->Fill(int_energy_true, int_energy_true_trklen - int_energy_true);
       }
+      if (isTestSample) {
+        ini_energy_true += rdm_gaus;
+        int_energy_true += rdm_gaus;
+      }
       // true initial sliceID
       for (true_ini_sliceID=0; true_ini_sliceID<pi::true_nbins-2; ++true_ini_sliceID) {
-        if (hadana.true_ffKE > pi::true_KE[true_ini_sliceID]) break;
+        if (ini_energy_true > pi::true_KE[true_ini_sliceID]) break;
       }
-      //true_ini_sliceID = int(ceil( (pi::plim - hadana.true_ffKE)/pi::Eslicewidth_t )); // ignore incomplete slices
+      //true_ini_sliceID = int(ceil( (pi::plim - ini_energy_true)/pi::Eslicewidth_t )); // ignore incomplete slices
       //if (true_ini_sliceID <= -99) true_ini_sliceID = -99;
       //if (true_ini_sliceID < 0) true_ini_sliceID = 0; // physical underflow
       //if (true_ini_sliceID >= pi::true_nbins-2) true_ini_sliceID = pi::true_nbins-2; // overflow (Eff<pi::Eslicewidth)
@@ -418,9 +423,9 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
 
     if (!evt.reco_beam_calo_wire->empty()){
       if (hadana.reco_trklen>0) {
-        ini_energy_reco = beam_inst_KE - 12.74;
-        //if (isTestSample)
-          //ini_energy_reco += r3->Gaus(20,40);
+        ini_energy_reco = beam_inst_KE - 13.;
+        if (isTestSample)
+          ini_energy_reco += rdm_gaus;
       }
       /*if (beam_inst_KE < 800) ini_energy_reco = beam_inst_KE - 0.95; // 0.9465 \pm 0.3051
       else if (beam_inst_KE < 850) ini_energy_reco = beam_inst_KE - 7.12; // 7.119 \pm 0.210
@@ -451,7 +456,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
       // ignore incomplete slices
       /*if (reco_sliceID < reco_ini_sliceID) {
         //cout<<"$$$"<<hadana.reco_trklen<<"\t"<<hadana.true_trklen<<endl;
-        //cout<<"$"<<int_energy_reco<<"\t"<<hadana.true_ffKE<<endl;
+        //cout<<"$"<<int_energy_reco<<"\t"<<ini_energy_true<<endl;
         reco_ini_sliceID = -1;
         reco_sliceID = -1;
       } // if reco_sliceID==-1, this event should not be used when calculating reco XS*/
@@ -490,7 +495,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
     reco_end_sliceID = -1;
   }
   // upstream interactions
-  if (hadana.true_ffKE == -999999) true_ini_sliceID = pi::true_nbins-2;
+  if (ini_energy_true == -999999) true_ini_sliceID = pi::true_nbins-2;
   if (int_energy_true == -999999) true_sliceID = pi::true_nbins-2;
   if (ini_energy_reco == -999999) reco_ini_sliceID = pi::reco_nbins-2;
   if (int_energy_reco == -999999) {

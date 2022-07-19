@@ -26,7 +26,7 @@ class ThinSlice {
   int reco_ini_sliceID;
   int true_ini_sliceID;
   double ini_energy_reco;
-  //double ini_energy_true;
+  double ini_energy_true;
   double int_energy_reco;
   double int_energy_true;
 

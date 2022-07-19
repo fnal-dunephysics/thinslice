@@ -435,13 +435,13 @@ int main(int argc, char** argv){
   
   // unfolding
   RooUnfoldResponse *response_SliceID_3D = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
-  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 4);
+  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 20);
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
-  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 4);
+  RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 10);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
-  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 4);
+  RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 10);
   RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
-  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 4);
+  RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 10);
   
   TH3D *hsig3D_uf;
   TH1D *hsiginc_uf;
