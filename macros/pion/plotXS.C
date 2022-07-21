@@ -233,10 +233,10 @@ void plotXS(){
   for (int i=1; i<pi::true_nbins-2; ++i) {
     double KE = (pi::true_KE[i+1]+pi::true_KE[i])/2;
     double xs_curve = total_inel_KE->Eval(KE);
-    double xs_MC = gr_truexs->GetPointY(i);
-    double xserr_MC = gr_truexs->GetErrorY(i);
-    double xs_data = gr_recoxs->GetPointY(i);
-    double xserr_data = gr_recoxs->GetErrorY(i);
+    double xs_MC = gr_truexs->GetPointY(i-1);
+    double xserr_MC = gr_truexs->GetErrorY(i-1);
+    double xs_data = gr_recoxs->GetPointY(i-1);
+    double xserr_data = gr_recoxs->GetErrorY(i-1);
     double c2 = 0;
     if (true) {
       c2 = pow( (xs_data-xs_MC)/sqrt(pow(xserr_data,2)+pow(xserr_MC,2)) , 2);
@@ -279,4 +279,4 @@ void plotXS(){
   c9->Print("plots/xs_Nini.png");
   c10->Print("plots/xs_pi+inel.png");
 }
-  
+ 

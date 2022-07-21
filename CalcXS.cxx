@@ -552,11 +552,11 @@ int main(int argc, char** argv){
     err_ina[i] = hsiginc_uf->GetBinError(i+2);
     for (int j = 0; j<=i; ++j){
       Ninc[i] += hsigini_uf->GetBinContent(j+2);
-      err_inc[i] += pow(hsigini_uf->GetBinError(j+2),2);
+      //err_inc[i] += pow(hsigini_uf->GetBinError(j+2),2);
     }
     for (int j = 0; j<=i-1; ++j){
       Ninc[i] -= hsiginc_uf->GetBinContent(j+2);
-      err_inc[i] += pow(hsiginc_uf->GetBinError(j+2),2);
+      //err_inc[i] += pow(hsiginc_uf->GetBinError(j+2),2);
     }
     /*for (int j = i; j<pi::true_nbins-1; ++j){
       Ninc[i] += hsiginc_uf->GetBinContent(j+2);
@@ -566,7 +566,8 @@ int main(int argc, char** argv){
       Ninc[i] -= hsigini_uf->GetBinContent(j+2);
       err_inc[i] += pow(hsigini_uf->GetBinError(j+2),2);
     }*/
-    err_inc[i] = sqrt(err_inc[i]);
+    //err_inc[i] = sqrt(err_inc[i]);
+    err_inc[i] = sqrt(Ninc[i]);
   }
   TGraphErrors *gr_inc = new TGraphErrors(pi::true_nbins-1, SliceID, Ninc, 0, err_inc);
   gr_inc->SetNameTitle("gr_inc", "Incident number;Slice ID;Events");
@@ -654,11 +655,11 @@ int main(int argc, char** argv){
     err_ina_t[i] = hval_trueinc->GetBinError(i+2);
     for (int j = 0; j<=i; ++j){
       Ninc_t[i] += hval_trueini->GetBinContent(j+2);
-      err_inc_t[i] += pow(hval_trueini->GetBinError(j+2),2);
+      //err_inc_t[i] += pow(hval_trueini->GetBinError(j+2),2);
     }
     for (int j = 0; j<=i-1; ++j){
       Ninc_t[i] -= hval_trueinc->GetBinContent(j+2);
-      err_inc_t[i] += pow(hval_trueinc->GetBinError(j+2),2);
+      //err_inc_t[i] += pow(hval_trueinc->GetBinError(j+2),2);
     }
     /*for (int j = i; j<pi::true_nbins-1; ++j){
       Ninc_t[i] += hval_trueinc->GetBinContent(j+2);
@@ -668,7 +669,8 @@ int main(int argc, char** argv){
       Ninc_t[i] -= hval_trueini->GetBinContent(j+2);
       err_inc_t[i] += pow(hval_trueini->GetBinError(j+2),2);
     }*/
-    err_inc_t[i] = sqrt(err_inc_t[i]);
+    //err_inc_t[i] = sqrt(err_inc_t[i]);
+    err_inc_t[i] = sqrt(Ninc_t[i]);
   }
   TGraphErrors *gr_inc_t = new TGraphErrors(pi::true_nbins-1, SliceID, Ninc_t, 0, err_inc_t);
   gr_inc_t->SetNameTitle("gr_inc_t", "Incident number;Slice ID;Events");
