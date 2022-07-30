@@ -29,6 +29,8 @@ void plotXS(){
   TGraphErrors *gr_int_t = (TGraphErrors*)file->Get("gr_int_t");
   TGraphErrors *gr_ini_t = (TGraphErrors*)file->Get("gr_ini_t");
   TGraphErrors *gr_ina_t = (TGraphErrors*)file->Get("gr_ina_t");
+  TGraphErrors *gr_truexs = (TGraphErrors*)file->Get("gr_truexs");
+  TGraphErrors *gr_recoxs = (TGraphErrors*)file->Get("gr_recoxs");
   
   /*for (int i=0; i<pi::nthinslices; ++i){
     cout<<gr_inc->GetPointY(i)<<",";
@@ -149,11 +151,28 @@ void plotXS(){
   gr_inc->GetYaxis()->SetTitle("N_{Inc}");
   gr_inc->GetXaxis()->SetRangeUser(0, 21);
   gr_inc->SetMinimum(0);
-  gr_inc->Draw("ape");
+  //gr_inc->Draw("ape");
   gr_inc_t->SetLineWidth(2);
   gr_inc_t->SetLineColor(3);
   gr_inc_t->SetMarkerColor(3);
-  gr_inc_t->Draw("pe");
+  //gr_inc_t->Draw("pe");
+  TGraphErrors *gr_incE = (TGraphErrors*)gr_inc->Clone("gr_incE");
+  TGraphErrors *gr_incE_t = (TGraphErrors*)gr_inc_t->Clone("gr_incE_t");
+  for (int i=0; i<pi::true_nbins-1; i++) {
+    double binw = gr_truexs->GetErrorX(i)*2;
+    gr_incE->SetPoint(i, gr_truexs->GetPointX(i), gr_inc->GetPointY(i)/binw);
+    gr_incE->SetPointError(i, binw/2, gr_inc->GetErrorY(i)/binw);
+    gr_incE_t->SetPoint(i, gr_truexs->GetPointX(i), gr_inc_t->GetPointY(i)/binw);
+    gr_incE_t->SetPointError(i, binw/2, gr_inc_t->GetErrorY(i)/binw);
+  }
+  gr_incE->GetXaxis()->SetTitle("Energy (MeV)");
+  gr_incE->GetYaxis()->SetTitle("N_{inc} / MeV");
+  gr_incE->GetXaxis()->SetRangeUser(0, 1000);
+  gr_incE->SetMarkerColor(4);
+  gr_incE->SetLineColor(4);
+  gr_incE->Draw("ape");
+  gr_incE_t->SetLineColor(3);
+  gr_incE_t->Draw("pe");
 
   // interaction histogram
   TCanvas *c8 = new TCanvas("c8","c8");
@@ -163,11 +182,28 @@ void plotXS(){
   gr_int->GetYaxis()->SetTitle("N_{Int}");
   gr_int->GetXaxis()->SetRangeUser(0, 21);
   gr_int->SetMinimum(0);
-  gr_int->Draw("ape");
+  //gr_int->Draw("ape");
   gr_int_t->SetLineWidth(2);
   gr_int_t->SetLineColor(3);
   gr_int_t->SetMarkerColor(3);
-  gr_int_t->Draw("pe");
+  //gr_int_t->Draw("pe");
+  TGraphErrors *gr_intE = (TGraphErrors*)gr_int->Clone("gr_intE");
+  TGraphErrors *gr_intE_t = (TGraphErrors*)gr_int_t->Clone("gr_intE_t");
+  for (int i=0; i<pi::true_nbins-1; i++) {
+    double binw = gr_truexs->GetErrorX(i)*2;
+    gr_intE->SetPoint(i, gr_truexs->GetPointX(i), gr_int->GetPointY(i)/binw);
+    gr_intE->SetPointError(i, binw/2, gr_int->GetErrorY(i)/binw);
+    gr_intE_t->SetPoint(i, gr_truexs->GetPointX(i), gr_int_t->GetPointY(i)/binw);
+    gr_intE_t->SetPointError(i, binw/2, gr_int_t->GetErrorY(i)/binw);
+  }
+  gr_intE->GetXaxis()->SetTitle("Energy (MeV)");
+  gr_intE->GetYaxis()->SetTitle("N_{int} / MeV");
+  gr_intE->GetXaxis()->SetRangeUser(0, 1000);
+  gr_intE->SetMarkerColor(4);
+  gr_intE->SetLineColor(4);
+  gr_intE->Draw("ape");
+  gr_intE_t->SetLineColor(3);
+  gr_intE_t->Draw("pe");
   
   // initial histogram
   TCanvas *c9 = new TCanvas("c9","c9");
@@ -177,12 +213,29 @@ void plotXS(){
   gr_ini->GetYaxis()->SetTitle("N_{Ini}");
   gr_ini->GetXaxis()->SetRangeUser(0, 21);
   gr_ini->SetMinimum(0);
-  gr_ini->Draw("ape");
+  //gr_ini->Draw("ape");
   gr_ini_t->SetLineWidth(2);
   gr_ini_t->SetLineColor(3);
   gr_ini_t->SetMarkerColor(3);
-  gr_ini_t->Draw("pe");
-
+  //gr_ini_t->Draw("pe");
+  TGraphErrors *gr_iniE = (TGraphErrors*)gr_ini->Clone("gr_iniE");
+  TGraphErrors *gr_iniE_t = (TGraphErrors*)gr_ini_t->Clone("gr_iniE_t");
+  for (int i=0; i<pi::true_nbins-1; i++) {
+    double binw = gr_truexs->GetErrorX(i)*2;
+    gr_iniE->SetPoint(i, gr_truexs->GetPointX(i), gr_ini->GetPointY(i)/binw);
+    gr_iniE->SetPointError(i, binw/2, gr_ini->GetErrorY(i)/binw);
+    gr_iniE_t->SetPoint(i, gr_truexs->GetPointX(i), gr_ini_t->GetPointY(i)/binw);
+    gr_iniE_t->SetPointError(i, binw/2, gr_ini_t->GetErrorY(i)/binw);
+  }
+  gr_iniE->GetXaxis()->SetTitle("Energy (MeV)");
+  gr_iniE->GetYaxis()->SetTitle("N_{Ini} / MeV");
+  gr_iniE->GetXaxis()->SetRangeUser(0, 1000);
+  gr_iniE->SetMarkerColor(4);
+  gr_iniE->SetLineColor(4);
+  gr_iniE->Draw("ape");
+  gr_iniE_t->SetLineColor(3);
+  gr_iniE_t->Draw("pe");
+  
   // cross-section
   /*double xs[pi::nthinslices] = {0};
   double err_xs[pi::nthinslices] = {0};
@@ -201,8 +254,6 @@ void plotXS(){
   
   TFile f2("../../files/exclusive_xsec.root");
   TGraph *total_inel_KE = (TGraph*)f2.Get("total_inel_KE");
-  TGraphErrors *gr_truexs = (TGraphErrors*)file->Get("gr_truexs");
-  TGraphErrors *gr_recoxs = (TGraphErrors*)file->Get("gr_recoxs");
 
   TCanvas *c10 = new TCanvas("c10", "c10", 1200, 500);
   gr_recoxs->SetTitle("Pion Inelastic Cross Section");
@@ -211,13 +262,13 @@ void plotXS(){
   gr_recoxs->GetYaxis()->SetTitle("#sigma_{inelastic} (mb)");
   gr_recoxs->GetYaxis()->SetRangeUser(0, 1000);
   gr_recoxs->SetLineWidth(2);
-  gr_recoxs->RemovePoint(pi::true_nbins-2); // the last is used as overflow
-  gr_recoxs->RemovePoint(0); // the first is used as underflow
+  //gr_recoxs->RemovePoint(pi::true_nbins-2); // the last is used as overflow
+  //gr_recoxs->RemovePoint(0); // the first is used as underflow
   gr_recoxs->Draw("ape");
   gr_truexs->SetMarkerColor(3);
   gr_truexs->SetLineColor(3);
-  gr_truexs->RemovePoint(pi::true_nbins-2);
-  gr_truexs->RemovePoint(0);
+  //gr_truexs->RemovePoint(pi::true_nbins-2);
+  //gr_truexs->RemovePoint(0);
   gr_truexs->Draw("pe");
   total_inel_KE->SetLineColor(2);
   
@@ -229,7 +280,7 @@ void plotXS(){
   }*/
   double chi2 = 0;
   int nbins = 0;
-  cout<<"KE\tData XS\t\tData XS_err\t\tMC XS\t\tMC XS_err\t\tChi2"<<endl;
+  cout<<"KE\tData XS\t\tData XS_err\t\tMC XS\t\tMC XS_err\tXS_curve\tChi2"<<endl;
   for (int i=1; i<pi::true_nbins-2; ++i) {
     double KE = (pi::true_KE[i+1]+pi::true_KE[i])/2;
     double xs_curve = total_inel_KE->Eval(KE);
@@ -243,16 +294,16 @@ void plotXS(){
       chi2 += c2;
       ++nbins;
     }
-    cout<<KE<<"\t"<<xs_data<<"\t\t"<<xserr_data<<"\t\t\t"<<xs_MC<<"\t\t"<<xserr_MC<<"\t\t\t"<<c2<<endl;
+    cout<<KE<<"\t"<<xs_data<<"\t\t"<<xserr_data<<"\t\t\t"<<xs_MC<<"\t\t"<<xserr_MC<<"\t\t"<<xs_curve<<"\t\t"<<c2<<endl;
   }
-  cout<<"Chi2/Ndf = "<<chi2/nbins<<endl;
+  cout<<"Chi2/Ndf = "<<chi2<<"/"<<nbins<<" = "<<chi2/nbins<<endl;
   
   total_inel_KE->Draw("L");
-  TLegend *leg10 = new TLegend(0.5,0.15,0.85,0.4);
+  TLegend *leg10 = new TLegend(0.5,0.2,0.85,0.4);
   leg10->SetFillStyle(0);
   leg10->AddEntry(gr_recoxs, "MC with reconstruction", "pe");
   leg10->AddEntry(gr_truexs, "MC truth", "pe");
-  //leg10->AddEntry(total_inel_KE, "Geant4 (theory prediction)", "l");
+  leg10->AddEntry(total_inel_KE, "Geant4 input", "l");
   leg10->Draw();
 
   gSystem->Exec("rm -rf plots");
@@ -279,4 +330,4 @@ void plotXS(){
   c9->Print("plots/xs_Nini.png");
   c10->Print("plots/xs_pi+inel.png");
 }
- 
+  
