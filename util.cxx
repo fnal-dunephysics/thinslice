@@ -11,7 +11,7 @@ double CalWeight(const anavar & evt, const int &partype){
   double weight = 1.;
   return weight;
   
-  double mufrac = 1.;//1.58;
+  double mufrac = 1.6;//1;
   
   double mom_mu0 = 1.0031953419820514;
   double mom_sigma0 = 0.0669145504342396;
