@@ -171,11 +171,11 @@ void ThinSlice::BookHistograms(){
       //const double xbins[25] = {-10.,0.,10.,20.,30.,40.,50.,60.,70.,80.,90.,100.,110.,120.,130.,140.,150.,160.,170.,180.,190.,200.,210.,220.,600}; // a user-defined binning
       hini_recoE[i][j] = new TH1D(Form("hini_recoE_%d_%d",i,j), Form("ini_recoE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 150, -50, 1450);
       hini_recoE[i][j]->Sumw2();
-      hint_recoE[i][j] = new TH1D(Form("hint_recoE_%d_%d",i,j), Form("int_recoE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 150, -50, 1450);
+      hint_recoE[i][j] = new TH1D(Form("hint_recoE_%d_%d",i,j), Form("int_recoE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 220, -50, 1050);
       hint_recoE[i][j]->Sumw2();
       hini_trueE[i][j] = new TH1D(Form("hini_trueE_%d_%d",i,j), Form("ini_trueE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 150, -50, 1450);
       hini_trueE[i][j]->Sumw2();
-      hint_trueE[i][j] = new TH1D(Form("hint_trueE_%d_%d",i,j), Form("int_trueE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 150, -50, 1450);
+      hint_trueE[i][j] = new TH1D(Form("hint_trueE_%d_%d",i,j), Form("int_trueE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 220, -50, 1050);
       hint_trueE[i][j]->Sumw2();
       //hreco_trklen[i][j] = new TH1D(Form("hreco_trklen_%d_%d",i,j), Form("reco_trklen, %s, %s;Track length (cm)", pi::cutName[i], pi::intTypeName[j]), 24, xbins);
       hreco_trklen[i][j] = new TH1D(Form("hreco_trklen_%d_%d",i,j), Form("reco_trklen, %s, %s;Track length (cm)", pi::cutName[i], pi::intTypeName[j]), 61, -10, 600);
@@ -228,6 +228,12 @@ void ThinSlice::BookHistograms(){
       pf_diff_reco_true_vs_true_Eint[i][j] = new TProfile(Form("pf_diff_reco_true_vs_true_Eint_%d_%d",i,j), Form("pf_diff_reco_true_vs_true_Eint, %s, %s;MeV", pi::cutName[i], pi::intTypeName[j]), 100, 0, 1000);
     }
   }
+  h_test1 = new TH1D("h_test1","h_test1;MeV", 100, -300, 300);
+  h_test1->Sumw2();
+  h_test2 = new TH1D("h_test2","h_test2;MeV", 100, -300, 300);
+  h_test2->Sumw2();
+  h_test3 = new TH1D("h_test3","h_test3;MeV", 100, -300, 300);
+  h_test3->Sumw2();
   h_beam_inst_KE = new TH1D("h_beam_inst_KE","h_beam_inst_KE;MeV", 100, 0, 2000);
   h_beam_inst_KE->Sumw2();
   h_true_ffKE = new TH1D("h_true_ffKE","h_true_ffKE;MeV", 100, 0, 2000);
@@ -258,7 +264,7 @@ void ThinSlice::BookHistograms(){
 
 }
 
-void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, double bkgw){
+void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, double g4rw, double bkgw){
   //hadana.ProcessEvent(evt);
   reco_sliceID = -99;
   reco_end_sliceID = -99;
@@ -272,7 +278,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
 
   TRandom3 *r3 = new TRandom3(0);
   double rdm_gaus = 0;//r3->Gaus(20,40);
-  isTestSample = (hadana.pitype == pi::kData); // fake data
+  isTestSample = (hadana.pitype == pi::kData) && evt.MC; // fake data
   //if (evt.MC && evt.event%2 == 0) isTestSample = false;
 
   double pimass = 139.57;
@@ -432,8 +438,9 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
       else if (beam_inst_KE < 900) ini_energy_reco = beam_inst_KE - 11.87; // 11.87 \pm 0.22
       else if (beam_inst_KE < 950) ini_energy_reco = beam_inst_KE - 17.31; // 17.31 \pm 0.27
       else ini_energy_reco = beam_inst_KE - 29.28; // 29.28 \pm 0.37*/
-      if (hadana.reco_trklen>0)
+      if (hadana.reco_trklen>0) {
         int_energy_reco = bb.KEAtLength(ini_energy_reco, hadana.reco_trklen);
+      }
       // reco initial sliceID
       for (reco_ini_sliceID=0; reco_ini_sliceID<pi::reco_nbins-2; ++reco_ini_sliceID) {
         if (ini_energy_reco > pi::reco_KE[reco_ini_sliceID]) break;
@@ -467,7 +474,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
         double energy_reco = bb.KEAtLength(ini_energy_reco, hadana.reco_trklen_accum[idx]);
         if (idx >= 0) {
           reco_end_sliceID = int(floor( (pi::plim-energy_reco)/pi::Eslicewidth )) - 1;
-          reco_sliceID = pi::nthinslices;
+          reco_sliceID = -1;
         }
         else { // evt.reco_beam_calo_startZ > 220
           reco_ini_sliceID = -1;
@@ -502,7 +509,15 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
     reco_sliceID = pi::reco_nbins-2;
     reco_end_sliceID = pi::reco_nbins-2;
   }
-  double weight = g4rw * bkgw;
+  // compare Eint
+  if (hadana.PassPiCuts(evt)) {
+    double int_E_leng = bb.KEAtLength(ini_energy_reco, hadana.reco_trklen);
+    double int_E_calo = (*evt.reco_beam_incidentEnergies)[0]-13-hadana.energy_calorimetry_SCE;
+    h_test1->Fill(int_E_leng-int_energy_true);
+    h_test2->Fill(int_E_calo-int_energy_true);
+    h_test3->Fill(int_E_leng-int_E_calo);
+  }
+  // Fill slice ID histograms
   if (evt.MC){
     if (evt.true_beam_PDG == 211 && hadana.true_trklen > 0){ // true pion beam entering the TPC
       double true_int_sliceID = true_sliceID;
@@ -510,57 +525,58 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
       if (!((*evt.true_beam_endProcess) == "pi+Inelastic")) {
         true_int_sliceID = -1;
         reco_int_sliceID = -1;
+        //reco_sliceID = -1;
       }
       if (isTestSample){ // fake data
-        h_truesliceid_pion_all->Fill(true_sliceID, g4rw);
-        h_trueinisliceid_pion_all->Fill(true_ini_sliceID, g4rw);
+        h_truesliceid_pion_all->Fill(true_sliceID, weight*g4rw);
+        h_trueinisliceid_pion_all->Fill(true_ini_sliceID, weight*g4rw);
       }
       else{
         uf.eff_den_Inc->Fill(true_sliceID);
       }
       if (hadana.PassPiCuts(evt) && evt.reco_beam_true_byE_matched){ // the beam pion passed full selections (reco_beam_true_byE_matched is used to veto secondary particles. Only in MC)
         if (isTestSample){
-          h_recosliceid_pion_cuts->Fill(reco_end_sliceID, g4rw);
-          h_truesliceid_pion_cuts->Fill(true_sliceID, g4rw);
-          h_recoinisliceid_pion_cuts->Fill(reco_ini_sliceID, g4rw);
-          h_trueinisliceid_pion_cuts->Fill(true_ini_sliceID, g4rw);
+          h_recosliceid_pion_cuts->Fill(reco_end_sliceID, weight*g4rw);
+          h_truesliceid_pion_cuts->Fill(true_sliceID, weight*g4rw);
+          h_recoinisliceid_pion_cuts->Fill(reco_ini_sliceID, weight*g4rw);
+          h_trueinisliceid_pion_cuts->Fill(true_ini_sliceID, weight*g4rw);
         }
         else{
           uf.eff_num_Inc->Fill(true_sliceID);
           uf.pur_num_Inc->Fill(reco_sliceID);
-          uf.response_SliceID_Inc.Fill(reco_end_sliceID, true_sliceID, g4rw);
-          uf.response_SliceID_Ini.Fill(reco_ini_sliceID, true_ini_sliceID, g4rw);
-          uf.response_SliceID_3D.Fill(reco_ini_sliceID, reco_end_sliceID, reco_end_sliceID, true_ini_sliceID, true_sliceID, true_int_sliceID, g4rw);
+          uf.response_SliceID_Inc.Fill(reco_end_sliceID, true_sliceID, weight*g4rw);
+          uf.response_SliceID_Ini.Fill(reco_ini_sliceID, true_ini_sliceID, weight*g4rw);
+          uf.response_SliceID_3D.Fill(reco_ini_sliceID, reco_end_sliceID, reco_int_sliceID, true_ini_sliceID, true_sliceID, true_int_sliceID, weight*g4rw);
         }
       }
       else { // this beam pion event is not selected
         if (!isTestSample) {
-          uf.response_SliceID_Inc.Miss(true_sliceID, weight); // missed event need bkgw
-          uf.response_SliceID_Ini.Miss(true_ini_sliceID, weight);
-          uf.response_SliceID_3D.Miss(true_ini_sliceID, true_sliceID, true_int_sliceID, weight);
+          uf.response_SliceID_Inc.Miss(true_sliceID, weight*g4rw*bkgw); // missed event need bkgw
+          uf.response_SliceID_Ini.Miss(true_ini_sliceID, weight*g4rw*bkgw);
+          uf.response_SliceID_3D.Miss(true_ini_sliceID, true_sliceID, true_int_sliceID, weight*g4rw*bkgw);
         }
       }
       
       if ((*evt.true_beam_endProcess) == "pi+Inelastic"){ // true pion beam interaction event (exclude elastics)
         if (isTestSample){
-          h_truesliceid_pioninelastic_all->Fill(true_sliceID, g4rw);
+          h_truesliceid_pioninelastic_all->Fill(true_sliceID, weight*g4rw);
         }
         else{
           uf.eff_den_Int->Fill(true_sliceID);
         }
         if (hadana.PassPiCuts(evt) && evt.reco_beam_true_byE_matched){
           if (isTestSample){
-            h_recosliceid_pioninelastic_cuts->Fill(reco_sliceID, g4rw);
-            h_truesliceid_pioninelastic_cuts->Fill(true_sliceID, g4rw);
+            h_recosliceid_pioninelastic_cuts->Fill(reco_sliceID, weight*g4rw);
+            h_truesliceid_pioninelastic_cuts->Fill(true_sliceID, weight*g4rw);
           }
           else{
             uf.eff_num_Int->Fill(true_sliceID);
             uf.pur_num_Int->Fill(reco_sliceID);
-            uf.response_SliceID_Int.Fill(reco_sliceID, true_sliceID, g4rw);
+            uf.response_SliceID_Int.Fill(reco_sliceID, true_sliceID, weight*g4rw);
           }
         }
         else{
-          if (!isTestSample) uf.response_SliceID_Int.Miss(true_sliceID, weight);
+          if (!isTestSample) uf.response_SliceID_Int.Miss(true_sliceID, weight*g4rw*bkgw);
         }
       }
       else { // pion decay
@@ -569,8 +585,8 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, doubl
     }
     if (hadana.PassPiCuts(evt)){ // the event passed full selections
       if (isTestSample){
-        //h_recosliceid_allevts_cuts->Fill(reco_sliceID, weight);
-        //h_recoinisliceid_allevts_cuts->Fill(reco_ini_sliceID, weight);
+        //h_recosliceid_allevts_cuts->Fill(reco_sliceID, weight*g4rw*bkgw);
+        //h_recoinisliceid_allevts_cuts->Fill(reco_ini_sliceID, weight*g4rw*bkgw);
       }
       else {
         uf.pur_den->Fill(reco_sliceID);
@@ -668,10 +684,12 @@ void ThinSlice::FillHistograms(int cut, const anavar & evt, double weight){
       FillHistVec1D(hreco_beam_true_byE_matched[cut], evt.reco_beam_true_byE_matched, hadana.pitype, weight);
       double mumass = 105.66;
       double beam_inst_KE_mu = sqrt(pow(evt.beam_inst_P*1000,2)+pow(mumass,2)) - mumass;
+      double int_E_leng = bb.KEAtLength(ini_energy_reco, hadana.reco_trklen);
+      double int_E_calo = (*evt.reco_beam_incidentEnergies)[0]-13-hadana.energy_calorimetry_SCE;
       FillHistVec1D(hini_recoE[cut], beam_inst_KE_mu-15, hadana.pitype, weight);
-      FillHistVec1D(hint_recoE[cut], bb_mu.KEFromRangeSpline(hadana.reco_trklen), hadana.pitype, weight);
+      FillHistVec1D(hint_recoE[cut], int_E_calo, hadana.pitype, weight);
       FillHistVec1D(hini_trueE[cut], hadana.true_ffKE, hadana.pitype, weight);
-      FillHistVec1D(hint_trueE[cut], bb_mu.KEFromRangeSpline(hadana.true_trklen), hadana.pitype, weight);
+      FillHistVec1D(hint_trueE[cut], int_E_leng, hadana.pitype, weight);
       FillHistVec1D(hreco_trklen[cut], hadana.reco_trklen, hadana.pitype, weight);
       FillHistVec1D(htrue_trklen[cut], hadana.true_trklen, hadana.pitype, weight);
       FillHistVec1D(hdiff_trklen[cut], hadana.reco_trklen - hadana.true_trklen, hadana.pitype, weight);
@@ -871,10 +889,12 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
   else  newfile = new TFile("newtree_data.root","recreate");
   TTree *newtree = oldtree->CloneTree(0);
   // new branches
+  double tweight = 1.;
   double reco_KE_from_trklen = -999.;
   double reco_KE = -999.;
   double true_KE_from_trklen = -999.;
   double true_KE = -999.;
+  newtree->Branch("tweight", &tweight);
   newtree->Branch("reco_KE_from_trklen", &reco_KE_from_trklen);
   newtree->Branch("reco_KE", &reco_KE);
   newtree->Branch("true_KE_from_trklen", &true_KE_from_trklen);
@@ -946,7 +966,7 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
         bkgw = CalBkgW(evt, 1., 1., 1.);
       }
     }
-    ProcessEvent(evt, uf, g4rw, bkgw);
+    ProcessEvent(evt, uf, weight, g4rw, bkgw);
     weight *= g4rw;
     weight *= bkgw;
     // can change order of cuts
@@ -994,6 +1014,7 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
     
     if (fillnewtree && savetree) {
       oldtree->GetEntry(jentry);
+      tweight = weight;
       reco_KE_from_trklen = bb_mu.KEFromRangeSpline(hadana.reco_trklen);
       double mumass = 105.66;
       double beam_inst_KE_mu = sqrt(pow(evt.beam_inst_P*1000,2)+pow(mumass,2)) - mumass;

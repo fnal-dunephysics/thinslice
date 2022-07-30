@@ -217,7 +217,7 @@ bool HadAna::PassBeamQualityCut(const anavar& evt, bool has_angle_cut, bool has_
 }
 
 bool HadAna::PassAPA3Cut(const anavar& evt) const{ // only use track in the first TPC
-
+  //return true;
   if (evt.reco_beam_calo_endZ > 220) return false;
   //if (reco_trklen > 220) return false;
   //if (reco_trklen < 30) return false;
@@ -231,7 +231,7 @@ bool HadAna::PassCaloSizeCut(const anavar& evt) const{ // Require hits informati
 }
 
 bool HadAna::PassMichelScoreCut() const{ // further veto muon tracks according to Michel score
-  
+  //return true;
   return daughter_michel_score < 0.55;
 }
 
@@ -434,6 +434,9 @@ void HadAna::ProcessEvent(const anavar& evt){
   for (int i=0; i<evt.reco_beam_calibrated_dEdX_SCE->size(); i++){
     energy_calorimetry_SCE += (*evt.reco_beam_calibrated_dEdX_SCE)[i]*(*evt.reco_beam_TrkPitch_SCE)[i];
   }
+  //double mass = 139.57;
+  //double Eii = sqrt( 1.e6*pow(evt.beam_inst_P,2) + mass*mass ) - mass;
+  //cout<<evt.reco_beam_calibrated_dEdX_SCE->size()<<"\t"<<evt.reco_beam_incidentEnergies->size()<<endl; // I think the former should be 1 smaller than the latter???
   //cout<<evt.beam_particle_scores->size()<<"\t"<<(*evt.beam_particle_scores)[0]<<endl;
   if (evt.beam_particle_scores->size())
     beam_score = (*evt.beam_particle_scores)[0];

@@ -68,6 +68,8 @@ class HadAna{
   double trklen_csda_proton;
   double beam_score;
   double energy_calorimetry_SCE;
+  double KEff_calo_SCE;
+  double KEint_calo_SCE;
   bool fAllTrackCheck = false;
 
  private:

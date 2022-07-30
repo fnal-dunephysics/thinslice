@@ -155,6 +155,8 @@ class ThinSlice {
   TH2D *h_diff_Eint_vs_true_Eint;
   TH1D *h_trklen_noint;
   TH1D *h_trklen_noint_mu;
+  TH1D *h_test1, *h_test2, *h_test3;
+  
 
   std::string fOutputFileName;
   TFile *outputFile;
@@ -164,7 +166,7 @@ class ThinSlice {
   void FillSliceHist(const anavar & evt, int constraint_type, double weight=1., int cut=6);
   void SaveHistograms();
 
-  void ProcessEvent(const anavar & evt, Unfold & uf, double g4rw, double bkgw);
+  void ProcessEvent(const anavar & evt, Unfold & uf, double weight, double g4rw, double bkgw);
   void CalcXS(const Unfold & uf);
 
   void Run(anavar & evt, Unfold & uf, Long64_t nentries=-1, bool random=false, bool savetree=false);
