@@ -9,29 +9,31 @@ using namespace std;
 
 double CalWeight(const anavar & evt, const int &partype){
   double weight = 1.;
-  return weight;
+  //return weight;
   
-  double mufrac = 1.6;//1;
+  double mufrac = 1.71;
   
-  double mom_mu0 = 1.0031953419820514;
-  double mom_sigma0 = 0.0669145504342396;
-  double mom_mu = 1.01641;
-  double mom_sigma = 0.07111;
-  double wlimit = 1e-5;
+  double mom_mu0 = 1.0033;
+  double mom_sigma0 = 0.0609;
+  double mom_mu = 1.01818;
+  double mom_sigma = 0.07192;
+  double wlimit = 3;
   
   if (evt.MC) {
-    // muon reweight
-    if (partype == 3) { // kMuon
-      weight *= mufrac;
-    }
-
     // momentum reweight (outlier weights are set to 1e-5)
     double deno = exp(-pow((evt.true_beam_startP-mom_mu0)/mom_sigma0,2)/2);
-    if (deno < wlimit) deno = wlimit;
+    //if (deno < wlimit) deno = wlimit;
     double numo = exp(-pow((evt.true_beam_startP-mom_mu)/mom_sigma,2)/2);
-    if (numo < wlimit) numo = wlimit;
+    //if (numo < wlimit) numo = wlimit;
     weight *= numo;
     weight /= deno;
+    if (weight>wlimit) weight=wlimit;
+    if (weight<1./wlimit) weight=1./wlimit;
+    if (evt.true_beam_PDG == -13) weight = 1;
+    // muon reweight
+    if (evt.true_beam_PDG == -13 && evt.reco_beam_true_byE_matched) { // kMuon
+      weight *= mufrac;
+    }
   }
 
   return weight;

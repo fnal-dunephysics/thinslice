@@ -80,7 +80,7 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
   for (int i = 0; i<pi::nIntTypes; ++i){
     hmc[cut][i+1]->SetFillColor(colors[i]);
     hmc[cut][i+1]->SetLineWidth(0);
-    hmc[cut][i+1]->Scale(totaldata/totalmc);
+    hmc[cut][i+1]->Scale(totaldata/totalmc*100150./105575.);
     hs->Add(hmc[cut][i+1]);
     if (i==0) htotmc = (TH1D*)hmc[cut][1]->Clone(Form("htotmc_%d",nc));
     else htotmc->Add(hmc[cut][i+1]);
@@ -100,7 +100,7 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
 
   double max = TMath::Max(hs->GetMaximum(), hdata[cut]->GetMaximum());
   max = TMath::Max(max, hcosmics[cut]->GetMaximum());
-  hs->SetMaximum(1.2*max);
+  hs->SetMaximum(8000);
   hs->Draw("hist");
   hs->SetTitle(hdata[cut]->GetTitle());
   hs->GetXaxis()->SetTitle(xtitle.c_str());
@@ -339,9 +339,9 @@ void plot(){
   gStyle->SetOptStat(0);
   gErrorIgnoreLevel = kWarning;
 
-  fmc = TFile::Open("../../build/mcprod4a.root");
+  fmc = TFile::Open("../../build/mcprod4a_0721_76sigma.root");
   //fdata = TFile::Open("../install/bin/mcprod4a.root");
-  fdata = TFile::Open("../../build/data.root");
+  fdata = TFile::Open("../../build/data_0721_nominal.root");
   fcosmics = TFile::Open("../../build/cosmics.root");
 
   for (int i = 0; i<pi::nCuts; ++i){
@@ -388,11 +388,11 @@ void plot(){
   plot1d("hdaughter_michel_score_bkg", 6, "Michel score", "Events");
   plot1d("hcostheta_bkg", 0, "Cos(theta)", "Events");
   plot1d("hcostheta_bkg", 6, "Cos(theta)", "Events");
-  plot1dslice("hmediandEdxSlice", 6, "Median dE/dx (MeV/cm)", "Events");
+  /*plot1dslice("hmediandEdxSlice", 6, "Median dE/dx (MeV/cm)", "Events");
   plot1dslice("hChi2_protonSlice", 6, "Chi2_p/Ndf", "Events");
   plot1dslice("hdaughter_michel_scoreSlice", 6, "Michel score", "Events");
   plot1dslice("hcosthetaSlice", 6, "Cos(theta)", "Events");
-
+*/
   PrintEvents("hreco_beam_endZ_SCE");
 
 }

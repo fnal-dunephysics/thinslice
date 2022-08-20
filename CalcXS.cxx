@@ -123,7 +123,7 @@ int main(int argc, char** argv){
   TH3D *hproton_3D = new TH3D("hproton_3D","Proton_3D background;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
   TH3D *hmu_3D = new TH3D("hmu_3D","Muon_3D background;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
   TH3D *hspi_3D = new TH3D("hspi_3D","Secondary pion_3D background;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
-  //TH3D *hpiel_3D = new TH3D("hpiel_3D","Pion elastic_3D;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
+  TH3D *hpiel_3D = new TH3D("hpiel_3D","Pion elastic_3D;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
   TH3D *hother_3D = new TH3D("hother_3D","Other_3D backgrounds;Slice ID;Events",pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins,pi::reco_nbins,pi::reco_bins);
   
   // first loop to get total number of events
@@ -196,19 +196,21 @@ int main(int argc, char** argv){
   // second loop to fill histograms
   for (int i = 0; i < pi::nIntTypes+1; ++i){
     if (i==0){
-      //hsliceID[i] = (TH1D*)fdata->Get(Form("hreco_sliceID_%d_%d",pi::nCuts-1,i));
     }
     else {
-      //hsliceID[i] = (TH1D*)fmc->Get(Form("hreco_sliceID_%d_%d",pi::nCuts-1,i));
-      //hsliceID[i]->Scale(totaldata/totalmc);
-      hsliceID[i]->Multiply(hsliceID[0]);
+      // try which scale method to use?
+      /*hsliceID[i]->Multiply(hsliceID[0]);
       hsliceID[i]->Divide(hmc);
       hincsliceID[i]->Multiply(hincsliceID[0]);
       hincsliceID[i]->Divide(hmc_inc);
       hinisliceID[i]->Multiply(hinisliceID[0]);
       hinisliceID[i]->Divide(hmc_ini);
       h3DsliceID[i]->Multiply(h3DsliceID[0]);
-      h3DsliceID[i]->Divide(hmc_3D);
+      h3DsliceID[i]->Divide(hmc_3D);*/
+      hsliceID[i]->Scale(hdata->Integral()/hmc->Integral());
+      hincsliceID[i]->Scale(hdata_inc->Integral()/hmc_inc->Integral());
+      hinisliceID[i]->Scale(hdata_ini->Integral()/hmc_ini->Integral());
+      h3DsliceID[i]->Scale(hdata_3D->Integral()/hmc_3D->Integral());
     }
     for (int j = 0; j < pi::reco_nbins; ++j){
       int bin = hsliceID[i]->FindBin(j-0.5);
@@ -216,7 +218,7 @@ int main(int argc, char** argv){
         double binc;
         double bine;
         if (i == pi::kMuon || i == pi::kMIDmu){
-          binc = hmu->GetBinContent(bin);
+          binc = hmu->GetBinContent(bin); // only possibly nonzero here because there are two pi::types
           bine = hmu->GetBinError(bin);
           binc += hsliceID[i]->GetBinContent(bin)*(*sf_mu)[0];
           bine = sqrt(pow(bine,2)
@@ -360,6 +362,23 @@ int main(int argc, char** argv){
                       + pow(hinisliceID[i]->GetBinError(bin),2));
           hpiel_ini->SetBinContent(j+1, binc);
           hpiel_ini->SetBinError(j+1, bine);*/
+          
+          for (int k = 0; k < pi::reco_nbins; ++k){
+            int bink = hsliceID[i]->FindBin(k-0.5);
+            for (int l = 0; l < pi::reco_nbins; ++l){
+              int binl = hsliceID[i]->FindBin(l-0.5);
+              double pielval = h3DsliceID[i]->GetBinContent(bin, bink, binl);
+              double pielerr = h3DsliceID[i]->GetBinError(bin, bink, binl);
+              binc = hpiel_3D->GetBinContent(bin, bink, 1);
+              bine = hpiel_3D->GetBinError(bin, bink, 1);
+              binc -= pielval;
+              bine = sqrt(pow(bine,2) + pow(pielerr,2));
+              hpiel_3D->SetBinContent(j+1, k+1, 1, binc);
+              hpiel_3D->SetBinError(j+1, k+1, 1, bine);
+              hpiel_3D->SetBinContent(j+1, k+1, l+1, pielval);
+              hpiel_3D->SetBinError(j+1, k+1, l+1, pielerr);
+            }
+          }
         }
         else if (i != pi::kPiInel){
           binc = hother->GetBinContent(bin);
@@ -431,11 +450,12 @@ int main(int argc, char** argv){
   hsig3D->Add(hmu_3D,-1);
   hsig3D->Add(hproton_3D,-1);
   hsig3D->Add(hspi_3D,-1);
+  hsig3D->Add(hpiel_3D,-1);
   hsig3D->Add(hother_3D,-1);
   
   // unfolding
   RooUnfoldResponse *response_SliceID_3D = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
-  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 20);
+  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 10);
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
   RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 10);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
@@ -449,12 +469,14 @@ int main(int argc, char** argv){
   TH1D *hsigini_uf;
   hsig3D_uf = (TH3D*)unfold_3D.Hreco();
   hsig3D_uf->SetNameTitle("hsig3D_uf", "Unfolded 3D signal;Slice ID;Events");
-  /*hsiginc_uf = (TH1D*)unfold_Inc.Hreco();
+  hsiginc_uf = (TH1D*)unfold_Inc.Hreco();
   hsiginc_uf->SetNameTitle("hsiginc_uf", "Unfolded incident signal;Slice ID;Events");
   hsignal_uf = (TH1D*)unfold_Int.Hreco();
   hsignal_uf->SetNameTitle("hsignal_uf", "Unfolded interaction signal;Slice ID;Events");
   hsigini_uf = (TH1D*)unfold_Ini.Hreco();
-  hsigini_uf->SetNameTitle("hsigini_uf", "Unfolded initial signal;Slice ID;Events");*/
+  hsigini_uf->SetNameTitle("hsigini_uf", "Unfolded initial signal;Slice ID;Events");
+  cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
+  cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
   //hsigini_uf->Scale(hsiginc_uf->Integral()/hsigini_uf->Integral());
   hsigini_uf = (TH1D*)hsig3D_uf->Project3D("x");
   hsiginc_uf = (TH1D*)hsig3D_uf->Project3D("y");
@@ -462,6 +484,8 @@ int main(int argc, char** argv){
   hsigini_uf->SetNameTitle("hsigini_uf","hsigini_uf");
   hsiginc_uf->SetNameTitle("hsiginc_uf","hsiginc_uf");
   hsignal_uf->SetNameTitle("hsignal_uf","hsignal_uf");
+  cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
+  cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
   
   TMatrixD cov_matrix_inc = unfold_Inc.Ereco();
   TH2D *covariance_inc = new TH2D(cov_matrix_inc);
@@ -560,11 +584,11 @@ int main(int argc, char** argv){
     }
     /*for (int j = i; j<pi::true_nbins-1; ++j){
       Ninc[i] += hsiginc_uf->GetBinContent(j+2);
-      err_inc[i] += pow(hsiginc_uf->GetBinError(j+2),2);
+      //err_inc[i] += pow(hsiginc_uf->GetBinError(j+2),2);
     }
     for (int j = i+1; j<pi::true_nbins-1; ++j){
       Ninc[i] -= hsigini_uf->GetBinContent(j+2);
-      err_inc[i] += pow(hsigini_uf->GetBinError(j+2),2);
+      //err_inc[i] += pow(hsigini_uf->GetBinError(j+2),2);
     }*/
     //err_inc[i] = sqrt(err_inc[i]);
     err_inc[i] = sqrt(Ninc[i]);

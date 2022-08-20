@@ -88,8 +88,8 @@ double calchi2(double muweight, TH1D *data_dist, TH1D *mc_dist_sep[typenum], TH1
 }
 
 void muon_reweight(){
-  TFile *mcfile = TFile::Open("../../build/mcprod4a.root");
-  TFile *datafile = TFile::Open("../../build/mcprod4a.root"); // data.root
+  TFile *mcfile = TFile::Open("../../build/mcprod4a_0721_nominal.root");
+  TFile *datafile = TFile::Open("../../build/data_0721_nominal.root"); // data.root
   
   int cut = 4;
   TH1D *data_dist = (TH1D*)datafile->Get(Form("hreco_trklen_%d_0", cut));
@@ -106,10 +106,17 @@ void muon_reweight(){
   vector<double> fom_list;
   double selw = 1.;
   double minfom = 999.;
-  for (double w = 0.9; w <= 1.1; w+=0.01) {
+  TGraph* cur = new TGraph();
+  int pi = 0;
+  double minw = 1.6;
+  double maxw = 1.8;
+  double stepw = 0.005;
+  for (double w = minw; w <= maxw; w+=stepw) {
     double fom = calchi2(w, data_dist, mc_dist_sep, hdata, hmc, hmc0);
     fom_list.push_back(fom);
     //cout<<fom<<", "; // python list format for plotting
+    cur->SetPoint(pi, w, fom);
+    ++pi;
     cout<<"weight = "<<w<<"\t fom = "<<fom<<endl;
     if (fom<minfom) {
       minfom = fom;
@@ -117,4 +124,17 @@ void muon_reweight(){
     }
   }
   calchi2(selw, data_dist, mc_dist_sep, hdata, hmc, hmc0, true);
+  
+  TCanvas* c2 = new TCanvas("c2","c2");
+  cur->GetXaxis()->SetTitle("Muon weight");
+  cur->GetYaxis()->SetTitle("Chi2/Ndf");
+  cur->Draw();
+  TLine *minline = new TLine(minw, minfom, maxw, minfom);
+  minline->SetLineColor(kRed);
+  minline->Draw("same");
+  TLine *errline = new TLine(minw, minfom+1./(boundbin+1), maxw, minfom+1./(boundbin+1));
+  errline->SetLineColor(kRed);
+  errline->SetLineStyle(2);
+  errline->Draw("same");
+  c2->Print("muon_reweight_curve.png");
 }
