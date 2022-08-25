@@ -6,6 +6,7 @@
 #include "HadAna.h"
 #include "Unfold.h"
 #include "BetheBloch.h"
+#include "TRandom3.h"
 
 class anavar;
 class HadAna;
@@ -19,6 +20,7 @@ class ThinSlice {
   HadAna hadana;
   BetheBloch bb;
   BetheBloch bb_mu;
+  TRandom3 *grdm = new TRandom3(1); // fixed seed
 
   int reco_sliceID;
   int reco_end_sliceID; // differ with reco_sliceID if reco_beam_calo_endZ > 220

@@ -3,7 +3,6 @@
 #include "anavar.h"
 #include "TGraphErrors.h"
 #include "TVector3.h"
-#include "TRandom3.h"
 #include "RooUnfoldBayes.h"
 #include "RooUnfoldSvd.h"
 #include "util.h"
@@ -278,13 +277,12 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
   int_energy_reco = -999999.;
   int_energy_true = -999999.;
 
-  TRandom3 *r3 = new TRandom3(1); // fixed seed
-  double rdm_gaus = 0;//r3->Gaus(20,40);
+  double rdm_gaus = 0;//grdm->Gaus(20,40);
   isTestSample = (hadana.pitype == pi::kData) && evt.MC; // fake data
   //if (evt.MC && evt.event%2 == 0) isTestSample = false;
   beam_inst_P = evt.beam_inst_P;
   if (evt.MC) {
-    beam_inst_P += r3->Gaus(0,0.017756843); // data: (1.00947, 0.0727443) MC_rew: (1.01932, 0.0705438)
+    beam_inst_P += grdm->Gaus(0,0.017756843); // data: (1.00947, 0.0727443) MC_rew: (1.01932, 0.0705438)
   }
   
   double pimass = 139.57;
@@ -500,16 +498,26 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
   }
   // ignore incomplete slices
   if (true_sliceID < true_ini_sliceID) {
-    //return;
     true_sliceID = -1;
     true_ini_sliceID = -1;
   }
-  if (reco_sliceID < reco_ini_sliceID) {
-    //return;
-    reco_sliceID = -1;
-    reco_ini_sliceID = -1;
-    reco_end_sliceID = -1;
+  if (reco_sliceID != -1) {
+    if (reco_sliceID!=reco_end_sliceID) cout<<"@@@ check1"<<endl;
+    if (reco_sliceID < reco_ini_sliceID) {
+      reco_sliceID = -1;
+      reco_ini_sliceID = -1;
+      reco_end_sliceID = -1;
+    }
   }
+  else {
+    if (evt.reco_beam_calo_endZ <= 220) cout<<"@@@ check2"<<endl;
+    if (reco_end_sliceID <= reco_ini_sliceID) {
+      reco_sliceID = -1;
+      reco_ini_sliceID = -1;
+      reco_end_sliceID = -1;
+    }
+  }
+  
   // upstream interactions
   if (ini_energy_true == -999999) true_ini_sliceID = pi::true_nbins-2;
   if (int_energy_true == -999999) true_sliceID = pi::true_nbins-2;
@@ -518,6 +526,17 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
     reco_sliceID = pi::reco_nbins-2;
     reco_end_sliceID = pi::reco_nbins-2;
   }
+  if (ini_energy_true == -999999 && true_ini_sliceID != pi::true_nbins-2) cout<<"$$$check1"<<endl;
+  if (ini_energy_true == -999999 && int_energy_true != -999999) cout<<"$$$check2"<<endl;
+  if (ini_energy_true != -999999 && int_energy_true == -999999) cout<<"$$$check3"<<endl;
+  if (int_energy_true == -999999 && true_sliceID != pi::true_nbins-2) cout<<"$$$check4"<<endl;
+  if (ini_energy_reco == -999999 && reco_ini_sliceID != pi::reco_nbins-2) cout<<"$$$check5"<<endl;
+  if (ini_energy_reco == -999999 && int_energy_reco != -999999) cout<<"$$$check6"<<endl;
+  if (ini_energy_reco != -999999 && int_energy_reco == -999999) cout<<"$$$check7"<<endl;
+  if (int_energy_reco == -999999 && reco_sliceID != pi::reco_nbins-2) cout<<"$$$check8"<<endl;
+  //if (int_energy_true == -999999 && int_energy_reco != -999999) cout<<"$$$check9"<<endl; //possible
+  //if (int_energy_true != -999999 && int_energy_reco == -999999) cout<<"$$$checka"<<endl; //possible
+
   // compare Eint
   if (hadana.PassPiCuts(evt)) {
     double int_E_leng = bb.KEAtLength(ff_energy_reco, hadana.reco_trklen);
