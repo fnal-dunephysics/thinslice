@@ -43,7 +43,7 @@ class HadAna{
   bool PassBeamQualityCut(const anavar& evt, bool has_angle_cut = true, bool has_beam_cut = true) const;
   bool PassAPA3Cut(const anavar& evt) const;
   bool PassCaloSizeCut(const anavar& evt) const;
-  bool PassMichelScoreCut() const;
+  bool PassMichelScoreCut(const anavar& evt) const;
   bool PassProtonCut() const;
 
   bool PassPiCuts(const anavar& evt) const;

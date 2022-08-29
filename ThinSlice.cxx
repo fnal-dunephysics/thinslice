@@ -313,22 +313,36 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
           h_upstream_Eloss_mu->Fill(beam_inst_KE_mu - ff_energy_true);
         }
         
-        int traj_max = evt.true_beam_traj_Z->size()-1;
-        if ((*evt.true_beam_traj_KE)[traj_max] != 0) {
-          int_energy_true = (*evt.true_beam_traj_KE)[traj_max];
+        int start_idx = -1;
+        for (int i=0; i<evt.true_beam_traj_Z->size(); i++){
+          if (hadana.true_trklen_accum[i] > pi::fidvol_low){
+            start_idx = i;
+            //if (start_idx <= 0) start_idx = -1;
+            break;
+          }
         }
-        else {
-          int temp = traj_max-1;
-          while ((*evt.true_beam_traj_KE)[temp] == 0) temp--;
-          //int_energy_true = bb.KEAtLength((*evt.true_beam_traj_KE)[temp], (hadana.true_trklen_accum)[traj_max]-(hadana.true_trklen_accum)[temp]);
-          int_energy_true = (*evt.true_beam_traj_KE)[temp] - 2.1*((hadana.true_trklen_accum)[traj_max]-(hadana.true_trklen_accum)[temp]); // 2.1 MeV/cm
-          //cout<<"int_energy_true"<<(*evt.true_beam_traj_KE)[temp]<<"\t"<<sqrt(pow(evt.true_beam_endP*1000,2)+pow(139.57,2)) - 139.57<<endl; // almost the same
+        if (start_idx > 0 && (*evt.true_beam_traj_KE)[start_idx]!=0) {
+          ini_energy_true = (*evt.true_beam_traj_KE)[start_idx];
+          //if (ini_energy_true == 0) cout<<"@@@ check 1"<<endl;
+          
+          int traj_max = evt.true_beam_traj_Z->size()-1;
+          if ((*evt.true_beam_traj_KE)[traj_max] != 0) {
+            int_energy_true = (*evt.true_beam_traj_KE)[traj_max];
+          }
+          else {
+            int temp = traj_max-1;
+            while ((*evt.true_beam_traj_KE)[temp] == 0) temp--;
+            //int_energy_true = bb.KEAtLength((*evt.true_beam_traj_KE)[temp], (hadana.true_trklen_accum)[traj_max]-(hadana.true_trklen_accum)[temp]);
+            int_energy_true = (*evt.true_beam_traj_KE)[temp];// - 2.1*((hadana.true_trklen_accum)[traj_max]-(hadana.true_trklen_accum)[temp]); // 2.1 MeV/cm
+            //cout<<"int_energy_true"<<(*evt.true_beam_traj_KE)[temp]<<"\t"<<sqrt(pow(evt.true_beam_endP*1000,2)+pow(139.57,2)) - 139.57<<endl; // almost the same
+          }
         }
+        //ini_energy_true = ff_energy_true;
+        
         double int_energy_true_trklen = bb.KEAtLength(ff_energy_true, hadana.true_trklen);
         h_diff_Eint->Fill(int_energy_true_trklen - int_energy_true);
         h_diff_Eint_vs_true_Eint->Fill(int_energy_true, int_energy_true_trklen - int_energy_true);
       }
-      ini_energy_true = ff_energy_true;
       if (isTestSample) {
         ff_energy_true += rdm_gaus;
         ini_energy_true += rdm_gaus;
@@ -354,7 +368,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
       /*if (true_sliceID < true_ini_sliceID) {
         true_ini_sliceID = -1;
         true_sliceID = -1;
-        //if (hadana.reco_trklen>30) cout<<"@@@@@"<<hadana.reco_trklen<<"\t"<<hadana.true_trklen<<endl;
+        //if (hadana.reco_trklen>pi::fidvol_low) cout<<"@@@@@"<<hadana.reco_trklen<<"\t"<<hadana.true_trklen<<endl;
       } // if true_sliceID==-1, this event should not be used when calculating true XS (but should it be used in unfolding???)*/
 
       if (evt.true_beam_PDG == 211){
@@ -444,11 +458,16 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
       else if (beam_inst_KE < 900) ff_energy_reco = beam_inst_KE - 11.87; // 11.87 \pm 0.22
       else if (beam_inst_KE < 950) ff_energy_reco = beam_inst_KE - 17.31; // 17.31 \pm 0.27
       else ff_energy_reco = beam_inst_KE - 29.28; // 29.28 \pm 0.37*/
-      if (hadana.reco_trklen>0) {
-        int_energy_reco = bb.KEAtLength(ff_energy_reco, hadana.reco_trklen);
-      }
+
       // reco initial sliceID
-      ini_energy_reco = ff_energy_reco;
+      if (hadana.reco_trklen > pi::fidvol_low) {
+        int idx = 0;
+        for (; hadana.reco_trklen_accum[idx]<pi::fidvol_low; ++idx) {}
+        ini_energy_reco = bb.KEAtLength(ff_energy_reco, hadana.reco_trklen_accum[idx]);
+        int_energy_reco = bb.KEAtLength(ff_energy_reco, hadana.reco_trklen);
+        if (hadana.reco_trklen<=0) cout<<"@@@ check 8"<<endl;
+      }
+      //ini_energy_reco = ff_energy_reco;
       for (reco_ini_sliceID=0; reco_ini_sliceID<pi::reco_nbins-2; ++reco_ini_sliceID) {
         if (ini_energy_reco > pi::reco_KE[reco_ini_sliceID]) break;
       }
@@ -475,9 +494,9 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
         reco_sliceID = -1;
       } // if reco_sliceID==-1, this event should not be used when calculating reco XS*/
       reco_end_sliceID = reco_sliceID;
-      if (evt.reco_beam_calo_endZ > 220) { // APA3 cut
+      if (evt.reco_beam_calo_endZ > pi::fidvol_upp) { // APA3 cut
         int idx = evt.reco_beam_calo_Z->size()-1;
-        for (; (*evt.reco_beam_calo_Z)[idx]>220; --idx) {}
+        for (; (*evt.reco_beam_calo_Z)[idx]>pi::fidvol_upp; --idx) {}
         double energy_reco = bb.KEAtLength(ff_energy_reco, hadana.reco_trklen_accum[idx]);
         if (idx >= 0) {
           //reco_end_sliceID = int(floor( (pi::plim-energy_reco)/pi::Eslicewidth )) - 1;
@@ -486,7 +505,8 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
           }
           reco_sliceID = -1;
         }
-        else { // evt.reco_beam_calo_startZ > 220
+        else { // evt.reco_beam_calo_startZ > pi::fidvol_upp
+          //cout<<"### check a "<<evt.true_beam_PDG<<"\t"<<evt.reco_beam_true_byE_matched<<endl;
           reco_ini_sliceID = -1;
           reco_end_sliceID = -1;
           reco_sliceID = -1;
@@ -510,7 +530,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
     }
   }
   else {
-    if (evt.reco_beam_calo_endZ <= 220) cout<<"@@@ check2"<<endl;
+    if (evt.reco_beam_calo_endZ <= pi::fidvol_upp) cout<<"@@@ check2"<<endl;
     if (reco_end_sliceID <= reco_ini_sliceID) {
       reco_sliceID = -1;
       reco_ini_sliceID = -1;
@@ -519,21 +539,21 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
   }
   
   // upstream interactions
-  if (ini_energy_true == -999999) true_ini_sliceID = pi::true_nbins-2;
-  if (int_energy_true == -999999) true_sliceID = pi::true_nbins-2;
-  if (ini_energy_reco == -999999) reco_ini_sliceID = pi::reco_nbins-2;
+  if (ini_energy_true == -999999) true_ini_sliceID = 0;
+  if (int_energy_true == -999999) true_sliceID = 0;
+  if (ini_energy_reco == -999999) reco_ini_sliceID = 0;
   if (int_energy_reco == -999999) {
-    reco_sliceID = pi::reco_nbins-2;
-    reco_end_sliceID = pi::reco_nbins-2;
+    reco_sliceID = 0;
+    reco_end_sliceID = 0;
   }
-  if (ini_energy_true == -999999 && true_ini_sliceID != pi::true_nbins-2) cout<<"$$$check1"<<endl;
+  if (ini_energy_true == -999999 && true_ini_sliceID != 0) cout<<"$$$check1"<<endl;
   if (ini_energy_true == -999999 && int_energy_true != -999999) cout<<"$$$check2"<<endl;
   if (ini_energy_true != -999999 && int_energy_true == -999999) cout<<"$$$check3"<<endl;
-  if (int_energy_true == -999999 && true_sliceID != pi::true_nbins-2) cout<<"$$$check4"<<endl;
-  if (ini_energy_reco == -999999 && reco_ini_sliceID != pi::reco_nbins-2) cout<<"$$$check5"<<endl;
+  if (int_energy_true == -999999 && true_sliceID != 0) cout<<"$$$check4"<<endl;
+  if (ini_energy_reco == -999999 && reco_ini_sliceID != 0) cout<<"$$$check5"<<endl;
   if (ini_energy_reco == -999999 && int_energy_reco != -999999) cout<<"$$$check6"<<endl;
   if (ini_energy_reco != -999999 && int_energy_reco == -999999) cout<<"$$$check7"<<endl;
-  if (int_energy_reco == -999999 && reco_sliceID != pi::reco_nbins-2) cout<<"$$$check8"<<endl;
+  if (int_energy_reco == -999999 && reco_sliceID != 0) cout<<"$$$check8"<<endl;
   //if (int_energy_true == -999999 && int_energy_reco != -999999) cout<<"$$$check9"<<endl; //possible
   //if (int_energy_true != -999999 && int_energy_reco == -999999) cout<<"$$$checka"<<endl; //possible
 
@@ -547,7 +567,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
   }
   // Fill slice ID histograms
   if (evt.MC){
-    if (evt.true_beam_PDG == 211 && hadana.true_trklen > 0){ // true pion beam entering the TPC
+    if (evt.true_beam_PDG == 211 && hadana.true_trklen > pi::fidvol_low){ // true pion beam entering the fiducial volume
       double true_int_sliceID = true_sliceID;
       double reco_int_sliceID = reco_sliceID;
       if (!((*evt.true_beam_endProcess) == "pi+Inelastic")) {
@@ -716,10 +736,10 @@ void ThinSlice::FillHistograms(int cut, const anavar & evt, double weight){
       double beam_inst_KE_mu = sqrt(pow(beam_inst_P*1000,2)+pow(mumass,2)) - mumass;
       double int_E_leng = bb.KEAtLength(ff_energy_reco, hadana.reco_trklen);
       double int_E_calo = (*evt.reco_beam_incidentEnergies)[0]-13-hadana.energy_calorimetry_SCE;
-      FillHistVec1D(hini_recoE[cut], beam_inst_KE-13, hadana.pitype, weight);
-      FillHistVec1D(hint_recoE[cut], int_E_leng, hadana.pitype, weight);
-      FillHistVec1D(hini_trueE[cut], hadana.true_ffKE, hadana.pitype, weight);
-      FillHistVec1D(hint_trueE[cut], int_E_calo, hadana.pitype, weight);
+      FillHistVec1D(hini_recoE[cut], ini_energy_reco, hadana.pitype, weight);
+      FillHistVec1D(hint_recoE[cut], int_energy_reco, hadana.pitype, weight);
+      FillHistVec1D(hini_trueE[cut], ini_energy_true, hadana.pitype, weight);
+      FillHistVec1D(hint_trueE[cut], int_energy_true, hadana.pitype, weight);
       FillHistVec1D(hreco_trklen[cut], hadana.reco_trklen, hadana.pitype, weight);
       FillHistVec1D(htrue_trklen[cut], hadana.true_trklen, hadana.pitype, weight);
       FillHistVec1D(hdiff_trklen[cut], hadana.reco_trklen - hadana.true_trklen, hadana.pitype, weight);
@@ -1009,13 +1029,16 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
         FillHistograms(pi::kCaloSize, evt, weight);
         if (hadana.PassBeamQualityCut(evt)){
           FillHistograms(pi::kBeamQuality, evt, weight);
+          if (ff_energy_reco == -999999) cout<<"### check 1"<<endl;
           if (hadana.PassProtonCut()){
             FillHistograms(pi::kProtonCut, evt, weight);
-            if (hadana.PassMichelScoreCut()){
+            if (hadana.PassMichelScoreCut(evt)){
               FillHistograms(pi::kMichelScore, evt, weight);
+              if (ff_energy_reco == -999999) cout<<"### check 2"<<endl;
               if (hadana.PassAPA3Cut(evt)){
                 FillHistograms(pi::kAPA3, evt, weight);
-                
+                if (ff_energy_reco == -999999) cout<<"### check 3"<<endl;
+                //if (hadana.reco_trklen<pi::fidvol_low) cout<<"$$$$$ "<<evt.reco_beam_calo_startZ<<"\t"<<evt.reco_beam_calo_endZ<<endl;
               }
             }
           }
@@ -1025,10 +1048,10 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
           if (hadana.PassBeamQualityCut(evt) && hadana.PassProtonCut()) { // to constrain muon
             FillSliceHist(evt, 1, weight);
           }
-          if (hadana.PassBeamQualityCut(evt) && hadana.PassMichelScoreCut()) { // to constrain proton
+          if (hadana.PassBeamQualityCut(evt) && hadana.PassMichelScoreCut(evt)) { // to constrain proton
             FillSliceHist(evt, 2, weight);
           }
-          if (hadana.PassBeamQualityCut(evt, false) && hadana.PassProtonCut() && hadana.PassMichelScoreCut()) { // to constrain secondary pion
+          if (hadana.PassBeamQualityCut(evt, false) && hadana.PassProtonCut() && hadana.PassMichelScoreCut(evt)) { // to constrain secondary pion
             FillSliceHist(evt, 3, weight);
           }
         }

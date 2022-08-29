@@ -1,7 +1,9 @@
 import os
 
-for i in range(20):
+for i in range(1):
     os.system("./../install/bin/RunCrossSection -c ../json/config.json")
+    os.system("./../install/bin/BackgroundFit -c ../json/bkgfitMC.json")
     os.system("./../install/bin/BackgroundFit -c ../json/bkgfit.json")
-    os.system("./../install/bin/RunCalcXS -c ../json/xs.json")
-    os.system("root -b -q ../macros/pion/plotXS_data.C")
+    os.system("(./../install/bin/RunCalcXS -c ../json/xsMC.json > log1.txt 2>&1 &)")
+    os.system("(./../install/bin/RunCalcXS -c ../json/xs.json > log2.txt 2>&1 &)")
+    #os.system("root -b -q ../macros/pion/plotXS_data.C")

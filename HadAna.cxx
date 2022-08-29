@@ -207,8 +207,12 @@ bool HadAna::PassBeamQualityCut(const anavar& evt, bool has_angle_cut, bool has_
       return false;
   }
   
-  if (has_beam_cut) { // currently it's hard coded MC values
-    double dxy = pow( (evt.beam_inst_X-beam_startX_mc_inst)/beam_startX_rms_mc_inst, 2) + pow( (evt.beam_inst_Y-beam_startY_mc_inst)/beam_startY_rms_mc_inst, 2);
+  if (has_beam_cut) {
+    double dxy;
+    if (evt.MC)
+      dxy = pow( (evt.beam_inst_X-beam_startX_mc_inst)/beam_startX_rms_mc_inst, 2) + pow( (evt.beam_inst_Y-beam_startY_mc_inst)/beam_startY_rms_mc_inst, 2);
+    else
+      dxy = pow( (evt.beam_inst_X-beam_startX_data_inst)/beam_startX_rms_data_inst, 2) + pow( (evt.beam_inst_Y-beam_startY_data_inst)/beam_startY_rms_data_inst, 2);
     if (dxy > 4.5)
       return false;
   }
@@ -217,10 +221,10 @@ bool HadAna::PassBeamQualityCut(const anavar& evt, bool has_angle_cut, bool has_
 }
 
 bool HadAna::PassAPA3Cut(const anavar& evt) const{ // only use track in the first TPC
-  return true;
-  if (evt.reco_beam_calo_endZ > 220) return false;
-  //if (reco_trklen > 220) return false;
-  //if (reco_trklen < 30) return false;
+  //return true;
+  //if (evt.reco_beam_calo_endZ > pi::fidvol_upp) return false;
+  //if (reco_trklen > pi::fidvol_upp) return false;
+  if (reco_trklen < pi::fidvol_low) return false;
   return true;
 }
 
@@ -230,8 +234,9 @@ bool HadAna::PassCaloSizeCut(const anavar& evt) const{ // Require hits informati
   else return !(evt.reco_beam_calo_wire->empty());
 }
 
-bool HadAna::PassMichelScoreCut() const{ // further veto muon tracks according to Michel score
+bool HadAna::PassMichelScoreCut(const anavar& evt) const{ // further veto muon tracks according to Michel score
   //return true;
+  if (evt.reco_beam_calo_endZ>220&&evt.reco_beam_calo_endZ<230) return true;
   return daughter_michel_score < 0.55;
 }
 
@@ -245,7 +250,7 @@ bool HadAna::PassPiCuts(const anavar& evt) const{
     PassCaloSizeCut(evt)&&
     PassBeamQualityCut(evt)&&
     PassAPA3Cut(evt)&&
-    PassMichelScoreCut()&&
+    PassMichelScoreCut(evt)&&
     PassProtonCut();
 }
 
@@ -389,7 +394,7 @@ void HadAna::ProcessEvent(const anavar& evt){
     true_trklen_accum.reserve(evt.true_beam_traj_Z->size()); // initialize true_trklen_accum
     for (int i=0; i<evt.true_beam_traj_Z->size(); i++){
       if ((*evt.true_beam_traj_Z)[i] >= 0){
-        start_idx = i-1; // the trajectory point before entering the TPC
+        start_idx = i; // the trajectory point after entering the TPC
         if (start_idx < 0) start_idx = -1;
         break;
       }
@@ -427,7 +432,7 @@ void HadAna::ProcessEvent(const anavar& evt){
     }
     // front-face energy
     true_ffKE = -999999.;
-    if (start_idx >= 0) true_ffKE = (*evt.true_beam_traj_KE)[start_idx+1] + 2.18*(true_trklen_accum)[start_idx+1];
+    if (start_idx >= 0) true_ffKE = (*evt.true_beam_traj_KE)[start_idx];// + 2.18*(true_trklen_accum)[start_idx+1];
   }
   
   energy_calorimetry_SCE = 0; //MeV

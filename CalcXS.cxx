@@ -455,7 +455,7 @@ int main(int argc, char** argv){
   
   // unfolding
   RooUnfoldResponse *response_SliceID_3D = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
-  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 10);
+  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 0);
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
   RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 10);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
@@ -478,14 +478,14 @@ int main(int argc, char** argv){
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
   //hsigini_uf->Scale(hsiginc_uf->Integral()/hsigini_uf->Integral());
-  hsigini_uf = (TH1D*)hsig3D_uf->Project3D("x");
+  /*hsigini_uf = (TH1D*)hsig3D_uf->Project3D("x");
   hsiginc_uf = (TH1D*)hsig3D_uf->Project3D("y");
   hsignal_uf = (TH1D*)hsig3D_uf->Project3D("z");
   hsigini_uf->SetNameTitle("hsigini_uf","hsigini_uf");
   hsiginc_uf->SetNameTitle("hsiginc_uf","hsiginc_uf");
   hsignal_uf->SetNameTitle("hsignal_uf","hsignal_uf");
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
-  cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
+  cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;*/
   
   TMatrixD cov_matrix_inc = unfold_Inc.Ereco();
   TH2D *covariance_inc = new TH2D(cov_matrix_inc);
