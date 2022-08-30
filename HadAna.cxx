@@ -393,12 +393,12 @@ void HadAna::ProcessEvent(const anavar& evt){
     int start_idx = -1;
     true_trklen_accum.reserve(evt.true_beam_traj_Z->size()); // initialize true_trklen_accum
     for (int i=0; i<evt.true_beam_traj_Z->size(); i++){
+      true_trklen_accum[i] = 0.; // initialize true_trklen_accum
       if ((*evt.true_beam_traj_Z)[i] >= 0){
         start_idx = i; // the trajectory point after entering the TPC
         if (start_idx < 0) start_idx = -1;
         break;
       }
-      true_trklen_accum[i] = 0.; // initialize true_trklen_accum
     }
     true_trklen = -1999; // initialize
     if (start_idx >= 0){
@@ -418,12 +418,14 @@ void HadAna::ProcessEvent(const anavar& evt){
         true_trklen_accum[i] = true_trklen;
       }
     }
+    //if ((*evt.true_beam_traj_KE)[evt.true_beam_traj_Z->size()-1]!=0) cout<<evt.true_beam_PDG<<*evt.true_beam_endProcess<<endl; //all Decay
+    //cout<<(*evt.true_beam_traj_KE)[evt.true_beam_traj_Z->size()-3]<<"\t"<<(*evt.true_beam_traj_KE)[evt.true_beam_traj_Z->size()-2]<<"\t"<<(*evt.true_beam_traj_KE)[evt.true_beam_traj_Z->size()-1]<<endl;
 
     // calculate reco track length
     reco_trklen_accum.reserve(evt.reco_beam_calo_Z->size());
     reco_trklen = -1999;
     for (int i=1; i<evt.reco_beam_calo_Z->size(); i++){
-      if (i == 1) reco_trklen = 0;
+      if (i == 1) {reco_trklen = 0; reco_trklen_accum[0] = 0;}
       reco_trklen += sqrt( pow( (*evt.reco_beam_calo_X)[i]-(*evt.reco_beam_calo_X)[i-1], 2)
                           + pow( (*evt.reco_beam_calo_Y)[i]-(*evt.reco_beam_calo_Y)[i-1], 2)
                           + pow( (*evt.reco_beam_calo_Z)[i]-(*evt.reco_beam_calo_Z)[i-1], 2)

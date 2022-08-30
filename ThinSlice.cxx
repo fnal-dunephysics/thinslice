@@ -168,13 +168,13 @@ void ThinSlice::BookHistograms(){
       hreco_beam_true_byE_matched[i][j] = new TH1D(Form("hreco_beam_true_byE_matched_%d_%d",i,j), Form("reco_beam_true_byE_matched, %s, %s;Truth matched", pi::cutName[i], pi::intTypeName[j]), 2, 0, 2);
       hreco_beam_true_byE_matched[i][j]->Sumw2();
       //const double xbins[25] = {-10.,0.,10.,20.,30.,40.,50.,60.,70.,80.,90.,100.,110.,120.,130.,140.,150.,160.,170.,180.,190.,200.,210.,220.,600}; // a user-defined binning
-      hini_recoE[i][j] = new TH1D(Form("hini_recoE_%d_%d",i,j), Form("ini_recoE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 150, -50, 1450);
+      hini_recoE[i][j] = new TH1D(Form("hini_recoE_%d_%d",i,j), Form("ini_recoE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 22, -50, 1050);
       hini_recoE[i][j]->Sumw2();
-      hint_recoE[i][j] = new TH1D(Form("hint_recoE_%d_%d",i,j), Form("int_recoE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 220, -50, 1050);
+      hint_recoE[i][j] = new TH1D(Form("hint_recoE_%d_%d",i,j), Form("int_recoE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 22, -50, 1050);
       hint_recoE[i][j]->Sumw2();
-      hini_trueE[i][j] = new TH1D(Form("hini_trueE_%d_%d",i,j), Form("ini_trueE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 150, -50, 1450);
+      hini_trueE[i][j] = new TH1D(Form("hini_trueE_%d_%d",i,j), Form("ini_trueE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 22, -50, 1050);
       hini_trueE[i][j]->Sumw2();
-      hint_trueE[i][j] = new TH1D(Form("hint_trueE_%d_%d",i,j), Form("int_trueE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 220, -50, 1050);
+      hint_trueE[i][j] = new TH1D(Form("hint_trueE_%d_%d",i,j), Form("int_trueE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 22, -50, 1050);
       hint_trueE[i][j]->Sumw2();
       //hreco_trklen[i][j] = new TH1D(Form("hreco_trklen_%d_%d",i,j), Form("reco_trklen, %s, %s;Track length (cm)", pi::cutName[i], pi::intTypeName[j]), 24, xbins);
       hreco_trklen[i][j] = new TH1D(Form("hreco_trklen_%d_%d",i,j), Form("reco_trklen, %s, %s;Track length (cm)", pi::cutName[i], pi::intTypeName[j]), 61, -10, 600);
@@ -282,7 +282,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
   //if (evt.MC && evt.event%2 == 0) isTestSample = false;
   beam_inst_P = evt.beam_inst_P;
   if (evt.MC) {
-    beam_inst_P += grdm->Gaus(0,0.017756843); // data: (1.00947, 0.0727443) MC_rew: (1.01932, 0.0705438)
+    beam_inst_P += grdm->Gaus(-0.00985,0.017756843); // data: (1.00947, 0.0727443) MC_rew: (1.01932, 0.0705438)
   }
   
   double pimass = 139.57;
@@ -321,21 +321,27 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
             break;
           }
         }
-        if (start_idx > 0 && (*evt.true_beam_traj_KE)[start_idx]!=0) {
+        if (start_idx > 0) {
+          /*if ((*evt.true_beam_traj_KE)[start_idx]==0) {
+            cout<<start_idx<<"\t"<<evt.true_beam_traj_Z->size()<<"\t"<<hadana.true_trklen_accum[start_idx-1]<<"\t"<<hadana.true_trklen_accum[start_idx]<<"\t"<<hadana.true_trklen_accum[start_idx+1]<<endl;
+          }
           ini_energy_true = (*evt.true_beam_traj_KE)[start_idx];
-          //if (ini_energy_true == 0) cout<<"@@@ check 1"<<endl;
+          //if (ini_energy_true == 0) cout<<"@@@ check 1"<<endl;*/
           
           int traj_max = evt.true_beam_traj_Z->size()-1;
+          int temp = traj_max;
           if ((*evt.true_beam_traj_KE)[traj_max] != 0) {
             int_energy_true = (*evt.true_beam_traj_KE)[traj_max];
           }
           else {
-            int temp = traj_max-1;
+            temp = traj_max-1;
             while ((*evt.true_beam_traj_KE)[temp] == 0) temp--;
             //int_energy_true = bb.KEAtLength((*evt.true_beam_traj_KE)[temp], (hadana.true_trklen_accum)[traj_max]-(hadana.true_trklen_accum)[temp]);
-            int_energy_true = (*evt.true_beam_traj_KE)[temp];// - 2.1*((hadana.true_trklen_accum)[traj_max]-(hadana.true_trklen_accum)[temp]); // 2.1 MeV/cm
+            int_energy_true = (*evt.true_beam_traj_KE)[temp] - 2.1*((hadana.true_trklen_accum)[traj_max]-(hadana.true_trklen_accum)[temp]); // 2.1 MeV/cm
             //cout<<"int_energy_true"<<(*evt.true_beam_traj_KE)[temp]<<"\t"<<sqrt(pow(evt.true_beam_endP*1000,2)+pow(139.57,2)) - 139.57<<endl; // almost the same
           }
+          if (start_idx == traj_max) ini_energy_true = (*evt.true_beam_traj_KE)[temp]; // (*evt.true_beam_traj_KE)[start_idx]==0
+          else ini_energy_true = (*evt.true_beam_traj_KE)[start_idx];
         }
         //ini_energy_true = ff_energy_true;
         
@@ -505,7 +511,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
           }
           reco_sliceID = -1;
         }
-        else { // evt.reco_beam_calo_startZ > pi::fidvol_upp
+        else { // possible: evt.reco_beam_calo_startZ > pi::fidvol_upp
           //cout<<"### check a "<<evt.true_beam_PDG<<"\t"<<evt.reco_beam_true_byE_matched<<endl;
           reco_ini_sliceID = -1;
           reco_end_sliceID = -1;
@@ -523,7 +529,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
   }
   if (reco_sliceID != -1) {
     if (reco_sliceID!=reco_end_sliceID) cout<<"@@@ check1"<<endl;
-    if (reco_sliceID < reco_ini_sliceID) {
+    if (reco_end_sliceID < reco_ini_sliceID) {
       reco_sliceID = -1;
       reco_ini_sliceID = -1;
       reco_end_sliceID = -1;
@@ -531,29 +537,33 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
   }
   else {
     if (evt.reco_beam_calo_endZ <= pi::fidvol_upp) cout<<"@@@ check2"<<endl;
-    if (reco_end_sliceID <= reco_ini_sliceID) {
+    if (reco_end_sliceID < reco_ini_sliceID) { // <=?
+      //cout<<"!chek\t"<<evt.reco_beam_calo_startZ<<"\t"<<ini_energy_reco<<"\t"<<int_energy_reco<<endl;
       reco_sliceID = -1;
       reco_ini_sliceID = -1;
       reco_end_sliceID = -1;
     }
   }
-  
   // upstream interactions
-  if (ini_energy_true == -999999) true_ini_sliceID = 0;
-  if (int_energy_true == -999999) true_sliceID = 0;
-  if (ini_energy_reco == -999999) reco_ini_sliceID = 0;
+  if (ini_energy_true == -999999) true_ini_sliceID = -1;
+  if (int_energy_true == -999999) true_sliceID = -1;
+  if (ini_energy_reco == -999999) reco_ini_sliceID = -1;
   if (int_energy_reco == -999999) {
-    reco_sliceID = 0;
-    reco_end_sliceID = 0;
+    reco_sliceID = -1;
+    reco_end_sliceID = -1;
   }
-  if (ini_energy_true == -999999 && true_ini_sliceID != 0) cout<<"$$$check1"<<endl;
+  //if (true_ini_sliceID == -99 || true_sliceID == -99) cout<<"~t"<<true_ini_sliceID<<" "<<true_sliceID<<endl; //none
+  //if (reco_ini_sliceID == -99 || reco_sliceID == -99) cout<<"~r"<<reco_ini_sliceID<<" "<<reco_sliceID<<endl; //none
+  if (ini_energy_true == -999999 && hadana.true_trklen>=pi::fidvol_low) cout<<"$$$check111"<<endl;
+  if (ini_energy_true != -999999 && hadana.true_trklen<pi::fidvol_low) cout<<"$$$check222"<<endl;
+  if (ini_energy_true == -999999 && true_ini_sliceID != -1) cout<<"$$$check1"<<endl;
   if (ini_energy_true == -999999 && int_energy_true != -999999) cout<<"$$$check2"<<endl;
   if (ini_energy_true != -999999 && int_energy_true == -999999) cout<<"$$$check3"<<endl;
-  if (int_energy_true == -999999 && true_sliceID != 0) cout<<"$$$check4"<<endl;
-  if (ini_energy_reco == -999999 && reco_ini_sliceID != 0) cout<<"$$$check5"<<endl;
+  if (int_energy_true == -999999 && true_sliceID != -1) cout<<"$$$check4"<<endl;
+  if (ini_energy_reco == -999999 && reco_ini_sliceID != -1) cout<<"$$$check5"<<endl;
   if (ini_energy_reco == -999999 && int_energy_reco != -999999) cout<<"$$$check6"<<endl;
   if (ini_energy_reco != -999999 && int_energy_reco == -999999) cout<<"$$$check7"<<endl;
-  if (int_energy_reco == -999999 && reco_sliceID != 0) cout<<"$$$check8"<<endl;
+  if (int_energy_reco == -999999 && reco_sliceID != -1) cout<<"$$$check8"<<endl;
   //if (int_energy_true == -999999 && int_energy_reco != -999999) cout<<"$$$check9"<<endl; //possible
   //if (int_energy_true != -999999 && int_energy_reco == -999999) cout<<"$$$checka"<<endl; //possible
 
