@@ -467,8 +467,14 @@ int main(int argc, char** argv){
   TH1D *hsiginc_uf;
   TH1D *hsignal_uf;
   TH1D *hsigini_uf;
+  
   hsig3D_uf = (TH3D*)unfold_3D.Hreco();
   hsig3D_uf->SetNameTitle("hsig3D_uf", "Unfolded 3D signal;Slice ID;Events");
+  std::filebuf fb;
+  fb.open ("Unfold3DTable.txt",std::ios::out);
+  std::ostream os(&fb);
+  unfold_3D.PrintTable(os);
+  fb.close();
   hsiginc_uf = (TH1D*)unfold_Inc.Hreco();
   hsiginc_uf->SetNameTitle("hsiginc_uf", "Unfolded incident signal;Slice ID;Events");
   hsignal_uf = (TH1D*)unfold_Int.Hreco();
@@ -486,7 +492,23 @@ int main(int argc, char** argv){
   hsignal_uf->SetNameTitle("hsignal_uf","hsignal_uf");
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
-
+  
+  TMatrixD cov_matrix_3D = unfold_3D.Ereco();
+  TH2D *covariance_3D = new TH2D(cov_matrix_3D);
+  covariance_3D->Write("covariance_3D");
+  TH2D *correlation_3D = (TH2D*)covariance_3D->Clone();
+  vector<double> sigma_3D;
+  for (int i=1; i<=covariance_3D->GetNbinsX(); ++i) {
+    sigma_3D.push_back(sqrt(covariance_3D->GetBinContent(i,i)));
+  }
+  for (int i=1; i<=covariance_3D->GetNbinsX(); ++i) {
+    for (int j=1; j<=covariance_3D->GetNbinsY(); ++j) {
+      if (covariance_3D->GetBinContent(i,j) == 0) correlation_3D->SetBinContent(i, j, 0);
+      else correlation_3D->SetBinContent(i, j, covariance_3D->GetBinContent(i,j)/sigma_3D.at(i-1)/sigma_3D.at(j-1));
+    }
+  }
+  correlation_3D->Write("correlation_3D");
+  
   TMatrixD cov_matrix_inc = unfold_Inc.Ereco();
   TH2D *covariance_inc = new TH2D(cov_matrix_inc);
   covariance_inc->Write("covariance_inc");
