@@ -547,23 +547,6 @@ int main(int argc, char** argv){
       else correlation_inc->SetBinContent(i, j, covariance_inc->GetBinContent(i,j)/sigma_inc.at(i-1)/sigma_inc.at(j-1));
     }
   }
-  // Draw correlation matrices option
-  /*const Int_t NRGBs = 3;
-  const Int_t NCont = 200;
-  Double_t stops[NRGBs] = { 0.0, 0.5, 1.0};
-  Double_t red[NRGBs]   = { 0.0, 1.0, 1.0};
-  Double_t green[NRGBs]   = { 0.0, 1.0, 0.0};
-  Double_t blue[NRGBs]   = { 1.0, 1.0, 0.0};
-  TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
-  gStyle->SetNumberContours(NCont);
-  const Double_t mymin = -1;
-  const Double_t mymax = 1;
-  Double_t levels[NCont];
-  for(int i = 1; i < NCont; i++) {
-    levels[i] = mymin + (mymax - mymin) / (NCont - 1) * (i);
-  }
-  levels[0] = -1;
-  correlation_inc->SetContour((sizeof(levels)/sizeof(Double_t)), levels);*/
   correlation_inc->Write("correlation_inc");
   
   TMatrixD cov_matrix_int = unfold_Int.Ereco();
@@ -695,13 +678,53 @@ int main(int argc, char** argv){
   double KE[pi::true_nbins-1] = {0};
   double err_KE[pi::true_nbins-1] = {0};
   double dEdx[pi::true_nbins-1] = {0};
+  TMatrixD mXS(pi::true_nbins-1, 2*(pi::true_nbins-1)); // Jacobian for (Ninc, Nint) to XS
   for (int i = 0; i<pi::true_nbins-1; ++i){
     KE[i] = (pi::true_KE[i]+pi::true_KE[i+1])/2;
     err_KE[i] = (pi::true_KE[i]-pi::true_KE[i+1])/2;
     dEdx[i] = bb.meandEdx(KE[i]); // MeV/cm
     xs[i] = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*log(Ninc[i]/(Ninc[i]-Nint[i]))*1e27;
-    err_xs[i] = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*sqrt(pow(Nint[i]*err_inc[i]/Ninc[i]/(Ninc[i]-Nint[i]),2)+pow(err_int[i]/(Ninc[i]-Nint[i]),2))*1e27;
+    //err_xs[i] = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*sqrt(pow(Nint[i]*err_inc[i]/Ninc[i]/(Ninc[i]-Nint[i]),2)+pow(err_int[i]/(Ninc[i]-Nint[i]),2))*1e27;
+    mXS(i,i) = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*1e27 * (-Nint[i]/Ninc[i])/(Ninc[i]-Nint[i]);
+    mXS(i,i+pi::true_nbins-1) = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*1e27 * 1/(Ninc[i]-Nint[i]);
   }
+  TMatrixD VXS_tmp(pi::true_nbins-1, 2*(pi::true_nbins-1));
+  TMatrixD VXS(pi::true_nbins-1, pi::true_nbins-1);
+  VXS_tmp.Mult(mXS, VNin);
+  VXS.MultT(VXS_tmp, mXS); // (N-1)*(N-1) covariance matrix
+  TH2D *VXS_3D = new TH2D(VXS);
+  VXS_3D->Write("VXS_3D");
+  for (int bi=0; bi<pi::true_nbins-1; ++bi) {
+    err_xs[bi] = sqrt(VXS(bi,bi));
+  }
+  TH2D *corr_matrix_XS = (TH2D*)VXS_3D->Clone(); // correlation matrix
+  for (int i=1; i<=VXS_3D->GetNbinsX(); ++i) {
+    for (int j=1; j<=VXS_3D->GetNbinsY(); ++j) {
+      if (VXS_3D->GetBinContent(i,j) == 0) corr_matrix_XS->SetBinContent(i, j, 0);
+      else corr_matrix_XS->SetBinContent(i, j, VXS_3D->GetBinContent(i,j)/err_xs[i-1]/err_xs[j-1]);
+    }
+  }
+  /// BEGIN draw correlation matrices option
+  /*// (put it in the interactive ROOT)
+  const Int_t NRGBs = 3;
+  const Int_t NCont = 200;
+  Double_t stops[NRGBs] = { 0.0, 0.5, 1.0};
+  Double_t red[NRGBs]   = { 0.0, 1.0, 1.0};
+  Double_t green[NRGBs]   = { 0.0, 1.0, 0.0};
+  Double_t blue[NRGBs]   = { 1.0, 1.0, 0.0};
+  TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+  gStyle->SetNumberContours(NCont);
+  const Double_t mymin = -1;
+  const Double_t mymax = 1;
+  Double_t levels[NCont];
+  for(int i = 1; i < NCont; i++) {
+    levels[i] = mymin + (mymax - mymin) / (NCont - 1) * (i);
+  }
+  levels[0] = -1;
+  corr_matrix_XS->SetContour((sizeof(levels)/sizeof(Double_t)), levels);*/
+  /// END draw correlation matrices option
+  corr_matrix_XS->Write("corr_matrix_XS");
+
   TGraphErrors *gr_recoxs = new TGraphErrors(pi::true_nbins-1, KE, xs, err_KE, err_xs);
   gr_recoxs->SetNameTitle("gr_recoxs", "Reco cross-section;Energy (MeV); Cross-section (mb)");
   gr_recoxs->Write();
