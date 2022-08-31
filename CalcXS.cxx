@@ -790,8 +790,27 @@ int main(int argc, char** argv){
       err_inc_t[i] += pow(hval_trueini->GetBinError(j+2),2);
     }*/
     //err_inc_t[i] = sqrt(err_inc_t[i]);
-    err_inc_t[i] = sqrt(Ninc_t[i]);
+    //err_inc_t[i] = sqrt(Ninc_t[i]);
   }
+  TMatrixD Vhist_t(3*pi::true_nbins, 3*pi::true_nbins); // Vhist_t is diagonal
+  for (int bi=0; bi<pi::true_nbins; ++bi) {
+    int tbi = bi;
+    Vhist_t(tbi,tbi) = pow(hval_trueini->GetBinError(bi+1),2);
+    tbi += pi::true_nbins;
+    Vhist_t(tbi,tbi) = pow(hval_trueinc->GetBinError(bi+1),2);
+    tbi += pi::true_nbins;
+    Vhist_t(tbi,tbi) = pow(hval_trueint->GetBinError(bi+1),2);
+  }
+  TMatrixD VNin_tmp_t(2*(pi::true_nbins-1), 3*pi::true_nbins);
+  TMatrixD VNin_t(2*(pi::true_nbins-1), 2*(pi::true_nbins-1));
+  VNin_tmp_t.Mult(mNin, Vhist_t);
+  VNin_t.MultT(VNin_tmp_t, mNin); // 2(N-1)*2(N-1) covariance matrix
+  TH2D *VNin_3D_t = new TH2D(VNin_t);
+  VNin_3D_t->Write("VNin_3D_t");
+  for (int bi=0; bi<pi::true_nbins-1; ++bi) {
+    err_inc_t[bi] = sqrt(VNin_t(bi,bi));
+  }
+  
   TGraphErrors *gr_inc_t = new TGraphErrors(pi::true_nbins-1, SliceID, Ninc_t, 0, err_inc_t);
   gr_inc_t->SetNameTitle("gr_inc_t", "Incident number;Slice ID;Events");
   gr_inc_t->Write();
@@ -806,10 +825,31 @@ int main(int argc, char** argv){
   gr_ina_t->Write();
   double xs_t[pi::true_nbins-1] = {0};
   double err_xs_t[pi::true_nbins-1] = {0};
+  TMatrixD mXS_t(pi::true_nbins-1, 2*(pi::true_nbins-1)); // Jacobian for (Ninc, Nint) to XS
   for (int i = 0; i<pi::true_nbins-1; ++i){
     xs_t[i] = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*log(Ninc_t[i]/(Ninc_t[i]-Nint_t[i]))*1e27;
-    err_xs_t[i] = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*sqrt(pow(Nint_t[i]*err_inc_t[i]/Ninc_t[i]/(Ninc_t[i]-Nint_t[i]),2)+pow(err_int_t[i]/(Ninc_t[i]-Nint_t[i]),2))*1e27;
+    //err_xs_t[i] = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*sqrt(pow(Nint_t[i]*err_inc_t[i]/Ninc_t[i]/(Ninc_t[i]-Nint_t[i]),2)+pow(err_int_t[i]/(Ninc_t[i]-Nint_t[i]),2))*1e27;
+    mXS_t(i,i) = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*1e27 * (-Nint_t[i]/Ninc_t[i])/(Ninc_t[i]-Nint_t[i]);
+    mXS_t(i,i+pi::true_nbins-1) = dEdx[i]*MAr/(Density*NA*2*err_KE[i])*1e27 * 1/(Ninc_t[i]-Nint_t[i]);
   }
+  TMatrixD VXS_tmp_t(pi::true_nbins-1, 2*(pi::true_nbins-1));
+  TMatrixD VXS_t(pi::true_nbins-1, pi::true_nbins-1);
+  VXS_tmp_t.Mult(mXS_t, VNin_t);
+  VXS_t.MultT(VXS_tmp_t, mXS_t); // (N-1)*(N-1) covariance matrix
+  TH2D *VXS_3D_t = new TH2D(VXS_t);
+  VXS_3D_t->Write("VXS_3D_t");
+  for (int bi=0; bi<pi::true_nbins-1; ++bi) {
+    err_xs_t[bi] = sqrt(VXS_t(bi,bi));
+  }
+  TH2D *corr_matrix_XS_t = (TH2D*)VXS_3D_t->Clone(); // correlation matrix
+  for (int i=1; i<=VXS_3D_t->GetNbinsX(); ++i) {
+    for (int j=1; j<=VXS_3D_t->GetNbinsY(); ++j) {
+      if (VXS_3D_t->GetBinContent(i,j) == 0) corr_matrix_XS_t->SetBinContent(i, j, 0);
+      else corr_matrix_XS_t->SetBinContent(i, j, VXS_3D_t->GetBinContent(i,j)/err_xs_t[i-1]/err_xs_t[j-1]);
+    }
+  }
+  corr_matrix_XS_t->Write("corr_matrix_XS_t");
+  
   TGraphErrors *gr_truexs = new TGraphErrors(pi::true_nbins-1, KE, xs_t, err_KE, err_xs_t);
   gr_truexs->SetNameTitle("gr_truexs", "Reco cross-section;Energy (MeV); Cross-section (mb)");
   gr_truexs->Write();
