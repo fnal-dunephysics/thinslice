@@ -476,20 +476,20 @@ int main(int argc, char** argv){
   unfold_3D.PrintTable(os);
   fb.close();
   hsiginc_uf = (TH1D*)unfold_Inc.Hreco();
-  hsiginc_uf->SetNameTitle("hsiginc_uf", "Unfolded incident signal;Slice ID;Events");
+  //hsiginc_uf->SetNameTitle("hsiginc_uf", "Unfolded incident signal;Slice ID;Events");
   hsignal_uf = (TH1D*)unfold_Int.Hreco();
-  hsignal_uf->SetNameTitle("hsignal_uf", "Unfolded interaction signal;Slice ID;Events");
+  //hsignal_uf->SetNameTitle("hsignal_uf", "Unfolded interaction signal;Slice ID;Events");
   hsigini_uf = (TH1D*)unfold_Ini.Hreco();
-  hsigini_uf->SetNameTitle("hsigini_uf", "Unfolded initial signal;Slice ID;Events");
+  //hsigini_uf->SetNameTitle("hsigini_uf", "Unfolded initial signal;Slice ID;Events");
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
   //hsigini_uf->Scale(hsiginc_uf->Integral()/hsigini_uf->Integral());
   hsigini_uf = (TH1D*)hsig3D_uf->Project3D("x");
   hsiginc_uf = (TH1D*)hsig3D_uf->Project3D("y");
   hsignal_uf = (TH1D*)hsig3D_uf->Project3D("z");
-  hsigini_uf->SetNameTitle("hsigini_uf","hsigini_uf");
-  hsiginc_uf->SetNameTitle("hsiginc_uf","hsiginc_uf");
-  hsignal_uf->SetNameTitle("hsignal_uf","hsignal_uf");
+  hsigini_uf->SetNameTitle("hsigini_uf","Unfolded initial signal;Slice ID;Events");
+  hsiginc_uf->SetNameTitle("hsiginc_uf","Unfolded incident signal;Slice ID;Events");
+  hsignal_uf->SetNameTitle("hsignal_uf","Unfolded interaction signal;Slice ID;Events");
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
   
@@ -508,6 +508,30 @@ int main(int argc, char** argv){
     }
   }
   correlation_3D->Write("correlation_3D");
+  
+  TMatrixD mhist(3*pi::true_nbins, pow(pi::true_nbins,3));
+  for (int bi=0; bi<pow(pi::true_nbins,3); ++bi) {
+    int bix = bi%pi::true_nbins;
+    int biy = (bi/pi::true_nbins)%pi::true_nbins;
+    int biz = (bi/pi::true_nbins/pi::true_nbins)%pi::true_nbins;
+    mhist(bix, bi) = 1;
+    mhist(pi::true_nbins+biy, bi) = 1;
+    mhist(2*pi::true_nbins+biz, bi) = 1;
+  }
+  TMatrixD Vhist_tmp(3*pi::true_nbins, pow(pi::true_nbins,3));
+  TMatrixD Vhist(3*pi::true_nbins, 3*pi::true_nbins);
+  Vhist_tmp.Mult(mhist, cov_matrix_3D);
+  Vhist.MultT(Vhist_tmp, mhist); // 3N*3N covariance matrix
+  TH2D *Vhist_3D = new TH2D(Vhist);
+  Vhist_3D->Write("Vhist_3D");
+  for (int bi=0; bi<pi::true_nbins; ++bi) {
+    int tbi = bi;
+    hsigini_uf->SetBinError(bi+1, sqrt(Vhist(tbi,tbi)));
+    tbi += pi::true_nbins;
+    hsiginc_uf->SetBinError(bi+1, sqrt(Vhist(tbi,tbi)));
+    tbi += pi::true_nbins;
+    hsignal_uf->SetBinError(bi+1, sqrt(Vhist(tbi,tbi)));
+  }
   
   TMatrixD cov_matrix_inc = unfold_Inc.Ereco();
   TH2D *covariance_inc = new TH2D(cov_matrix_inc);
@@ -613,8 +637,35 @@ int main(int argc, char** argv){
       //err_inc[i] += pow(hsigini_uf->GetBinError(j+2),2);
     }*/
     //err_inc[i] = sqrt(err_inc[i]);
-    err_inc[i] = sqrt(Ninc[i]);
+    //err_inc[i] = sqrt(Ninc[i]);
   }
+  // calculate covariance matrix for Ninc and Nint
+  TMatrixD mNin(2*(pi::true_nbins-1), 3*pi::true_nbins);
+  for (int bi=0; bi<pi::true_nbins-1; ++bi) { // Ninc
+    for (int ti=bi+2; ti<pi::true_nbins; ++ti)
+      mNin(bi, ti) = -1;
+    for (int ti=bi+1+pi::true_nbins; ti<2*pi::true_nbins; ++ti)
+      mNin(bi, ti) = 1;
+  }
+  /*for (int bi=0; bi<pi::true_nbins-1; ++bi) { // Ninc (equivalent)
+    for (int ti=1; ti<bi+2; ++ti)
+      mNin(bi, ti) = 1;
+    for (int ti=1+pi::true_nbins; ti<bi+1+pi::true_nbins; ++ti)
+      mNin(bi, ti) = -1;
+  }*/
+  for (int bi=pi::true_nbins-1; bi<2*(pi::true_nbins-1); ++bi) { // Nint
+    mNin(bi, pi::true_nbins+2+bi) = 1;
+  }
+  TMatrixD VNin_tmp(2*(pi::true_nbins-1), 3*pi::true_nbins);
+  TMatrixD VNin(2*(pi::true_nbins-1), 2*(pi::true_nbins-1));
+  VNin_tmp.Mult(mNin, Vhist);
+  VNin.MultT(VNin_tmp, mNin); // 2(N-1)*2(N-1) covariance matrix
+  TH2D *VNin_3D = new TH2D(VNin);
+  VNin_3D->Write("VNin_3D");
+  for (int bi=0; bi<pi::true_nbins-1; ++bi) {
+    err_inc[bi] = sqrt(VNin(bi,bi));
+  }
+  
   TGraphErrors *gr_inc = new TGraphErrors(pi::true_nbins-1, SliceID, Ninc, 0, err_inc);
   gr_inc->SetNameTitle("gr_inc", "Incident number;Slice ID;Events");
   gr_inc->Write();
