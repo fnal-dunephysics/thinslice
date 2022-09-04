@@ -148,6 +148,8 @@ class ThinSlice {
   TH2D *h_diff_reco_true_vs_true_Eint[pi::nCuts][pi::nIntTypes+1];
   TProfile *pf_diff_reco_true_vs_true_Eint[pi::nCuts][pi::nIntTypes+1];
   
+  TH2D *hreco_iniE_trklen[pi::nCuts][pi::nIntTypes+1];
+  
   TH1D *h_beam_inst_KE;
   TH1D *h_true_ffKE;
   TH1D *h_upstream_Eloss;

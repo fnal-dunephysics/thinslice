@@ -225,6 +225,8 @@ void ThinSlice::BookHistograms(){
       h_diff_reco_true_Eint[i][j]->Sumw2();
       h_diff_reco_true_vs_true_Eint[i][j] = new TH2D(Form("h_diff_reco_true_vs_true_Eint_%d_%d",i,j), Form("h_diff_reco_true_vs_true_Eint, %s, %s;MeV", pi::cutName[i], pi::intTypeName[j]), 100, 0, 1000, 100, -300, 300);
       pf_diff_reco_true_vs_true_Eint[i][j] = new TProfile(Form("pf_diff_reco_true_vs_true_Eint_%d_%d",i,j), Form("pf_diff_reco_true_vs_true_Eint, %s, %s;MeV", pi::cutName[i], pi::intTypeName[j]), 100, 0, 1000);
+      
+      hreco_iniE_trklen[i][j] = new TH2D(Form("hreco_iniE_trklen_%d_%d",i,j), Form("hreco_iniE_trklen, %s, %s;MeV", pi::cutName[i], pi::intTypeName[j]), 100, 0, 300, 100, 700, 1100);
     }
   }
   h_test1 = new TH1D("h_test1","h_test1;MeV", 100, -300, 300);
@@ -588,6 +590,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
       if (isTestSample){ // fake data
         h_truesliceid_pion_all->Fill(true_sliceID, weight*g4rw);
         h_trueinisliceid_pion_all->Fill(true_ini_sliceID, weight*g4rw);
+        h_truesliceid_pioninelastic_all->Fill(true_int_sliceID, weight*g4rw);
       }
       else{
         uf.eff_den_Inc->Fill(true_sliceID);
@@ -598,6 +601,8 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
           h_truesliceid_pion_cuts->Fill(true_sliceID, weight*g4rw);
           h_recoinisliceid_pion_cuts->Fill(reco_ini_sliceID, weight*g4rw);
           h_trueinisliceid_pion_cuts->Fill(true_ini_sliceID, weight*g4rw);
+          h_recosliceid_pioninelastic_cuts->Fill(reco_int_sliceID, weight*g4rw);
+          h_truesliceid_pioninelastic_cuts->Fill(true_int_sliceID, weight*g4rw);
         }
         else{
           uf.eff_num_Inc->Fill(true_sliceID);
@@ -617,15 +622,15 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
       
       if ((*evt.true_beam_endProcess) == "pi+Inelastic"){ // true pion beam interaction event (exclude elastics)
         if (isTestSample){
-          h_truesliceid_pioninelastic_all->Fill(true_sliceID, weight*g4rw);
+          //h_truesliceid_pioninelastic_all->Fill(true_sliceID, weight*g4rw);
         }
         else{
           uf.eff_den_Int->Fill(true_sliceID);
         }
         if (hadana.PassPiCuts(evt) && evt.reco_beam_true_byE_matched){
           if (isTestSample){
-            h_recosliceid_pioninelastic_cuts->Fill(reco_sliceID, weight*g4rw);
-            h_truesliceid_pioninelastic_cuts->Fill(true_sliceID, weight*g4rw);
+            //h_recosliceid_pioninelastic_cuts->Fill(reco_sliceID, weight*g4rw);
+            //h_truesliceid_pioninelastic_cuts->Fill(true_sliceID, weight*g4rw);
           }
           else{
             uf.eff_num_Int->Fill(true_sliceID);
@@ -664,6 +669,8 @@ void ThinSlice::FillHistograms(int cut, const anavar & evt, double weight){
       FillHistVec1D(h_diff_reco_true_Eint[cut], int_energy_reco - int_energy_true, hadana.pitype);
       FillHistVec2D(h_diff_reco_true_vs_true_Eint[cut], int_energy_true, int_energy_reco - int_energy_true, hadana.pitype);
       FillProfVec(pf_diff_reco_true_vs_true_Eint[cut], int_energy_true, int_energy_reco - int_energy_true, hadana.pitype);
+      
+      FillHistVec2D(hreco_iniE_trklen[cut], hadana.reco_trklen, ini_energy_reco, hadana.pitype);
       
       FillHistVec1D(htrue_beam_endZ[cut], evt.true_beam_endZ_SCE, hadana.pitype, weight);
       FillHistVec1D(htrue_beam_endZ_SCE[cut], evt.true_beam_endZ, hadana.pitype, weight); // it seems SCE is reversed? and I didn't find true_beam_endZ_SCE on wiki?

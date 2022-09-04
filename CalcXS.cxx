@@ -424,7 +424,6 @@ int main(int argc, char** argv){
   }
 
   TH1D *hsignal = (TH1D*)hdata->Clone("hsignal");
-  hsignal->SetTitle("Pion interaction signal;Slice ID;Events");
   hsignal->Add(hmu,-1);
   hsignal->Add(hproton,-1);
   hsignal->Add(hspi,-1);
@@ -432,14 +431,12 @@ int main(int argc, char** argv){
   hsignal->Add(hother,-1);
   
   TH1D *hsiginc = (TH1D*)hdata_inc->Clone("hsiginc");
-  hsiginc->SetTitle("All pion incident;Slice ID;Events");
   hsiginc->Add(hmu_inc,-1);
   hsiginc->Add(hproton_inc,-1);
   hsiginc->Add(hspi_inc,-1);
   hsiginc->Add(hother_inc,-1);
   
   TH1D *hsigini = (TH1D*)hdata_ini->Clone("hsigini");
-  hsigini->SetTitle("All pion initial;Slice ID;Events");
   hsigini->Add(hmu_ini,-1);
   hsigini->Add(hproton_ini,-1);
   hsigini->Add(hspi_ini,-1);
@@ -463,6 +460,13 @@ int main(int argc, char** argv){
   RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
   RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 10);
   
+  hsigini = (TH1D*)hsig3D->Project3D("x");
+  hsiginc = (TH1D*)hsig3D->Project3D("y");
+  hsignal = (TH1D*)hsig3D->Project3D("z");
+  hsigini->SetNameTitle("hsigini","All pion initial;Slice ID;Events");
+  hsiginc->SetNameTitle("hsiginc","All pion incident;Slice ID;Events");
+  hsignal->SetNameTitle("hsignal","Pion interaction signal;Slice ID;Events");
+  
   TH3D *hsig3D_uf;
   TH1D *hsiginc_uf;
   TH1D *hsignal_uf;
@@ -471,16 +475,13 @@ int main(int argc, char** argv){
   hsig3D_uf = (TH3D*)unfold_3D.Hreco();
   hsig3D_uf->SetNameTitle("hsig3D_uf", "Unfolded 3D signal;Slice ID;Events");
   std::filebuf fb;
-  fb.open ("Unfold3DTable.txt",std::ios::out);
+  fb.open(root["UnfoldTable"].asString().c_str(),std::ios::out);
   std::ostream os(&fb);
   unfold_3D.PrintTable(os);
   fb.close();
   hsiginc_uf = (TH1D*)unfold_Inc.Hreco();
-  //hsiginc_uf->SetNameTitle("hsiginc_uf", "Unfolded incident signal;Slice ID;Events");
   hsignal_uf = (TH1D*)unfold_Int.Hreco();
-  //hsignal_uf->SetNameTitle("hsignal_uf", "Unfolded interaction signal;Slice ID;Events");
   hsigini_uf = (TH1D*)unfold_Ini.Hreco();
-  //hsigini_uf->SetNameTitle("hsigini_uf", "Unfolded initial signal;Slice ID;Events");
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
   //hsigini_uf->Scale(hsiginc_uf->Integral()/hsigini_uf->Integral());

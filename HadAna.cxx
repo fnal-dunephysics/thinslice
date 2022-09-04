@@ -222,7 +222,7 @@ bool HadAna::PassBeamQualityCut(const anavar& evt, bool has_angle_cut, bool has_
 
 bool HadAna::PassAPA3Cut(const anavar& evt) const{ // only use track in the first TPC
   //return true;
-  //if (evt.reco_beam_calo_endZ > pi::fidvol_upp) return false;
+  if (evt.reco_beam_calo_endZ > pi::fidvol_upp) return false;
   //if (reco_trklen > pi::fidvol_upp) return false;
   if (reco_trklen < pi::fidvol_low) return false;
   return true;
@@ -236,7 +236,7 @@ bool HadAna::PassCaloSizeCut(const anavar& evt) const{ // Require hits informati
 
 bool HadAna::PassMichelScoreCut(const anavar& evt) const{ // further veto muon tracks according to Michel score
   //return true;
-  if (evt.reco_beam_calo_endZ>220&&evt.reco_beam_calo_endZ<230) return true;
+  //if (evt.reco_beam_calo_endZ>220&&evt.reco_beam_calo_endZ<230) return true;
   return daughter_michel_score < 0.55;
 }
 

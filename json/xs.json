@@ -2,5 +2,6 @@
     "datafile" : "data.root",
     "mcfile" : "mcprod4a.root",
     "bkgfile" : "bkgfits.root",
-    "outfile" : "XS.root"
+    "outfile" : "XS.root",
+    "UnfoldTable" : "Unfold3DTable_data.txt"
 }
