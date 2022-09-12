@@ -116,15 +116,15 @@ void ThinSlice::BookHistograms(){
       hdaughter_michel_scorePi[i][j] = new TH1D(Form("hdaughter_michel_scorePi_%d_%d",i,j), Form("daughter_michel_scorePi, %s, %s;Michel score", pi::cutName[i], pi::intTypeName[j]), 10, 0, 1);
       hdaughter_michel_scorePi[i][j]->Sumw2();
 
-      hmediandEdx_bkg[i][j] = new TH1D(Form("hmediandEdx_bkg_%d_%d",i,j), Form("mediandEdx_bkg, %s, %s;Median dE/dx (MeV/cm)", pi::cutName[i], pi::intTypeName[j]), 100, 0, 8);
+      hmediandEdx_bkg[i][j] = new TH1D(Form("hmediandEdx_bkg_%d_%d",i,j), Form("mediandEdx_bkg, %s, %s;Median dE/dx (MeV/cm)", pi::cutName[i], pi::intTypeName[j]), 30, 0, 8);
       hmediandEdx_bkg[i][j]->Sumw2();
-      hChi2_proton_bkg[i][j] = new TH1D(Form("hChi2_proton_bkg_%d_%d",i,j), Form("Chi2_proton_bkg, %s, %s;Chi2/Ndof", pi::cutName[i], pi::intTypeName[j]), 100, 0, 100);
+      hChi2_proton_bkg[i][j] = new TH1D(Form("hChi2_proton_bkg_%d_%d",i,j), Form("Chi2_proton_bkg, %s, %s;Chi2/Ndof", pi::cutName[i], pi::intTypeName[j]), 31, -10./3, 100);
       hChi2_proton_bkg[i][j]->Sumw2();
-      hdaughter_michel_score_bkg[i][j] = new TH1D(Form("hdaughter_michel_score_bkg_%d_%d",i,j), Form("daughter_michel_score_bkg, %s, %s;Michel score", pi::cutName[i], pi::intTypeName[j]), 100, 0, 1);
+      hdaughter_michel_score_bkg[i][j] = new TH1D(Form("hdaughter_michel_score_bkg_%d_%d",i,j), Form("daughter_michel_score_bkg, %s, %s;Michel score", pi::cutName[i], pi::intTypeName[j]), 31, -1./30, 1);
       hdaughter_michel_score_bkg[i][j]->Sumw2();
-      hcostheta_bkg[i][j] = new TH1D(Form("hcostheta_bkg_%d_%d",i,j), Form("costheta_bkg, %s, %s;cos#theta", pi::cutName[i], pi::intTypeName[j]), 75, 0.85, 1);
+      hcostheta_bkg[i][j] = new TH1D(Form("hcostheta_bkg_%d_%d",i,j), Form("costheta_bkg, %s, %s;cos#theta", pi::cutName[i], pi::intTypeName[j]), 30, 0.85, 1);
       hcostheta_bkg[i][j]->Sumw2();
-      for (int k = 0; k<pi::reco_nbins-1; ++k){
+      for (int k = 0; k<pi::reco_nbins; ++k){
         hmediandEdxSlice[k][i][j] = new TH1D(Form("hmediandEdxSlice_%d_%d_%d",k,i,j), Form("mediandEdx, %s, %s, sliceID = %d;Median dE/dx (MeV/cm)", pi::cutName[i], pi::intTypeName[j], k), 14, 1, 8);
         hmediandEdxSlice[k][i][j]->Sumw2();
         
@@ -167,17 +167,19 @@ void ThinSlice::BookHistograms(){
 
       hreco_beam_true_byE_matched[i][j] = new TH1D(Form("hreco_beam_true_byE_matched_%d_%d",i,j), Form("reco_beam_true_byE_matched, %s, %s;Truth matched", pi::cutName[i], pi::intTypeName[j]), 2, 0, 2);
       hreco_beam_true_byE_matched[i][j]->Sumw2();
-      //const double xbins[25] = {-10.,0.,10.,20.,30.,40.,50.,60.,70.,80.,90.,100.,110.,120.,130.,140.,150.,160.,170.,180.,190.,200.,210.,220.,600}; // a user-defined binning
-      hini_recoE[i][j] = new TH1D(Form("hini_recoE_%d_%d",i,j), Form("ini_recoE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 22, -50, 1050);
+      hbeam_inst_P[i][j] = new TH1D(Form("hbeam_inst_P_%d_%d",i,j), Form("beam_inst_P, %s, %s;Momentum (GeV)", pi::cutName[i], pi::intTypeName[j]), 100, 0.7, 1.3);
+      hbeam_inst_P[i][j]->Sumw2();
+      hini_recoE[i][j] = new TH1D(Form("hini_recoE_%d_%d",i,j), Form("ini_recoE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 110, -50, 1050);
       hini_recoE[i][j]->Sumw2();
-      hint_recoE[i][j] = new TH1D(Form("hint_recoE_%d_%d",i,j), Form("int_recoE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 22, -50, 1050);
+      hint_recoE[i][j] = new TH1D(Form("hint_recoE_%d_%d",i,j), Form("int_recoE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 110, -50, 1050);
       hint_recoE[i][j]->Sumw2();
-      hini_trueE[i][j] = new TH1D(Form("hini_trueE_%d_%d",i,j), Form("ini_trueE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 22, -50, 1050);
+      hini_trueE[i][j] = new TH1D(Form("hini_trueE_%d_%d",i,j), Form("ini_trueE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 110, -50, 1050);
       hini_trueE[i][j]->Sumw2();
-      hint_trueE[i][j] = new TH1D(Form("hint_trueE_%d_%d",i,j), Form("int_trueE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 22, -50, 1050);
+      hint_trueE[i][j] = new TH1D(Form("hint_trueE_%d_%d",i,j), Form("int_trueE, %s, %s;Energy (MeV)", pi::cutName[i], pi::intTypeName[j]), 110, -50, 1050);
       hint_trueE[i][j]->Sumw2();
+      //const double xbins[25] = {-10.,0.,10.,20.,30.,40.,50.,60.,70.,80.,90.,100.,110.,120.,130.,140.,150.,160.,170.,180.,190.,200.,210.,220.,500}; // a user-defined binning
       //hreco_trklen[i][j] = new TH1D(Form("hreco_trklen_%d_%d",i,j), Form("reco_trklen, %s, %s;Track length (cm)", pi::cutName[i], pi::intTypeName[j]), 24, xbins);
-      hreco_trklen[i][j] = new TH1D(Form("hreco_trklen_%d_%d",i,j), Form("reco_trklen, %s, %s;Track length (cm)", pi::cutName[i], pi::intTypeName[j]), 61, -10, 600);
+      hreco_trklen[i][j] = new TH1D(Form("hreco_trklen_%d_%d",i,j), Form("reco_trklen, %s, %s;Track length (cm)", pi::cutName[i], pi::intTypeName[j]), 51, -10, 500);
       hreco_trklen[i][j]->Sumw2();
       htrue_trklen[i][j] = new TH1D(Form("htrue_trklen_%d_%d",i,j), Form("true_trklen, %s, %s;Track length (cm)", pi::cutName[i], pi::intTypeName[j]), 61, -10, 600);
       htrue_trklen[i][j]->Sumw2();
@@ -753,6 +755,7 @@ void ThinSlice::FillHistograms(int cut, const anavar & evt, double weight){
       double beam_inst_KE_mu = sqrt(pow(beam_inst_P*1000,2)+pow(mumass,2)) - mumass;
       double int_E_leng = bb.KEAtLength(ff_energy_reco, hadana.reco_trklen);
       double int_E_calo = (*evt.reco_beam_incidentEnergies)[0]-13-hadana.energy_calorimetry_SCE;
+      FillHistVec1D(hbeam_inst_P[cut], beam_inst_P, hadana.pitype, weight);
       FillHistVec1D(hini_recoE[cut], ini_energy_reco, hadana.pitype, weight);
       FillHistVec1D(hint_recoE[cut], int_energy_reco, hadana.pitype, weight);
       FillHistVec1D(hini_trueE[cut], ini_energy_true, hadana.pitype, weight);
@@ -834,26 +837,26 @@ void ThinSlice::FillSliceHist(const anavar & evt, int constraint_type, double we
   }
   else {
     if (constraint_type == 1) { // muon
-      FillHistVec1D(hdaughter_michel_score_bkg[cut], hadana.daughter_michel_score, hadana.pitype, weight, false, false);
+      FillHistVec1D(hdaughter_michel_score_bkg[cut], hadana.daughter_michel_score, hadana.pitype, weight, true, false);
     }
     else if (constraint_type == 2) { // proton
-      FillHistVec1D(hmediandEdx_bkg[cut], hadana.median_dEdx, hadana.pitype, weight, false, true);
-      FillHistVec1D(hChi2_proton_bkg[cut], hadana.chi2_proton, hadana.pitype, weight, false, true);
+      FillHistVec1D(hmediandEdx_bkg[cut], hadana.median_dEdx, hadana.pitype, weight, true, true);
+      FillHistVec1D(hChi2_proton_bkg[cut], hadana.chi2_proton, hadana.pitype, weight, true, true);
     }
     else if (constraint_type == 3) { // secondary pion
       FillHistVec1D(hcostheta_bkg[cut], hadana.beam_costh, hadana.pitype, weight, true, false);
     }
     // in each slice
-    if (reco_sliceID>=0 && reco_sliceID<pi::reco_nbins-1){
+    if (reco_sliceID>=-1 && reco_sliceID<pi::reco_nbins-1){
       if (constraint_type == 1) { // muon
-        FillHistVec1D(hdaughter_michel_scoreSlice[reco_sliceID][cut], hadana.daughter_michel_score, hadana.pitype, weight, false, false);
+        FillHistVec1D(hdaughter_michel_scoreSlice[reco_sliceID+1][cut], hadana.daughter_michel_score, hadana.pitype, weight, true, false);
       }
       else if (constraint_type == 2) { // proton
-        FillHistVec1D(hmediandEdxSlice[reco_sliceID][cut], hadana.median_dEdx, hadana.pitype, weight, false, true);
-        FillHistVec1D(hChi2_protonSlice[reco_sliceID][cut], hadana.chi2_proton, hadana.pitype, weight, false, true);
+        FillHistVec1D(hmediandEdxSlice[reco_sliceID+1][cut], hadana.median_dEdx, hadana.pitype, weight, true, true);
+        FillHistVec1D(hChi2_protonSlice[reco_sliceID+1][cut], hadana.chi2_proton, hadana.pitype, weight, true, true);
       }
       else if (constraint_type == 3) { // secondary pion
-        FillHistVec1D(hcosthetaSlice[reco_sliceID][cut], hadana.beam_costh, hadana.pitype, weight, true, false);
+        FillHistVec1D(hcosthetaSlice[reco_sliceID+1][cut], hadana.beam_costh, hadana.pitype, weight, true, false);
       }
     }
   }
@@ -968,6 +971,18 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
   newtree->Branch("reco_KE", &reco_KE);
   newtree->Branch("true_KE_from_trklen", &true_KE_from_trklen);
   newtree->Branch("true_KE", &true_KE);
+  double piEff_true = -999.;
+  newtree->Branch("piEff_true", &piEff_true);
+  double piEff_true2 = -999.;
+  newtree->Branch("piEff_true2", &piEff_true2);
+  double piEinst = -999.;
+  newtree->Branch("piEinst", &piEinst);
+  double piEff_sumdep = -999.;
+  newtree->Branch("piEff_sumdep", &piEff_sumdep);
+  double pidEdx_1 = -999.;
+  newtree->Branch("pidEdx_1", &pidEdx_1);
+  double pidEdx_2 = -999.;
+  newtree->Branch("pidEdx_2", &pidEdx_2);
   
   Long64_t nbytes = 0, nb = 0;
   TRandom3 *r3 = new TRandom3(0);
@@ -1079,10 +1094,22 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
     FillSliceHist(evt, 3, weight, 0);
     
     double mumass = 105.66;
+    double pimass = 139.57;
     double beam_inst_KE_mu = sqrt(pow(beam_inst_P*1000,2)+pow(mumass,2)) - mumass;
     if (hadana.PassBeamQualityCut(evt) && evt.reco_beam_vertex_michel_score_weight_by_charge>0.6 && 1 > 0.9) {
       fillnewtree = true;
       tratio = hadana.reco_trklen/bb_mu.RangeFromKE(beam_inst_KE_mu - 15);
+      
+      piEff_true = ff_energy_true;
+      piEff_true2 = ini_energy_true;
+      piEinst = sqrt(pow(beam_inst_P*1000,2)+pow(pimass,2)) - pimass;
+      //cout<<evt.reco_beam_calo_endZ<<"\t"<<(*evt.reco_beam_calo_Z)[0]<<"\t"<<(*evt.reco_beam_calo_Z)[evt.reco_beam_calo_Z->size()-1]<<"\n"<<evt.reco_beam_interactingEnergy<<"\t"<<(*evt.reco_beam_incidentEnergies)[0]<<"\t"<<(*evt.reco_beam_incidentEnergies)[evt.reco_beam_incidentEnergies->size()-1]<<endl;
+      piEff_sumdep = (*evt.reco_beam_incidentEnergies)[0]-(*evt.reco_beam_incidentEnergies)[evt.reco_beam_incidentEnergies->size()-1];
+      //for (int i=0; i<evt.reco_beam_incidentEnergies->size()-1; ++i)
+        //piEff_sumdep += (*evt.reco_beam_calibrated_dEdX_SCE)[i]*(*evt.reco_beam_TrkPitch_SCE)[i];
+      //cout<<(*evt.reco_beam_calibrated_dEdX_SCE)[evt.reco_beam_incidentEnergies->size()-1]<<"\t"<<(*evt.reco_beam_calibrated_dEdX_SCE)[evt.reco_beam_incidentEnergies->size()-2]<<"\t"<<(*evt.reco_beam_calibrated_dEdX_SCE)[evt.reco_beam_incidentEnergies->size()-3]<<"\t"<<(*evt.reco_beam_calibrated_dEdX_SCE)[evt.reco_beam_incidentEnergies->size()-4]<<"\t"<<(*evt.reco_beam_calibrated_dEdX_SCE)[evt.reco_beam_incidentEnergies->size()-5]<<endl;
+      pidEdx_1 = (*evt.reco_beam_calibrated_dEdX_SCE)[evt.reco_beam_incidentEnergies->size()-1];
+      pidEdx_2 = (*evt.reco_beam_calibrated_dEdX_SCE)[evt.reco_beam_incidentEnergies->size()-2];
     }
     
     if (fillnewtree && savetree) {

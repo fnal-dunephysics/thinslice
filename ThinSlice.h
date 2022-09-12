@@ -59,10 +59,11 @@ class ThinSlice {
   TH1D *h_recoinisliceid_pion_cuts;
   TH1D *h_recosliceid_pioninelastic_cuts;
 
-  double true_interactions[pi::nthinslices];
-  double true_incidents[pi::nthinslices];
+  double true_interactions[pi::true_nbins];
+  double true_incidents[pi::true_nbins];
 
   // energy used to calculate slice ID
+  TH1D *hbeam_inst_P[pi::nCuts][pi::nIntTypes+1];
   TH1D *hini_recoE[pi::nCuts][pi::nIntTypes+1];
   TH1D *hint_recoE[pi::nCuts][pi::nIntTypes+1];
   TH1D *hini_trueE[pi::nCuts][pi::nIntTypes+1];
@@ -109,10 +110,10 @@ class ThinSlice {
   TH1D *hChi2_proton_bkg[pi::nCuts][pi::nIntTypes+1];
   TH1D *hdaughter_michel_score_bkg[pi::nCuts][pi::nIntTypes+1];
   TH1D *hcostheta_bkg[pi::nCuts][pi::nIntTypes+1];
-  TH1D *hmediandEdxSlice[pi::nthinslices][pi::nCuts][pi::nIntTypes+1];
-  TH1D *hChi2_protonSlice[pi::nthinslices][pi::nCuts][pi::nIntTypes+1];
-  TH1D *hdaughter_michel_scoreSlice[pi::nthinslices][pi::nCuts][pi::nIntTypes+1];
-  TH1D *hcosthetaSlice[pi::nthinslices][pi::nCuts][pi::nIntTypes+1];
+  TH1D *hmediandEdxSlice[pi::reco_nbins][pi::nCuts][pi::nIntTypes+1];
+  TH1D *hChi2_protonSlice[pi::reco_nbins][pi::nCuts][pi::nIntTypes+1];
+  TH1D *hdaughter_michel_scoreSlice[pi::reco_nbins][pi::nCuts][pi::nIntTypes+1];
+  TH1D *hcosthetaSlice[pi::reco_nbins][pi::nCuts][pi::nIntTypes+1];
 
   TH1D *hdeltax[pi::nCuts][pi::nIntTypes+1];
   TH1D *hdeltay[pi::nCuts][pi::nIntTypes+1];

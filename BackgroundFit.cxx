@@ -30,18 +30,18 @@ void save_results(vector<double> vslice, vector<double> vcorr, vector<double> vc
   gr_corr->SetMarkerStyle(106);
   gr_corr->SetTitle(Form("%s bkg constraint (overall fit %.2f #pm  %.2f)", particle, par, parerr));
   gr_corr->GetXaxis()->SetTitle("Slice");
-  gr_corr->GetXaxis()->SetLimits(-1, pi::reco_nbins-1);
+  gr_corr->GetXaxis()->SetLimits(-1, pi::reco_nbins);
   gr_corr->GetYaxis()->SetTitle("Scale factor");
-  gr_corr->GetYaxis()->SetRangeUser(0, 3);
+  //gr_corr->GetYaxis()->SetRangeUser(0, 3);
   gr_corr->Draw("AP");
-  TLine *line = new TLine(-1, par, pi::reco_nbins-1, par);
+  TLine *line = new TLine(-1, par, pi::reco_nbins, par);
   line->SetLineColor(kRed);
   line->Draw("same");
-  TLine *line_upp = new TLine(-1, par+parerr, pi::reco_nbins-1, par+parerr);
+  TLine *line_upp = new TLine(-1, par+parerr, pi::reco_nbins, par+parerr);
   line_upp->SetLineColor(kRed);
   line_upp->SetLineStyle(2);
   line_upp->Draw("same");
-  TLine *line_low = new TLine(-1, par-parerr, pi::reco_nbins-1, par-parerr);
+  TLine *line_low = new TLine(-1, par-parerr, pi::reco_nbins, par-parerr);
   line_low->SetLineColor(kRed);
   line_low->SetLineStyle(2);
   line_low->Draw("same");
@@ -61,15 +61,15 @@ double bkgFit_mu(TFile *fmc, TFile *fdata, string outfile){
   
   double totaldata = 0;
   double totalmc = 0;
-  //double ndata[pi::reco_nbins-1] = {0};
-  //double nmc[pi::reco_nbins-1] = {0};
-  TH1D *hvarSlice[pi::reco_nbins-1][pi::nCuts][pi::nIntTypes+1];
+  //double ndata[pi::reco_nbins] = {0};
+  //double nmc[pi::reco_nbins] = {0};
+  TH1D *hvarSlice[pi::reco_nbins][pi::nCuts][pi::nIntTypes+1];
   TH1D *hvar[pi::nCuts][pi::nIntTypes+1];
   //TH1D *hsliceID[pi::nCuts][pi::nIntTypes+1];
  
   for (int i = 0; i < pi::nCuts; ++i){
     for (int j = 0; j < pi::nIntTypes+1; ++j){
-      for (int k = 0; k < pi::reco_nbins-1; ++k){
+      for (int k = 0; k < pi::reco_nbins; ++k){
         if (j==0){ // data
           hvarSlice[k][i][j] = (TH1D*)fdata->Get(Form("h%sSlice_%d_%d_%d",varname,k,i,j));
           if (i==6) totaldata += hvarSlice[k][i][j]->Integral(); // normalization should be done before any cut or after all cuts?
@@ -107,7 +107,7 @@ double bkgFit_mu(TFile *fmc, TFile *fdata, string outfile){
   std::vector<double> vcorrerr;
 
   // muon constraint begins
-  for (int i = 0; i<pi::reco_nbins-1; ++i){
+  for (int i = 0; i<pi::reco_nbins; ++i){
     std::cout<<"##### Slice "<<i<<std::endl;
     TH1D *h0 = hvarSlice[i][6][pi::kData];
     TH1D *h1 = hvarSlice[i][6][pi::kPiInel];
@@ -168,12 +168,12 @@ double bkgFit_p(TFile *fmc, TFile *fdata, string outfile, double muscale = 1.){
   
   double totaldata = 0;
   double totalmc = 0;
-  TH1D *hvarSlice[pi::reco_nbins-1][pi::nCuts][pi::nIntTypes+1];
+  TH1D *hvarSlice[pi::reco_nbins][pi::nCuts][pi::nIntTypes+1];
   TH1D *hvar[pi::nCuts][pi::nIntTypes+1];
 
   for (int i = 0; i < pi::nCuts; ++i){
     for (int j = 0; j < pi::nIntTypes+1; ++j){
-      for (int k = 0; k < pi::reco_nbins-1; ++k){
+      for (int k = 0; k < pi::reco_nbins; ++k){
         if (j==0){ // data
           hvarSlice[k][i][j] = (TH1D*)fdata->Get(Form("h%sSlice_%d_%d_%d",varname,k,i,j));
           if (i==6) totaldata += hvarSlice[k][i][j]->Integral(); // normalization should be done before any cut or after all cuts?
@@ -202,7 +202,7 @@ double bkgFit_p(TFile *fmc, TFile *fdata, string outfile, double muscale = 1.){
 
   // proton constraint begins
   TH1D *htemp;
-  for (int i = 0; i<pi::reco_nbins-1; ++i){
+  for (int i = 0; i<pi::reco_nbins; ++i){
     std::cout<<"##### Slice "<<i<<std::endl;
     TH1D *h0 = hvarSlice[i][6][pi::kData];
     TH1D *h1 = hvarSlice[i][6][pi::kPiInel];
@@ -263,12 +263,12 @@ double bkgFit_spi(TFile *fmc, TFile *fdata, string outfile, double muscale = 1.,
   
   double totaldata = 0;
   double totalmc = 0;
-  TH1D *hvarSlice[pi::reco_nbins-1][pi::nCuts][pi::nIntTypes+1];
+  TH1D *hvarSlice[pi::reco_nbins][pi::nCuts][pi::nIntTypes+1];
   TH1D *hvar[pi::nCuts][pi::nIntTypes+1];
 
   for (int i = 0; i < pi::nCuts; ++i){
     for (int j = 0; j < pi::nIntTypes+1; ++j){
-      for (int k = 0; k < pi::reco_nbins-1; ++k){
+      for (int k = 0; k < pi::reco_nbins; ++k){
         if (j==0){ // data
           hvarSlice[k][i][j] = (TH1D*)fdata->Get(Form("h%sSlice_%d_%d_%d",varname,k,i,j));
           if (i==6) totaldata += hvarSlice[k][i][j]->Integral(); // normalization should be done before any cut or after all cuts?
@@ -297,7 +297,7 @@ double bkgFit_spi(TFile *fmc, TFile *fdata, string outfile, double muscale = 1.,
 
   // secondary pion constraint begins
   TH1D *htemp;
-  for (int i = 0; i<pi::reco_nbins-1; ++i){
+  for (int i = 0; i<pi::reco_nbins; ++i){
     std::cout<<"##### Slice "<<i<<std::endl;
     TH1D *h0 = hvarSlice[i][6][pi::kData];
     TH1D *h1 = hvarSlice[i][6][pi::kPiInel];
