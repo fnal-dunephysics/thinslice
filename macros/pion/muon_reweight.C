@@ -10,18 +10,22 @@ double calchi2(double muweight, TH1D *data_dist, TH1D *mc_dist_sep[typenum], TH1
   double data_inte = data_dist->Integral(0, uppbound);
   double mc_inte_sep;
   double mc_inte_sep0;
+  double mc_inte_sep_sq;
   for (int j=0; j<typenum; ++j){
     mc_inte_sep += mc_dist_sep[j]->Integral(0, uppbound)*typeweight[j];
     mc_inte_sep0 += mc_dist_sep[j]->Integral(0, uppbound);
+    mc_inte_sep_sq += mc_dist_sep[j]->Integral(0, uppbound)*pow(typeweight[j],2);
   }
   //cout<<mc_inte<<"\t"<<mc_inte_sep<<"\t"<<data_inte<<endl;
   double mcnorm = data_inte/mc_inte_sep;
   double mcnorm0 = data_inte/mc_inte_sep0;
+  double sfactor = mc_inte_sep_sq/mc_inte_sep;
   double fom = 0;
   double chi = 0;
   double mcbin;
   double mcbin0;
-  for (int i=1; i<=boundbin; ++i){
+  int initi = 16;
+  for (int i=initi; i<=boundbin; ++i){
     //mcbin = mc_dist->GetBinContent(i+1) * mcnorm;
     mcbin = 0;
     mcbin0 = 0;
@@ -32,7 +36,7 @@ double calchi2(double muweight, TH1D *data_dist, TH1D *mc_dist_sep[typenum], TH1
     mcbin *= mcnorm;
     mcbin0 *= mcnorm0;
     
-    chi = (data_dist->GetBinContent(i+1) - mcbin)/sqrt(data_dist->GetBinContent(i+1) + mcbin);
+    chi = (data_dist->GetBinContent(i+1) - mcbin)/sqrt(sfactor*data_dist->GetBinContent(i+1) + mcbin);
     fom += chi*chi;
     //cout<<i<<endl;
     //cout<<mcbin<<endl;
@@ -57,7 +61,7 @@ double calchi2(double muweight, TH1D *data_dist, TH1D *mc_dist_sep[typenum], TH1
   
   chi = (over_data - mcbin)/sqrt(over_data + mcbin);
   fom += chi*chi;
-  fom /= (boundbin+1);
+  fom /= (boundbin-initi+2);
   if (save_plot) {
     cout<<"\nWeight = "<<muweight<<"\t FOM = "<<fom<<endl;
     
@@ -110,7 +114,7 @@ void muon_reweight(){
   int pi = 0;
   double minw = 1.6;
   double maxw = 1.8;
-  double stepw = 0.005;
+  double stepw = 0.001;
   for (double w = minw; w <= maxw; w+=stepw) {
     double fom = calchi2(w, data_dist, mc_dist_sep, hdata, hmc, hmc0);
     fom_list.push_back(fom);

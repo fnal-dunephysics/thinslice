@@ -14,11 +14,13 @@
 using namespace std;
 
 int nc = 0;
-double totaldata = 0;
-double totalmc = 0;
-double totalcosmics = 0;
+double totaldata[7] = {0,0,0,0,0,0,0};
+double totalmc[7] = {0,0,0,0,0,0,0};
+double totalcosmics[7] = {0,0,0,0,0,0,0};
 
 int colors[pi::nIntTypes] = {2, 3, 800, 7, 33, 9, 46, 28, 41};
+const int orders[pi::nIntTypes] = {0,1,2,3,4,5,6,7,8};
+double scales[pi::nIntTypes] = {1,1,1,1,1,1,1,1,1};
 
 TFile *fmc;
 TFile *fdata;
@@ -59,35 +61,38 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
   TH1D *hcosmics[pi::nCuts];
   TH1D *hmc[pi::nCuts][pi::nIntTypes+1];
   for (int i = 0; i < pi::nCuts; ++i){
+    totalmc[i] = 0;
+    totaldata[i] = 0;
+    totalcosmics[i] = 0;
     for (int j = 0; j < pi::nIntTypes+1; ++j){
       hmc[i][j] = (TH1D*)fmc->Get(Form("%s_%d_%d",name.c_str(),i,j));
-      if (i==0 && j!=0 && first){
-        totalmc += hmc[i][j]->Integral();
+      if (j!=0 && first){
+        totalmc[i] += hmc[i][j]->Integral(); //hmc[i][j] or hmc[0][j]
       }
     }
     hdata[i] = (TH1D*)fdata->Get(Form("%s_%d_%d",name.c_str(),i,0));
     hcosmics[i] = (TH1D*)fcosmics->Get(Form("%s_%d_%d",name.c_str(),i,0));
-    if (i==0 && first){
-      totaldata = hdata[i]->Integral();
-      totalcosmics = hcosmics[i]->Integral();
+    if (first){
+      totaldata[i] = hdata[i]->Integral(); //hdata[i] or hdata[0]
+      totalcosmics[i] = hcosmics[i]->Integral(); //hcosmics[i] or hcosmics[0]
     }
   }
-  //std::cout<<"$$$$$"<<totaldata<<"\t"<<totalmc<<"\t"<<totalcosmics<<std::endl;
-  first = false;
+  //first = false;
   
   TH1D *htotmc;
   THStack *hs = new THStack(Form("hs_%d",nc),"");
-  for (int i = 0; i<pi::nIntTypes; ++i){
+  for (int jj = 0; jj<pi::nIntTypes; ++jj){
+    int i = orders[jj];
     hmc[cut][i+1]->SetFillColor(colors[i]);
     hmc[cut][i+1]->SetLineWidth(0);
-    hmc[cut][i+1]->Scale(totaldata/totalmc*100150./105575.);
+    hmc[cut][i+1]->Scale(totaldata[cut]/totalmc[cut]*scales[i]);
     hs->Add(hmc[cut][i+1]);
-    if (i==0) htotmc = (TH1D*)hmc[cut][1]->Clone(Form("htotmc_%d",nc));
+    if (jj==0) htotmc = (TH1D*)hmc[cut][i+1]->Clone(Form("htotmc_%d",nc));
     else htotmc->Add(hmc[cut][i+1]);
   }
 
   if (!htotmc->Integral() || !hdata[cut]->Integral()) return;
-  hcosmics[cut]->Scale(totaldata/totalcosmics);
+  //hcosmics[cut]->Scale(totaldata[cut]/totalcosmics[cut]);
 
   TCanvas *can = new TCanvas(Form("can_%d",nc), Form("can_%d",nc), 800, 800);
   TPad *pad1 = new TPad(Form("pad1_%d",nc), Form("pad1_%d",nc), 0, 0.2, 1, 1.);
@@ -100,7 +105,7 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
 
   double max = TMath::Max(hs->GetMaximum(), hdata[cut]->GetMaximum());
   max = TMath::Max(max, hcosmics[cut]->GetMaximum());
-  hs->SetMaximum(8000);
+  hs->SetMaximum(1.2*max);
   hs->Draw("hist");
   hs->SetTitle(hdata[cut]->GetTitle());
   hs->GetXaxis()->SetTitle(xtitle.c_str());
@@ -195,19 +200,18 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
 
 void plot1dslice(string name, int cut, string xtitle, string ytitle){
 
-  TH1D *hdata[pi::nthinslices][pi::nCuts];
-  TH1D *hmc[pi::nthinslices][pi::nCuts][pi::nIntTypes+1];
+  TH1D *hdata[pi::true_nbins][pi::nCuts];
+  TH1D *hmc[pi::true_nbins][pi::nCuts][pi::nIntTypes+1];
   for (int i = 0; i < pi::nCuts; ++i){
     for (int j = 0; j < pi::nIntTypes+1; ++j){
-      for (int k = 0; k < pi::nthinslices; ++k){
+      for (int k = 0; k < pi::true_nbins; ++k){
         hmc[k][i][j] = (TH1D*)fmc->Get(Form("%s_%d_%d_%d",name.c_str(),k,i,j));
         if (j==0) hdata[k][i] = (TH1D*)fdata->Get(Form("%s_%d_%d_%d",name.c_str(),k,i,0));
       }
     }
   }
-  //std::cout<<totaldata<<" "<<totalmc<<std::endl;
 
-  for (int j = 0; j<pi::nthinslices; ++j){
+  for (int j = 0; j<pi::true_nbins; ++j){
     TCanvas *can = new TCanvas(Form("can_%d",nc), Form("can_%d",nc), 800, 800);
     TPad *pad1 = new TPad(Form("pad1_%d",nc), Form("pad1_%d",nc), 0, 0.2, 1, 1.);
     pad1->SetBottomMargin(0.03);
@@ -218,12 +222,13 @@ void plot1dslice(string name, int cut, string xtitle, string ytitle){
     
     TH1D *htotmc;
     THStack *hs = new THStack(Form("hs_%d",nc),"");
-    for (int i = 0; i<pi::nIntTypes; ++i){
+    for (int jj = 0; jj<pi::nIntTypes; ++jj){
+      int i = orders[jj];
       hmc[j][cut][i+1]->SetFillColor(colors[i]);
       hmc[j][cut][i+1]->SetLineWidth(0);
-      hmc[j][cut][i+1]->Scale(totaldata/totalmc);
+      hmc[j][cut][i+1]->Scale(totaldata[cut]/totalmc[cut]*scales[i]);
       hs->Add(hmc[j][cut][i+1]);
-      if (i==0) htotmc = (TH1D*)hmc[j][cut][1]->Clone(Form("htotmc_%d",nc));
+      if (jj==0) htotmc = (TH1D*)hmc[j][cut][i+1]->Clone(Form("htotmc_%d",nc));
       else htotmc->Add(hmc[j][cut][i+1]);
     }
     
@@ -339,9 +344,9 @@ void plot(){
   gStyle->SetOptStat(0);
   gErrorIgnoreLevel = kWarning;
 
-  fmc = TFile::Open("../../build/mcprod4a_0721_76sigma.root");
+  fmc = TFile::Open("../../build/mcprod4a.root");
   //fdata = TFile::Open("../install/bin/mcprod4a.root");
-  fdata = TFile::Open("../../build/data_0721_nominal.root");
+  fdata = TFile::Open("../../build/data.root");
   fcosmics = TFile::Open("../../build/cosmics.root");
 
   for (int i = 0; i<pi::nCuts; ++i){
@@ -364,6 +369,7 @@ void plot(){
     plot1d("hdeltay", i, "#Deltay/#sigma_{y}", "Events");
     plot1d("hdeltaz", i, "#Deltaz/#sigma_{z}", "Events");
     plot1d("hcostheta", i, "cos#theta", "Events");
+    //plot1d("hbeam_inst_P", i, "Beam instrumented momentum (GeV)", "Events");
     plot1d("hini_recoE", i, "Reco initial energy (MeV)", "Events");
     plot1d("hint_recoE", i, "Reco interacting energy (MeV)", "Events");
     plot1d("hreco_trklen", i, "Reco track length (cm)", "Events");
@@ -388,11 +394,11 @@ void plot(){
   plot1d("hdaughter_michel_score_bkg", 6, "Michel score", "Events");
   plot1d("hcostheta_bkg", 0, "Cos(theta)", "Events");
   plot1d("hcostheta_bkg", 6, "Cos(theta)", "Events");
-  /*plot1dslice("hmediandEdxSlice", 6, "Median dE/dx (MeV/cm)", "Events");
+  plot1dslice("hmediandEdxSlice", 6, "Median dE/dx (MeV/cm)", "Events");
   plot1dslice("hChi2_protonSlice", 6, "Chi2_p/Ndf", "Events");
   plot1dslice("hdaughter_michel_scoreSlice", 6, "Michel score", "Events");
   plot1dslice("hcosthetaSlice", 6, "Cos(theta)", "Events");
-*/
+
   PrintEvents("hreco_beam_endZ_SCE");
 
 }

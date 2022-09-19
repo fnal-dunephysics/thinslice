@@ -40,14 +40,15 @@ void plotXS(){
   // incident (all pion)
   TCanvas *c1 = new TCanvas("c1","c1");
   h_sel_data_inc->SetTitle("All Pions;Reco SliceID;Events");
+  h_sel_data_inc->SetMinimum(0);
   h_sel_data_inc->DrawCopy();
   h_sel_sig_inc->SetLineColor(3);
   h_sel_sig_inc->SetMarkerColor(3);
   h_sel_sig_inc->DrawCopy("same");
   hval_sel_sig_inc->SetLineColor(2);
-  //hval_sel_sig_inc->Scale(h_sel_sig_inc->Integral()/hval_sel_sig_inc->Integral());
+  hval_sel_sig_inc->Scale(h_sel_sig_inc->Integral()/hval_sel_sig_inc->Integral());
   hval_sel_sig_inc->Draw("same hist");
-  TLegend *leg1 = new TLegend(0.5,0.6,0.8,0.9);
+  TLegend *leg1 = new TLegend(0.5,0.15,0.8,0.45);
   leg1->SetFillStyle(0);
   leg1->AddEntry(h_sel_data_inc,"Selected data","ple");
   leg1->AddEntry(h_sel_sig_inc, "After bkg subtraction","ple");
@@ -58,11 +59,13 @@ void plotXS(){
   h_sel_sig_inc_uf->SetLineColor(4);
   h_sel_sig_inc_uf->SetMarkerColor(4);
   h_sel_sig_inc_uf->SetTitle("All Pions; True SliceID; Events");
+  h_sel_sig_inc_uf->SetMinimum(0);
+  h_sel_sig_inc_uf->SetMaximum(18000);
   h_sel_sig_inc_uf->Draw();
-  //h_sel_sig_inc->DrawCopy("same");
+  h_sel_sig_inc->DrawCopy("same");
   hval_sel_sig_inc_uf->SetLineColor(2);
   hval_sel_sig_inc_uf->SetMarkerColor(2);
-  //hval_sel_sig_inc_uf->Scale(h_sel_sig_inc_uf->Integral()/hval_sel_sig_inc_uf->Integral());
+  hval_sel_sig_inc_uf->Scale(h_sel_sig_inc_uf->Integral()/hval_sel_sig_inc_uf->Integral());
   hval_sel_sig_inc_uf->Draw("same hist");
   TLegend *leg2 = new TLegend(0.5,0.6,0.8,0.9);
   leg2->SetFillStyle(0);
@@ -74,14 +77,15 @@ void plotXS(){
   // interaction (pion inelastic)
   TCanvas *c3 = new TCanvas("c3","c3"); // compared to c1, only miss a few pion elastic events
   h_sel_data->SetTitle("Pion Inelastic Scatterings;Reco SliceID;Events");
+  h_sel_data->SetMinimum(0);
   h_sel_data->Draw();
   h_sel_sig_int->SetLineColor(3);
   h_sel_sig_int->SetMarkerColor(3);
   h_sel_sig_int->DrawCopy("same");
   hval_sel_sig_int->SetLineColor(2);
-  //hval_sel_sig_int->Scale(h_sel_sig_int->Integral()/hval_sel_sig_int->Integral());
+  hval_sel_sig_int->Scale(h_sel_sig_int->Integral()/hval_sel_sig_int->Integral());
   hval_sel_sig_int->Draw("same hist");
-  TLegend *leg3 = new TLegend(0.5,0.6,0.8,0.9);
+  TLegend *leg3 = new TLegend(0.5,0.15,0.8,0.45);
   leg3->SetFillStyle(0);
   leg3->AddEntry(h_sel_data,"Selected data","ple");
   leg3->AddEntry(h_sel_sig_int, "After bkg subtraction","ple");
@@ -92,11 +96,13 @@ void plotXS(){
   h_sel_sig_int_uf->SetLineColor(4);
   h_sel_sig_int_uf->SetMarkerColor(4);
   h_sel_sig_int_uf->SetTitle("Pion Inelastic Scatterings; True SliceID; Events");
+  h_sel_sig_int_uf->SetMinimum(0);
+  h_sel_sig_int_uf->SetMaximum(18000);
   h_sel_sig_int_uf->Draw();
-  //h_sel_sig_int->DrawCopy("same");
+  h_sel_sig_int->DrawCopy("same");
   hval_sel_sig_int_uf->SetLineColor(2);
   hval_sel_sig_int_uf->SetMarkerColor(2);
-  //hval_sel_sig_int_uf->Scale(h_sel_sig_int_uf->Integral()/hval_sel_sig_int_uf->Integral());
+  hval_sel_sig_int_uf->Scale(h_sel_sig_int_uf->Integral()/hval_sel_sig_int_uf->Integral());
   hval_sel_sig_int_uf->Draw("same hist");
   TLegend *leg4 = new TLegend(0.5,0.6,0.8,0.9);
   leg4->SetFillStyle(0);
@@ -108,12 +114,13 @@ void plotXS(){
   // start
   TCanvas *c5 = new TCanvas("c5","c5");
   h_sel_data_ini->SetTitle("All Pions;Reco SliceID;Events");
+  h_sel_data_ini->SetMinimum(0);
   h_sel_data_ini->Draw();
   h_sel_sig_ini->SetLineColor(3);
   h_sel_sig_ini->SetMarkerColor(3);
   h_sel_sig_ini->DrawCopy("same");
   hval_sel_sig_ini->SetLineColor(2);
-  //hval_sel_sig_ini->Scale(h_sel_sig_ini->Integral()/hval_sel_sig_ini->Integral());
+  hval_sel_sig_ini->Scale(h_sel_sig_ini->Integral()/hval_sel_sig_ini->Integral());
   hval_sel_sig_ini->Draw("same hist");
   TLegend *leg5 = new TLegend(0.5,0.6,0.8,0.9);
   leg5->SetFillStyle(0);
@@ -128,10 +135,10 @@ void plotXS(){
   h_sel_sig_ini_uf->SetTitle("All Pions; True SliceID; Events");
   h_sel_sig_ini_uf->SetMinimum(0);
   h_sel_sig_ini_uf->Draw();
-  //h_sel_sig_ini->DrawCopy("same");
+  h_sel_sig_ini->DrawCopy("same");
   hval_sel_sig_ini_uf->SetLineColor(2);
   hval_sel_sig_ini_uf->SetMarkerColor(2);
-  //hval_sel_sig_ini_uf->Scale(h_sel_sig_ini_uf->Integral()/hval_sel_sig_ini_uf->Integral());
+  hval_sel_sig_ini_uf->Scale(h_sel_sig_ini_uf->Integral()/hval_sel_sig_ini_uf->Integral());
   hval_sel_sig_ini_uf->Draw("same hist");
   TLegend *leg6 = new TLegend(0.5,0.6,0.8,0.9);
   leg6->SetFillStyle(0);
@@ -236,6 +243,37 @@ void plotXS(){
   gr_iniE_t->SetLineColor(3);
   gr_iniE_t->Draw("pe");
   
+  // end histogram
+  /*TCanvas *c91 = new TCanvas("c91","c91");
+  gr_ina->SetTitle("");
+  gr_ina->SetLineWidth(2);
+  gr_ina->GetXaxis()->SetTitle("Slice ID");
+  gr_ina->GetYaxis()->SetTitle("N_{Ina}");
+  gr_ina->GetXaxis()->SetRangeUser(0, 21);
+  gr_ina->SetMinimum(0);
+  //gr_ina->Draw("ape");
+  gr_ina_t->SetLineWidth(2);
+  gr_ina_t->SetLineColor(3);
+  gr_ina_t->SetMarkerColor(3);
+  //gr_ina_t->Draw("pe");
+  TGraphErrors *gr_inaE = (TGraphErrors*)gr_ina->Clone("gr_inaE");
+  TGraphErrors *gr_inaE_t = (TGraphErrors*)gr_ina_t->Clone("gr_inaE_t");
+  for (int i=0; i<pi::true_nbins-1; i++) {
+    double binw = gr_truexs->GetErrorX(i)*2;
+    gr_inaE->SetPoint(i, gr_truexs->GetPointX(i), gr_ina->GetPointY(i)/binw);
+    gr_inaE->SetPointError(i, binw/2, gr_ina->GetErrorY(i)/binw);
+    gr_inaE_t->SetPoint(i, gr_truexs->GetPointX(i), gr_ina_t->GetPointY(i)/binw);
+    gr_inaE_t->SetPointError(i, binw/2, gr_ina_t->GetErrorY(i)/binw);
+  }
+  gr_inaE->GetXaxis()->SetTitle("Energy (MeV)");
+  gr_inaE->GetYaxis()->SetTitle("N_{Ina} / MeV");
+  gr_inaE->GetXaxis()->SetRangeUser(0, 1000);
+  gr_inaE->SetMarkerColor(4);
+  gr_inaE->SetLineColor(4);
+  gr_inaE->Draw("ape");
+  gr_inaE_t->SetLineColor(3);
+  gr_inaE_t->Draw("pe");*/
+  
   // cross-section
   /*double xs[pi::nthinslices] = {0};
   double err_xs[pi::nthinslices] = {0};
@@ -262,13 +300,13 @@ void plotXS(){
   gr_recoxs->GetYaxis()->SetTitle("#sigma_{inelastic} (mb)");
   gr_recoxs->GetYaxis()->SetRangeUser(0, 1000);
   gr_recoxs->SetLineWidth(2);
-  //gr_recoxs->RemovePoint(pi::true_nbins-2); // the last is used as overflow
-  //gr_recoxs->RemovePoint(0); // the first is used as underflow
+  gr_recoxs->RemovePoint(pi::true_nbins-2); // the last is used as overflow
+  gr_recoxs->RemovePoint(0); // the first is used as underflow
   gr_recoxs->Draw("ape");
   gr_truexs->SetMarkerColor(3);
   gr_truexs->SetLineColor(3);
-  //gr_truexs->RemovePoint(pi::true_nbins-2);
-  //gr_truexs->RemovePoint(0);
+  gr_truexs->RemovePoint(pi::true_nbins-2);
+  gr_truexs->RemovePoint(0);
   gr_truexs->Draw("pe");
   total_inel_KE->SetLineColor(2);
   
@@ -284,10 +322,10 @@ void plotXS(){
   for (int i=1; i<pi::true_nbins-2; ++i) {
     double KE = (pi::true_KE[i+1]+pi::true_KE[i])/2;
     double xs_curve = total_inel_KE->Eval(KE);
-    double xs_MC = gr_truexs->GetPointY(i-1);
-    double xserr_MC = gr_truexs->GetErrorY(i-1);
-    double xs_data = gr_recoxs->GetPointY(i-1);
-    double xserr_data = gr_recoxs->GetErrorY(i-1);
+    double xs_MC = gr_truexs->GetPointY(i);
+    double xserr_MC = gr_truexs->GetErrorY(i);
+    double xs_data = gr_recoxs->GetPointY(i);
+    double xserr_data = gr_recoxs->GetErrorY(i);
     double c2 = 0;
     if (true) {
       c2 = pow( (xs_data-xs_MC)/sqrt(pow(xserr_data,2)+pow(xserr_MC,2)) , 2);
@@ -308,8 +346,8 @@ void plotXS(){
 
   gSystem->Exec("rm -rf plots");
   gSystem->Exec("mkdir plots");
-  c1->Print("plots/xs_sliceidinc_reco.pdf");
-  c2->Print("plots/xs_sliceidinc_true.pdf");
+  c1->Print("plots/xs_sliceidina_reco.pdf");
+  c2->Print("plots/xs_sliceidina_true.pdf");
   c3->Print("plots/xs_sliceidint_reco.pdf");
   c4->Print("plots/xs_sliceidint_true.pdf");
   c5->Print("plots/xs_sliceidini_reco.pdf");
@@ -317,10 +355,11 @@ void plotXS(){
   c7->Print("plots/xs_Ninc.pdf");
   c8->Print("plots/xs_Nint.pdf");
   c9->Print("plots/xs_Nini.pdf");
+  //c91->Print("plots/xs_Nina.pdf");
   c10->Print("plots/xs_pi+inel.pdf");
 
-  c1->Print("plots/xs_sliceidinc_reco.png");
-  c2->Print("plots/xs_sliceidinc_true.png");
+  c1->Print("plots/xs_sliceidina_reco.png");
+  c2->Print("plots/xs_sliceidina_true.png");
   c3->Print("plots/xs_sliceidint_reco.png");
   c4->Print("plots/xs_sliceidint_true.png");
   c5->Print("plots/xs_sliceidini_reco.png");
@@ -328,6 +367,7 @@ void plotXS(){
   c7->Print("plots/xs_Ninc.png");
   c8->Print("plots/xs_Nint.png");
   c9->Print("plots/xs_Nini.png");
+  //c91->Print("plots/xs_Nina.png");
   c10->Print("plots/xs_pi+inel.png");
 }
   
