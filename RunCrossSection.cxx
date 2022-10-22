@@ -59,15 +59,15 @@ int main(int argc, char ** argv){
 
   ThinSlice mcths;
   mcths.SetOutputFileName(root["mcoutfile"].asString());
-  mcths.Run(mcevt, uf, -1, false, true);
+  mcths.Run(mcevt, uf, -1, false, false);
 
-  anavar dataevt(datachain);
+  /*anavar dataevt(datachain);
 
   ThinSlice dataths;
   dataths.SetOutputFileName(root["dataoutfile"].asString());
-  dataths.Run(dataevt, uf, -1, false, true);
+  dataths.Run(dataevt, uf, -1, false, false);
 
-  /*ThinSlice cosmicsths;
+  ThinSlice cosmicsths;
   cosmicsths.SetSelectCosmics(true);
   cosmicsths.SetOutputFileName(root["cosmicsoutfile"].asString());
   cosmicsths.Run(dataevt, uf, -1);*/

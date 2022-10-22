@@ -452,7 +452,7 @@ int main(int argc, char** argv){
   
   // unfolding
   RooUnfoldResponse *response_SliceID_3D = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
-  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 10);
+  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 4);
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
   RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 10);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
@@ -466,6 +466,51 @@ int main(int argc, char** argv){
   hsigini->SetNameTitle("hsigini","All pion initial;Slice ID;Events");
   hsiginc->SetNameTitle("hsiginc","All pion incident;Slice ID;Events");
   hsignal->SetNameTitle("hsignal","Pion interaction signal;Slice ID;Events");
+  
+  
+  ofstream myfile_data;
+  myfile_data.open ("toys/syscov_central_data.txt", ios::app);
+  //Ninc
+  for (int i=0; i<pi::reco_nbins; ++i) myfile_data<<hsig3D->ProjectionY()->GetBinContent(i+1)<<"\t";
+  myfile_data<<endl;
+  //Nini
+  for (int i=0; i<pi::reco_nbins; ++i) myfile_data<<hsig3D->ProjectionX()->GetBinContent(i+1)<<"\t";
+  myfile_data<<endl;
+  //Nint
+  for (int i=0; i<pi::reco_nbins; ++i) myfile_data<<hsig3D->ProjectionZ()->GetBinContent(i+1)<<"\t";
+  myfile_data<<endl;
+  //3D
+  for (int i=0; i<pi::reco_nbins; ++i)
+    for (int j=0; j<pi::reco_nbins; ++j)
+      for (int k=0; k<pi::reco_nbins; ++k)
+          myfile_data<<hsig3D->GetBinContent(i+1, j+1, k+1)<<"\t";
+  myfile_data<<endl<<endl;
+  myfile_data.close();
+  
+  TH3D *hmeas_MC = (TH3D*)response_SliceID_3D->Hmeasured();
+  ofstream myfile_mc;
+  myfile_mc.open ("toys/syscov_central_mc.txt", ios::app);
+  //Ninc
+  for (int i=0; i<pi::reco_nbins; ++i) myfile_mc<<hmeas_MC->ProjectionY()->GetBinContent(i+1)<<"\t";
+  myfile_mc<<endl;
+  //Nini
+  for (int i=0; i<pi::reco_nbins; ++i) myfile_mc<<hmeas_MC->ProjectionX()->GetBinContent(i+1)<<"\t";
+  myfile_mc<<endl;
+  //Nint
+  for (int i=0; i<pi::reco_nbins; ++i) myfile_mc<<hmeas_MC->ProjectionZ()->GetBinContent(i+1)<<"\t";
+  myfile_mc<<endl;
+  //3D
+  for (int i=0; i<pi::reco_nbins; ++i)
+    for (int j=0; j<pi::reco_nbins; ++j)
+      for (int k=0; k<pi::reco_nbins; ++k)
+          myfile_mc<<hmeas_MC->GetBinContent(i+1, j+1, k+1)<<"\t";
+  myfile_mc<<endl<<endl;
+  myfile_mc.close();
+
+  fout->Write();
+  fout->Close();
+  return 0;
+  
   
   TH3D *hsig3D_uf;
   TH1D *hsiginc_uf;

@@ -5,6 +5,7 @@
 #include "EventSelection.h"
 #include "SliceParams.h"
 #include "TGraph.h"
+#include "TRandom3.h"
 
 class anavar;
 
@@ -12,7 +13,8 @@ class HadAna{
  public: 
 
   HadAna();
-
+  TRandom3 *r3 = new TRandom3(8);
+  TRandom3 *r33 = new TRandom3(0);
   void InitPi();
 
   void InitP();

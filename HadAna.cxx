@@ -86,7 +86,7 @@ int HadAna::GetPiParType(const anavar& evt){
   if (!evt.MC){
     return pi::kData;
   }
-  else if (evt.event%2==1){ // divide half of MC as fake data
+  else if (r3->Rndm()>0.5){ // divide half of MC as fake data
     return pi::kData;
   }
   else if (!evt.reco_beam_true_byE_matched){ // the true beam track is not selected
@@ -224,7 +224,7 @@ bool HadAna::PassAPA3Cut(const anavar& evt) const{ // only use track in the firs
   //return true;
   if (evt.reco_beam_calo_endZ > pi::fidvol_upp) return false;
   //if (reco_trklen > pi::fidvol_upp) return false;
-  if (reco_trklen < pi::fidvol_low) return false;
+  if (reco_trklen < 30) return false;
   return true;
 }
 
