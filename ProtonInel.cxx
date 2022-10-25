@@ -312,7 +312,7 @@ void ProtonInel::ProcessEvent(const anavar & evt, Unfold & uf){
         h_recosliceid_allevts_cuts->Fill(reco_sliceID);
       }
       else {
-        uf.pur_den->Fill(reco_sliceID);
+        uf.pur_den_Inc->Fill(reco_sliceID);
       }
     }
   }

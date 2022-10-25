@@ -71,6 +71,9 @@ int main(int argc, char** argv){
   TVectorD *sf_mu = (TVectorD*)fbkg->Get("sf_mu");
   TVectorD *sf_p = (TVectorD*)fbkg->Get("sf_p");
   TVectorD *sf_spi = (TVectorD*)fbkg->Get("sf_spi");
+  //(*sf_mu)[1] = 0;
+  //(*sf_p)[1] = 0;
+  //(*sf_spi)[1] = 0;
 
   cout<<"Muon scaling factor: "<<(*sf_mu)[0]<<"+-"<<(*sf_mu)[1]<<endl;
   cout<<"Proton scaling factor: "<<(*sf_p)[0]<<"+-"<<(*sf_p)[1]<<endl;
@@ -460,6 +463,7 @@ int main(int argc, char** argv){
   RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
   RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 10);
   
+  TH3D *hmeas_MC = (TH3D*)response_SliceID_3D->Hmeasured();
   hsigini = (TH1D*)hsig3D->Project3D("x");
   hsiginc = (TH1D*)hsig3D->Project3D("y");
   hsignal = (TH1D*)hsig3D->Project3D("z");
@@ -467,50 +471,86 @@ int main(int argc, char** argv){
   hsiginc->SetNameTitle("hsiginc","All pion incident;Slice ID;Events");
   hsignal->SetNameTitle("hsignal","Pion interaction signal;Slice ID;Events");
   
-  
+  double Ndata = hsig3D->Integral();
+  double Nmc = hmeas_MC->Integral();
+  double Eweight = Ndata/Nmc;
   ofstream myfile_data;
   myfile_data.open ("toys/syscov_central_data.txt", ios::app);
   //Ninc
-  for (int i=0; i<pi::reco_nbins; ++i) myfile_data<<hsig3D->ProjectionY()->GetBinContent(i+1)<<"\t";
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_data<<hsig3D->ProjectionY()->GetBinContent(i+1)<<"\t";
+    //myfile_data<<pow(hsig3D->ProjectionY()->GetBinError(i+1), 2)<<"\t";
   myfile_data<<endl;
   //Nini
-  for (int i=0; i<pi::reco_nbins; ++i) myfile_data<<hsig3D->ProjectionX()->GetBinContent(i+1)<<"\t";
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_data<<hsig3D->ProjectionX()->GetBinContent(i+1)<<"\t";
+    //myfile_data<<pow(hsig3D->ProjectionX()->GetBinError(i+1), 2)<<"\t";
   myfile_data<<endl;
   //Nint
-  for (int i=0; i<pi::reco_nbins; ++i) myfile_data<<hsig3D->ProjectionZ()->GetBinContent(i+1)<<"\t";
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_data<<hsig3D->ProjectionZ()->GetBinContent(i+1)<<"\t";
+    //myfile_data<<pow(hsig3D->ProjectionZ()->GetBinError(i+1), 2)<<"\t";
   myfile_data<<endl;
   //3D
   for (int i=0; i<pi::reco_nbins; ++i)
     for (int j=0; j<pi::reco_nbins; ++j)
       for (int k=0; k<pi::reco_nbins; ++k)
-          myfile_data<<hsig3D->GetBinContent(i+1, j+1, k+1)<<"\t";
+        myfile_data<<hsig3D->GetBinContent(i+1, j+1, k+1)<<"\t";
+        //myfile_data<<pow(hsig3D->GetBinError(i+1, j+1, k+1), 2)<<"\t";
   myfile_data<<endl<<endl;
   myfile_data.close();
-  
-  TH3D *hmeas_MC = (TH3D*)response_SliceID_3D->Hmeasured();
+
   ofstream myfile_mc;
   myfile_mc.open ("toys/syscov_central_mc.txt", ios::app);
   //Ninc
-  for (int i=0; i<pi::reco_nbins; ++i) myfile_mc<<hmeas_MC->ProjectionY()->GetBinContent(i+1)<<"\t";
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_mc<<hmeas_MC->ProjectionY()->GetBinContent(i+1)*Eweight<<"\t";
+    //myfile_mc<<pow(hmeas_MC->ProjectionY()->GetBinError(i+1)*Eweight, 2)<<"\t";
   myfile_mc<<endl;
   //Nini
-  for (int i=0; i<pi::reco_nbins; ++i) myfile_mc<<hmeas_MC->ProjectionX()->GetBinContent(i+1)<<"\t";
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_mc<<hmeas_MC->ProjectionX()->GetBinContent(i+1)*Eweight<<"\t";
+    //myfile_mc<<pow(hmeas_MC->ProjectionX()->GetBinError(i+1)*Eweight, 2)<<"\t";
   myfile_mc<<endl;
   //Nint
-  for (int i=0; i<pi::reco_nbins; ++i) myfile_mc<<hmeas_MC->ProjectionZ()->GetBinContent(i+1)<<"\t";
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_mc<<hmeas_MC->ProjectionZ()->GetBinContent(i+1)*Eweight<<"\t";
+    //myfile_mc<<pow(hmeas_MC->ProjectionZ()->GetBinError(i+1)*Eweight, 2)<<"\t";
   myfile_mc<<endl;
   //3D
   for (int i=0; i<pi::reco_nbins; ++i)
     for (int j=0; j<pi::reco_nbins; ++j)
       for (int k=0; k<pi::reco_nbins; ++k)
-          myfile_mc<<hmeas_MC->GetBinContent(i+1, j+1, k+1)<<"\t";
+        myfile_mc<<hmeas_MC->GetBinContent(i+1, j+1, k+1)*Eweight<<"\t";
+        //myfile_mc<<pow(hmeas_MC->GetBinError(i+1, j+1, k+1)*Eweight, 2)<<"\t";
   myfile_mc<<endl<<endl;
   myfile_mc.close();
 
   fout->Write();
   fout->Close();
   return 0;
-  
+
+  TMatrixD mcov_3D_stat(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
+  TMatrixD mcov_3D(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
+  mcov_3D_stat = unfold_3D.GetMeasuredCov();
+  TVectorD Emeas_MC = response_SliceID_3D->Emeasured();
+  cout<<"Ndata_sig: "<<Ndata<<"; Nmc_sig: "<<Nmc<<endl;
+  for(int i=0; i<pow(pi::reco_nbins,3); i++) {
+    mcov_3D(i, i) = mcov_3D_stat(i, i) + pow(Emeas_MC(i)*Eweight, 2);
+    //if (mcov_3D(i, i)!=0)
+    //  cout<<mcov_3D_stat(i, i)<<"\t"<<mcov_3D(i, i)<<endl;
+  }
+  FILE *fcov_3D=fopen("toys/cov_3D_input.txt","r");
+  TMatrixD mcov_3D_input(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
+  double vv;
+  for(int i=0; i<pow(pi::reco_nbins,3); i++) {
+    for(int j=0; j<pow(pi::reco_nbins,3); j++) {
+      fscanf(fcov_3D, "%lf", &vv);
+      mcov_3D_input(i, j) = vv;
+    }
+  }
+  mcov_3D = mcov_3D + mcov_3D_input;
+  unfold_3D.SetMeasuredCov(mcov_3D);
   
   TH3D *hsig3D_uf;
   TH1D *hsiginc_uf;

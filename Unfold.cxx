@@ -15,19 +15,30 @@ Unfold::Unfold(TH3D* hist_reco, TH3D* hist_true)
 
   eff_num_Int = new TH1D("eff_num_Int", "eff_num_Int", pi::true_nbins, pi::true_bins);
   eff_den_Int = new TH1D("eff_den_Int", "eff_den_Int", pi::true_nbins, pi::true_bins);
+  pur_num_Int = new TH1D("pur_num_Int", "pur_num_Int", pi::reco_nbins, pi::reco_bins);
+  pur_den_Int = new TH1D("pur_den_Int", "pur_den_Int", pi::reco_nbins, pi::reco_bins);
   eff_num_Inc = new TH1D("eff_num_Inc", "eff_num_Inc", pi::true_nbins, pi::true_bins);
   eff_den_Inc = new TH1D("eff_den_Inc", "eff_den_Inc", pi::true_nbins, pi::true_bins);
-  pur_num_Int = new TH1D("pur_num_Int", "pur_num_Int", pi::reco_nbins, pi::reco_bins);
   pur_num_Inc = new TH1D("pur_num_Inc", "pur_num_Inc", pi::reco_nbins, pi::reco_bins);
-  pur_den     = new TH1D("pur_den",     "pur_den",     pi::reco_nbins, pi::reco_bins);
+  pur_den_Inc = new TH1D("pur_den_Inc", "pur_den_Inc", pi::reco_nbins, pi::reco_bins);
+  eff_num_Ini = new TH1D("eff_num_Ini", "eff_num_Ini", pi::true_nbins, pi::true_bins);
+  eff_den_Ini = new TH1D("eff_den_Ini", "eff_den_Ini", pi::true_nbins, pi::true_bins);
+  pur_num_Ini = new TH1D("pur_num_Ini", "pur_num_Ini", pi::reco_nbins, pi::reco_bins);
+  pur_den_Ini = new TH1D("pur_den_Ini", "pur_den_Ini", pi::reco_nbins, pi::reco_bins);
+  
 
   eff_num_Int->Sumw2();
   eff_den_Int->Sumw2();
+  pur_num_Int->Sumw2();
+  pur_den_Int->Sumw2();
   eff_num_Inc->Sumw2();
   eff_den_Inc->Sumw2();
-  pur_num_Int->Sumw2();
   pur_num_Inc->Sumw2();
-  pur_den->Sumw2();
+  pur_den_Inc->Sumw2();
+  eff_num_Ini->Sumw2();
+  eff_den_Ini->Sumw2();
+  pur_num_Ini->Sumw2();
+  pur_den_Ini->Sumw2();
 
 }  
 
@@ -35,27 +46,46 @@ void Unfold::SaveHistograms(){
 
   eff_num_Int->Write("eff_num_Int");
   eff_den_Int->Write("eff_den_Int");
+  pur_num_Int->Write("pur_num_Int");
+  pur_den_Int->Write("pur_den_Int");
   eff_num_Inc->Write("eff_num_Inc");
   eff_den_Inc->Write("eff_den_Inc");
-  pur_num_Int->Write("pur_num_Int");
   pur_num_Inc->Write("pur_num_Inc");
-  pur_den->Write("pur_den");
+  pur_den_Inc->Write("pur_den_Inc");
+  eff_num_Ini->Write("eff_num_Ini");
+  eff_den_Ini->Write("eff_den_Ini");
+  pur_num_Ini->Write("pur_num_Ini");
+  pur_den_Ini->Write("pur_den_Ini");
 
   eff_Int = (TH1D*)eff_num_Int->Clone("eff_Int");
   eff_Int->Divide(eff_den_Int);
+  eff_Int->SetTitle("eff_Int");
   eff_Int->Write("eff_Int");
 
   eff_Inc = (TH1D*)eff_num_Inc->Clone("eff_Inc");
   eff_Inc->Divide(eff_den_Inc);
+  eff_Inc->SetTitle("eff_Inc");
   eff_Inc->Write("eff_Inc");
+  
+  eff_Ini = (TH1D*)eff_num_Ini->Clone("eff_Ini");
+  eff_Ini->Divide(eff_den_Ini);
+  eff_Ini->SetTitle("eff_Ini");
+  eff_Ini->Write("eff_Ini");
 
   pur_Int = (TH1D*)pur_num_Int->Clone("pur_Int");
-  pur_Int->Divide(pur_den);
+  pur_Int->Divide(pur_den_Int);
+  pur_Int->SetTitle("pur_Int");
   pur_Int->Write("pur_Int");
 
   pur_Inc = (TH1D*)pur_num_Inc->Clone("pur_Inc");
-  pur_Inc->Divide(pur_den);
+  pur_Inc->Divide(pur_den_Inc);
+  pur_Inc->SetTitle("pur_Inc");
   pur_Inc->Write("pur_Inc");
+  
+  pur_Ini = (TH1D*)pur_num_Ini->Clone("pur_Ini");
+  pur_Ini->Divide(pur_den_Ini);
+  pur_Ini->SetTitle("pur_Ini");
+  pur_Ini->Write("pur_Ini");
 
   TH2D *hint = (TH2D*)response_SliceID_Int.Hresponse();
   hint->SetTitle("Interactions;Reco Slice ID;True Slice ID");
