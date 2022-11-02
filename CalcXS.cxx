@@ -474,7 +474,29 @@ int main(int argc, char** argv){
   double Ndata = hsig3D->Integral();
   double Nmc = hmeas_MC->Integral();
   double Eweight = Ndata/Nmc;
-  ofstream myfile_data;
+  ofstream myfile_sys;
+  myfile_sys.open ("toys/syscov_central.txt", ios::app);
+  //Ninc
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_sys<<hmeas_MC->ProjectionY()->GetBinContent(i+1)*Eweight - hsig3D->ProjectionY()->GetBinContent(i+1)<<"\t";
+  myfile_sys<<endl;
+  //Nini
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_sys<<hmeas_MC->ProjectionX()->GetBinContent(i+1)*Eweight - hsig3D->ProjectionX()->GetBinContent(i+1)<<"\t";
+  myfile_sys<<endl;
+  //Nint
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_sys<<hmeas_MC->ProjectionZ()->GetBinContent(i+1)*Eweight - hsig3D->ProjectionZ()->GetBinContent(i+1)<<"\t";
+  myfile_sys<<endl;
+  //3D
+  for (int i=0; i<pi::reco_nbins; ++i)
+    for (int j=0; j<pi::reco_nbins; ++j)
+      for (int k=0; k<pi::reco_nbins; ++k)
+        myfile_sys<<hmeas_MC->GetBinContent(k+1, j+1, i+1)*Eweight - hsig3D->GetBinContent(k+1, j+1, i+1)<<"\t";
+  myfile_sys<<endl<<endl;
+  myfile_sys.close();
+  
+  /*ofstream myfile_data;
   myfile_data.open ("toys/syscov_central_data.txt", ios::app);
   //Ninc
   for (int i=0; i<pi::reco_nbins; ++i)
@@ -495,8 +517,8 @@ int main(int argc, char** argv){
   for (int i=0; i<pi::reco_nbins; ++i)
     for (int j=0; j<pi::reco_nbins; ++j)
       for (int k=0; k<pi::reco_nbins; ++k)
-        myfile_data<<hsig3D->GetBinContent(i+1, j+1, k+1)<<"\t";
-        //myfile_data<<pow(hsig3D->GetBinError(i+1, j+1, k+1), 2)<<"\t";
+        myfile_data<<hsig3D->GetBinContent(k+1, j+1, i+1)<<"\t";
+        //myfile_data<<pow(hsig3D->GetBinError(k+1, j+1, i+1), 2)<<"\t";
   myfile_data<<endl<<endl;
   myfile_data.close();
 
@@ -521,14 +543,14 @@ int main(int argc, char** argv){
   for (int i=0; i<pi::reco_nbins; ++i)
     for (int j=0; j<pi::reco_nbins; ++j)
       for (int k=0; k<pi::reco_nbins; ++k)
-        myfile_mc<<hmeas_MC->GetBinContent(i+1, j+1, k+1)*Eweight<<"\t";
-        //myfile_mc<<pow(hmeas_MC->GetBinError(i+1, j+1, k+1)*Eweight, 2)<<"\t";
+        myfile_mc<<hmeas_MC->GetBinContent(k+1, j+1, i+1)*Eweight<<"\t";
+        //myfile_mc<<pow(hmeas_MC->GetBinError(k+1, j+1, i+1)*Eweight, 2)<<"\t";
   myfile_mc<<endl<<endl;
   myfile_mc.close();
 
   fout->Write();
   fout->Close();
-  return 0;
+  return 0;*/
 
   TMatrixD mcov_3D_stat(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
   TMatrixD mcov_3D(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
@@ -578,6 +600,32 @@ int main(int argc, char** argv){
   hsignal_uf->SetNameTitle("hsignal_uf","Unfolded interaction signal;Slice ID;Events");
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
+  
+  ofstream myfile_sys_unfold;
+  myfile_sys_unfold.open ("toys/syscov_central_unfold.txt", ios::app);
+  //Ninc
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_sys_unfold<<hsiginc_uf->GetBinContent(i+1)<<"\t";
+  myfile_sys_unfold<<endl;
+  //Nini
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_sys_unfold<<hsigini_uf->GetBinContent(i+1)<<"\t";
+  myfile_sys_unfold<<endl;
+  //Nint
+  for (int i=0; i<pi::reco_nbins; ++i)
+    myfile_sys_unfold<<hsignal_uf->GetBinContent(i+1)<<"\t";
+  myfile_sys_unfold<<endl;
+  //3D
+  for (int i=0; i<pi::reco_nbins; ++i)
+    for (int j=0; j<pi::reco_nbins; ++j)
+      for (int k=0; k<pi::reco_nbins; ++k)
+        myfile_sys_unfold<<hsig3D_uf->GetBinContent(k+1, j+1, i+1)<<"\t";
+  myfile_sys_unfold<<endl<<endl;
+  myfile_sys_unfold.close();
+  
+  /*fout->Write();
+  fout->Close();
+  return 0;*/
   
   TMatrixD cov_matrix_3D = unfold_3D.Ereco();
   TH2D *covariance_3D = new TH2D(cov_matrix_3D);
