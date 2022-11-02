@@ -4,7 +4,7 @@ void plotXS(){
 
   gStyle->SetOptStat(0);
 
-  TFile *file = TFile::Open("../../build/XSMC.root");
+  TFile *file = TFile::Open("../../build/XS.root");
   
   TH1D *h_sel_data = (TH1D*)file->Get("hdata");
   TH1D *h_sel_sig_int = (TH1D*)file->Get("hsignal");
@@ -31,6 +31,8 @@ void plotXS(){
   TGraphErrors *gr_ina_t = (TGraphErrors*)file->Get("gr_ina_t");
   TGraphErrors *gr_truexs = (TGraphErrors*)file->Get("gr_truexs");
   TGraphErrors *gr_recoxs = (TGraphErrors*)file->Get("gr_recoxs");
+  TFile *file_stat = TFile::Open("../../build/XS_datastat.root"); // data stat only
+  TGraphErrors *gr_recoxs_stat = (TGraphErrors*)file_stat->Get("gr_recoxs");
   
   /*for (int i=0; i<pi::nthinslices; ++i){
     cout<<gr_inc->GetPointY(i)<<",";
@@ -60,7 +62,7 @@ void plotXS(){
   h_sel_sig_inc_uf->SetMarkerColor(4);
   h_sel_sig_inc_uf->SetTitle("All Pions; True SliceID; Events");
   h_sel_sig_inc_uf->SetMinimum(0);
-  h_sel_sig_inc_uf->SetMaximum(18000);
+  //h_sel_sig_inc_uf->SetMaximum(18000);
   h_sel_sig_inc_uf->Draw();
   h_sel_sig_inc->DrawCopy("same");
   hval_sel_sig_inc_uf->SetLineColor(2);
@@ -97,7 +99,7 @@ void plotXS(){
   h_sel_sig_int_uf->SetMarkerColor(4);
   h_sel_sig_int_uf->SetTitle("Pion Inelastic Scatterings; True SliceID; Events");
   h_sel_sig_int_uf->SetMinimum(0);
-  h_sel_sig_int_uf->SetMaximum(18000);
+  //h_sel_sig_int_uf->SetMaximum(18000);
   h_sel_sig_int_uf->Draw();
   h_sel_sig_int->DrawCopy("same");
   hval_sel_sig_int_uf->SetLineColor(2);
@@ -134,6 +136,7 @@ void plotXS(){
   h_sel_sig_ini_uf->SetMarkerColor(4);
   h_sel_sig_ini_uf->SetTitle("All Pions; True SliceID; Events");
   h_sel_sig_ini_uf->SetMinimum(0);
+  //h_sel_sig_ini_uf->SetMaximum(20000);
   h_sel_sig_ini_uf->Draw();
   h_sel_sig_ini->DrawCopy("same");
   hval_sel_sig_ini_uf->SetLineColor(2);
@@ -300,6 +303,8 @@ void plotXS(){
   gr_recoxs->GetYaxis()->SetTitle("#sigma_{inelastic} (mb)");
   gr_recoxs->GetYaxis()->SetRangeUser(0, 1000);
   gr_recoxs->SetLineWidth(2);
+  gr_recoxs->SetMarkerColor(4);
+  gr_recoxs->SetLineColor(4);
   gr_recoxs->RemovePoint(pi::true_nbins-2); // the last is used as overflow
   gr_recoxs->RemovePoint(0); // the first is used as underflow
   gr_recoxs->Draw("ape");
@@ -309,6 +314,9 @@ void plotXS(){
   gr_truexs->RemovePoint(0);
   gr_truexs->Draw("pe");
   total_inel_KE->SetLineColor(2);
+  gr_recoxs_stat->RemovePoint(pi::true_nbins-2);
+  gr_recoxs_stat->RemovePoint(0);
+  gr_recoxs_stat->Draw("pe");
   
   /*for (int i=0;i<total_inel_KE->GetN();i++) {
     if (total_inel_KE->GetX()[i] <= 476.44931) {
@@ -322,10 +330,10 @@ void plotXS(){
   for (int i=1; i<pi::true_nbins-2; ++i) {
     double KE = (pi::true_KE[i+1]+pi::true_KE[i])/2;
     double xs_curve = total_inel_KE->Eval(KE);
-    double xs_MC = gr_truexs->GetPointY(i);
-    double xserr_MC = gr_truexs->GetErrorY(i);
-    double xs_data = gr_recoxs->GetPointY(i);
-    double xserr_data = gr_recoxs->GetErrorY(i);
+    double xs_MC = gr_truexs->GetPointY(i-1);
+    double xserr_MC = gr_truexs->GetErrorY(i-1);
+    double xs_data = gr_recoxs->GetPointY(i-1);
+    double xserr_data = gr_recoxs->GetErrorY(i-1);
     double c2 = 0;
     if (true) {
       c2 = pow( (xs_data-xs_MC)/sqrt(pow(xserr_data,2)+pow(xserr_MC,2)) , 2);
@@ -337,9 +345,10 @@ void plotXS(){
   cout<<"Chi2/Ndf = "<<chi2<<"/"<<nbins<<" = "<<chi2/nbins<<endl;
   
   total_inel_KE->Draw("L");
-  TLegend *leg10 = new TLegend(0.5,0.2,0.85,0.4);
+  TLegend *leg10 = new TLegend(0.15,0.2,0.5,0.4);
   leg10->SetFillStyle(0);
-  leg10->AddEntry(gr_recoxs, "MC with reconstruction", "pe");
+  leg10->AddEntry(gr_recoxs_stat, "Data stat", "pe");
+  leg10->AddEntry(gr_recoxs, "Data total", "pe");
   leg10->AddEntry(gr_truexs, "MC truth", "pe");
   leg10->AddEntry(total_inel_KE, "Geant4 input", "l");
   leg10->Draw();
