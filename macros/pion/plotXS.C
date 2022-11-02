@@ -31,7 +31,7 @@ void plotXS(){
   TGraphErrors *gr_ina_t = (TGraphErrors*)file->Get("gr_ina_t");
   TGraphErrors *gr_truexs = (TGraphErrors*)file->Get("gr_truexs");
   TGraphErrors *gr_recoxs = (TGraphErrors*)file->Get("gr_recoxs");
-  TFile *file_stat = TFile::Open("../../build/XS_datastat.root"); // data stat only
+  TFile *file_stat = TFile::Open("../../build/XS.root"); // data stat only: XS_datastat.root
   TGraphErrors *gr_recoxs_stat = (TGraphErrors*)file_stat->Get("gr_recoxs");
   
   /*for (int i=0; i<pi::nthinslices; ++i){
@@ -48,7 +48,7 @@ void plotXS(){
   h_sel_sig_inc->SetMarkerColor(3);
   h_sel_sig_inc->DrawCopy("same");
   hval_sel_sig_inc->SetLineColor(2);
-  hval_sel_sig_inc->Scale(h_sel_sig_inc->Integral()/hval_sel_sig_inc->Integral());
+  //hval_sel_sig_inc->Scale(h_sel_sig_inc->Integral()/hval_sel_sig_inc->Integral());
   hval_sel_sig_inc->Draw("same hist");
   TLegend *leg1 = new TLegend(0.5,0.15,0.8,0.45);
   leg1->SetFillStyle(0);
@@ -67,7 +67,7 @@ void plotXS(){
   h_sel_sig_inc->DrawCopy("same");
   hval_sel_sig_inc_uf->SetLineColor(2);
   hval_sel_sig_inc_uf->SetMarkerColor(2);
-  hval_sel_sig_inc_uf->Scale(h_sel_sig_inc_uf->Integral()/hval_sel_sig_inc_uf->Integral());
+  //hval_sel_sig_inc_uf->Scale(h_sel_sig_inc_uf->Integral()/hval_sel_sig_inc_uf->Integral());
   hval_sel_sig_inc_uf->Draw("same hist");
   TLegend *leg2 = new TLegend(0.5,0.6,0.8,0.9);
   leg2->SetFillStyle(0);
@@ -85,7 +85,7 @@ void plotXS(){
   h_sel_sig_int->SetMarkerColor(3);
   h_sel_sig_int->DrawCopy("same");
   hval_sel_sig_int->SetLineColor(2);
-  hval_sel_sig_int->Scale(h_sel_sig_int->Integral()/hval_sel_sig_int->Integral());
+  //hval_sel_sig_int->Scale(h_sel_sig_int->Integral()/hval_sel_sig_int->Integral());
   hval_sel_sig_int->Draw("same hist");
   TLegend *leg3 = new TLegend(0.5,0.15,0.8,0.45);
   leg3->SetFillStyle(0);
@@ -104,7 +104,7 @@ void plotXS(){
   h_sel_sig_int->DrawCopy("same");
   hval_sel_sig_int_uf->SetLineColor(2);
   hval_sel_sig_int_uf->SetMarkerColor(2);
-  hval_sel_sig_int_uf->Scale(h_sel_sig_int_uf->Integral()/hval_sel_sig_int_uf->Integral());
+  //hval_sel_sig_int_uf->Scale(h_sel_sig_int_uf->Integral()/hval_sel_sig_int_uf->Integral());
   hval_sel_sig_int_uf->Draw("same hist");
   TLegend *leg4 = new TLegend(0.5,0.6,0.8,0.9);
   leg4->SetFillStyle(0);
@@ -122,7 +122,7 @@ void plotXS(){
   h_sel_sig_ini->SetMarkerColor(3);
   h_sel_sig_ini->DrawCopy("same");
   hval_sel_sig_ini->SetLineColor(2);
-  hval_sel_sig_ini->Scale(h_sel_sig_ini->Integral()/hval_sel_sig_ini->Integral());
+  //hval_sel_sig_ini->Scale(h_sel_sig_ini->Integral()/hval_sel_sig_ini->Integral());
   hval_sel_sig_ini->Draw("same hist");
   TLegend *leg5 = new TLegend(0.5,0.6,0.8,0.9);
   leg5->SetFillStyle(0);
@@ -141,7 +141,7 @@ void plotXS(){
   h_sel_sig_ini->DrawCopy("same");
   hval_sel_sig_ini_uf->SetLineColor(2);
   hval_sel_sig_ini_uf->SetMarkerColor(2);
-  hval_sel_sig_ini_uf->Scale(h_sel_sig_ini_uf->Integral()/hval_sel_sig_ini_uf->Integral());
+  //hval_sel_sig_ini_uf->Scale(h_sel_sig_ini_uf->Integral()/hval_sel_sig_ini_uf->Integral());
   hval_sel_sig_ini_uf->Draw("same hist");
   TLegend *leg6 = new TLegend(0.5,0.6,0.8,0.9);
   leg6->SetFillStyle(0);

@@ -496,73 +496,39 @@ int main(int argc, char** argv){
   myfile_sys<<endl<<endl;
   myfile_sys.close();
   
-  /*ofstream myfile_data;
-  myfile_data.open ("toys/syscov_central_data.txt", ios::app);
-  //Ninc
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_data<<hsig3D->ProjectionY()->GetBinContent(i+1)<<"\t";
-    //myfile_data<<pow(hsig3D->ProjectionY()->GetBinError(i+1), 2)<<"\t";
-  myfile_data<<endl;
-  //Nini
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_data<<hsig3D->ProjectionX()->GetBinContent(i+1)<<"\t";
-    //myfile_data<<pow(hsig3D->ProjectionX()->GetBinError(i+1), 2)<<"\t";
-  myfile_data<<endl;
-  //Nint
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_data<<hsig3D->ProjectionZ()->GetBinContent(i+1)<<"\t";
-    //myfile_data<<pow(hsig3D->ProjectionZ()->GetBinError(i+1), 2)<<"\t";
-  myfile_data<<endl;
-  //3D
-  for (int i=0; i<pi::reco_nbins; ++i)
-    for (int j=0; j<pi::reco_nbins; ++j)
-      for (int k=0; k<pi::reco_nbins; ++k)
-        myfile_data<<hsig3D->GetBinContent(k+1, j+1, i+1)<<"\t";
-        //myfile_data<<pow(hsig3D->GetBinError(k+1, j+1, i+1), 2)<<"\t";
-  myfile_data<<endl<<endl;
-  myfile_data.close();
-
-  ofstream myfile_mc;
-  myfile_mc.open ("toys/syscov_central_mc.txt", ios::app);
-  //Ninc
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_mc<<hmeas_MC->ProjectionY()->GetBinContent(i+1)*Eweight<<"\t";
-    //myfile_mc<<pow(hmeas_MC->ProjectionY()->GetBinError(i+1)*Eweight, 2)<<"\t";
-  myfile_mc<<endl;
-  //Nini
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_mc<<hmeas_MC->ProjectionX()->GetBinContent(i+1)*Eweight<<"\t";
-    //myfile_mc<<pow(hmeas_MC->ProjectionX()->GetBinError(i+1)*Eweight, 2)<<"\t";
-  myfile_mc<<endl;
-  //Nint
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_mc<<hmeas_MC->ProjectionZ()->GetBinContent(i+1)*Eweight<<"\t";
-    //myfile_mc<<pow(hmeas_MC->ProjectionZ()->GetBinError(i+1)*Eweight, 2)<<"\t";
-  myfile_mc<<endl;
-  //3D
-  for (int i=0; i<pi::reco_nbins; ++i)
-    for (int j=0; j<pi::reco_nbins; ++j)
-      for (int k=0; k<pi::reco_nbins; ++k)
-        myfile_mc<<hmeas_MC->GetBinContent(k+1, j+1, i+1)*Eweight<<"\t";
-        //myfile_mc<<pow(hmeas_MC->GetBinError(k+1, j+1, i+1)*Eweight, 2)<<"\t";
-  myfile_mc<<endl<<endl;
-  myfile_mc.close();
-
-  fout->Write();
+  /*fout->Write();
   fout->Close();
   return 0;*/
+  
+  TH1D *hval_siginc_reco = (TH1D*)fmc->Get("h_recosliceid_pion_cuts");
+  TH1D *hval_signal_reco = (TH1D*)fmc->Get("h_recosliceid_pioninelastic_cuts");
+  TH1D *hval_sigini_reco = (TH1D*)fmc->Get("h_recoinisliceid_pion_cuts");
+  TH1D *hval_trueinc = (TH1D*)fmc->Get("h_truesliceid_pion_all");
+  TH1D *hval_trueint = (TH1D*)fmc->Get("h_truesliceid_pioninelastic_all");
+  TH1D *hval_trueini = (TH1D*)fmc->Get("h_trueinisliceid_pion_all");
+  double Nfakedata = hval_siginc_reco->Integral();
+  hval_siginc_reco->Scale(Ndata/Nfakedata);
+  hval_signal_reco->Scale(Ndata/Nfakedata);
+  hval_sigini_reco->Scale(Ndata/Nfakedata);
+  hval_trueinc->Scale(Ndata/Nfakedata);
+  hval_trueint->Scale(Ndata/Nfakedata);
+  hval_trueini->Scale(Ndata/Nfakedata);
 
   TMatrixD mcov_3D_stat(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
   TMatrixD mcov_3D(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
   mcov_3D_stat = unfold_3D.GetMeasuredCov();
   TVectorD Emeas_MC = response_SliceID_3D->Emeasured();
-  cout<<"Ndata_sig: "<<Ndata<<"; Nmc_sig: "<<Nmc<<endl;
+  cout<<"Ndata_sig: "<<Ndata<<"; Nmc_sig: "<<Nmc<<"; Nfakedata_sig: "<<Nfakedata<<endl;
   for(int i=0; i<pow(pi::reco_nbins,3); i++) {
     mcov_3D(i, i) = mcov_3D_stat(i, i) + pow(Emeas_MC(i)*Eweight, 2);
     //if (mcov_3D(i, i)!=0)
     //  cout<<mcov_3D_stat(i, i)<<"\t"<<mcov_3D(i, i)<<endl;
   }
   FILE *fcov_3D=fopen("toys/cov_3D_input.txt","r");
+  if (!fcov_3D) {
+    cout<<"cov_3D_input not found!"<<endl;
+    return 1;
+  }
   TMatrixD mcov_3D_input(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
   double vv;
   for(int i=0; i<pow(pi::reco_nbins,3); i++) {
@@ -877,21 +843,13 @@ int main(int argc, char** argv){
   c1->Print("recoxs.png");*/
   
   // test sample validation
-  TH1D *hval_siginc_reco = (TH1D*)fmc->Get("h_recosliceid_pion_cuts");
   hval_siginc_reco->Write("hval_siginc_reco");
-  TH1D *hval_signal_reco = (TH1D*)fmc->Get("h_recosliceid_pioninelastic_cuts");
   hval_signal_reco->Write("hval_signal_reco");
-  TH1D *hval_sigini_reco = (TH1D*)fmc->Get("h_recoinisliceid_pion_cuts");
   hval_sigini_reco->Write("hval_sigini_reco");
-  TH1D *hval_trueinc = (TH1D*)fmc->Get("h_truesliceid_pion_all");
-  //hval_trueinc->Scale(hsiginc_uf->Integral(2,-1)/hval_trueinc->Integral(2,-1));
   hval_trueinc->Write("hval_trueinc");
-  TH1D *hval_trueint = (TH1D*)fmc->Get("h_truesliceid_pioninelastic_all");
-  //hval_trueint->Scale(hsignal_uf->Integral(2,-1)/hval_trueint->Integral(2,-1));
   hval_trueint->Write("hval_trueint");
-  TH1D *hval_trueini = (TH1D*)fmc->Get("h_trueinisliceid_pion_all");
-  //hval_trueini->Scale(hsigini_uf->Integral(2,-1)/hval_trueini->Integral(2,-1));
   hval_trueini->Write("hval_trueini");
+  
   double Ninc_t[pi::true_nbins-1] = {0};
   double Nint_t[pi::true_nbins-1] = {0};
   double Nini_t[pi::true_nbins-1] = {0};
