@@ -21,6 +21,7 @@
 #include "TH2D.h"
 #include "TH3D.h"
 #include "BetheBloch.h"
+#include "TRandom3.h"
 
 static void show_usage(std::string name)
 {
@@ -453,9 +454,41 @@ int main(int argc, char** argv){
   hsig3D->Add(hpiel_3D,-1);
   hsig3D->Add(hother_3D,-1);
   
+  double central_truth[13] = {13755.6, 521.355, 4687.65, 8443.53, 10055.3, 9165.82, 7466.6, 5704.19, 4351.92, 3398.71, 2566.63, 2038.35, 5617.28};
+  //double central_datasig[13] = {102.051, 310.714, 982.064, 2608.51, 4172.62, 4875.73, 4753.92, 4030.19, 3096.8, 2391.79, 1694.35, 1212.39, 958.097}; // real data
+  double central_datasig[13] = {85.3735, 225.925, 1072.21, 2761.74, 4295.01, 5035.34, 4601.26, 3874.87, 2963.82, 2267.13, 1801.99, 1160.03, 1044.52}; // true MC
+  TVectorD vcentral_truth(13);
+  for (int i=0; i<pi::reco_nbins; ++i) {
+    vcentral_truth(i) = central_truth[i];
+    hsiginc->SetBinContent(i+1, central_datasig[i]);
+  }
+  // use Cholesky decomposition to generate correlated toys
+  /*FILE *fcholsqrt_Inc=fopen("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/cholsqrt_MCXS_inc_1110.txt","r");
+  if (!fcholsqrt_Inc) {
+    cout<<"cholsqrt_inc_MCXS not found!"<<endl;
+    return 1;
+  }
+  TMatrixD mcholsqrt_Inc_input(pi::reco_nbins, pi::reco_nbins);
+  double vvchol;
+  for(int i=0; i<pi::reco_nbins; i++) {
+    for(int j=0; j<pi::reco_nbins; j++) {
+      fscanf(fcholsqrt_Inc, "%lf", &vvchol);
+      mcholsqrt_Inc_input(i, j) = vvchol;
+    }
+  }
+  TRandom3 *r3 = new TRandom3(0);
+  TVectorD rdmtt(pi::reco_nbins);
+  for (int i=0; i<pi::reco_nbins; i++) {
+    rdmtt(i) = r3->Gaus(0, 1);
+  }
+  TVectorD rdmss(pi::reco_nbins);
+  rdmss = mcholsqrt_Inc_input * rdmtt;
+  for (int i=1; i<=pi::reco_nbins; i++) {
+    hsiginc->SetBinContent(i, rdmss(i-1) + hsiginc->GetBinContent(i));
+  }*/
   // unfolding
   RooUnfoldResponse *response_SliceID_3D = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
-  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 4);
+  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 0);
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
   RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 10);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
@@ -464,9 +497,9 @@ int main(int argc, char** argv){
   RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 10);
   
   TH3D *hmeas_MC = (TH3D*)response_SliceID_3D->Hmeasured();
-  hsigini = (TH1D*)hsig3D->Project3D("x");
-  hsiginc = (TH1D*)hsig3D->Project3D("y");
-  hsignal = (TH1D*)hsig3D->Project3D("z");
+  //hsigini = (TH1D*)hsig3D->Project3D("x");
+  //hsiginc = (TH1D*)hsig3D->Project3D("y");
+  //hsignal = (TH1D*)hsig3D->Project3D("z");
   hsigini->SetNameTitle("hsigini","All pion initial;Slice ID;Events");
   hsiginc->SetNameTitle("hsiginc","All pion incident;Slice ID;Events");
   hsignal->SetNameTitle("hsignal","Pion interaction signal;Slice ID;Events");
@@ -474,13 +507,27 @@ int main(int argc, char** argv){
   double Ndata = hsig3D->Integral();
   double Nmc = hmeas_MC->Integral();
   double Eweight = Ndata/Nmc;
+
+  TH1D *htruth_inc = (TH1D*)response_SliceID_Inc->Htruth(); // to normalize R matrix
+  TH2D *hresponse_inc = (TH2D*)response_SliceID_Inc->Hresponse();
+  TMatrixD mR_inc(pi::reco_nbins, pi::reco_nbins);
+  for (int i=1; i<=pi::reco_nbins; i++) {
+    double factor = 1/htruth_inc->GetBinContent(i);
+    for (int j=1; j<=pi::reco_nbins; j++) {
+      double tmp = hresponse_inc->GetBinContent(j, i);
+      mR_inc(j-1, i-1) = tmp*factor;
+    }
+  }
+  TVectorD vmeas_inc(pi::reco_nbins);
+  vmeas_inc = mR_inc * vcentral_truth;
   ofstream myfile_sys;
-  myfile_sys.open ("toys/syscov_central.txt", ios::app);
+  myfile_sys.open ("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/syscov_MCXS_inc_1110.txt", ios::app);
   //Ninc
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_sys<<hmeas_MC->ProjectionY()->GetBinContent(i+1)*Eweight - hsig3D->ProjectionY()->GetBinContent(i+1)<<"\t";
+  for (int i=0; i<pi::reco_nbins; ++i) {
+    myfile_sys<<vmeas_inc(i) - hsiginc->GetBinContent(i+1)<<"\t";
+  }
   myfile_sys<<endl;
-  //Nini
+  /*//Nini
   for (int i=0; i<pi::reco_nbins; ++i)
     myfile_sys<<hmeas_MC->ProjectionX()->GetBinContent(i+1)*Eweight - hsig3D->ProjectionX()->GetBinContent(i+1)<<"\t";
   myfile_sys<<endl;
@@ -493,7 +540,7 @@ int main(int argc, char** argv){
     for (int j=0; j<pi::reco_nbins; ++j)
       for (int k=0; k<pi::reco_nbins; ++k)
         myfile_sys<<hmeas_MC->GetBinContent(k+1, j+1, i+1)*Eweight - hsig3D->GetBinContent(k+1, j+1, i+1)<<"\t";
-  myfile_sys<<endl<<endl;
+  myfile_sys<<endl<<endl;*/
   myfile_sys.close();
   
   /*fout->Write();
@@ -514,7 +561,7 @@ int main(int argc, char** argv){
   hval_trueint->Scale(Ndata/Nfakedata);
   hval_trueini->Scale(Ndata/Nfakedata);
 
-  TMatrixD mcov_3D_stat(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
+  /*TMatrixD mcov_3D_stat(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
   TMatrixD mcov_3D(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
   mcov_3D_stat = unfold_3D.GetMeasuredCov();
   TVectorD Emeas_MC = response_SliceID_3D->Emeasured();
@@ -523,44 +570,44 @@ int main(int argc, char** argv){
     mcov_3D(i, i) = mcov_3D_stat(i, i) + pow(Emeas_MC(i)*Eweight, 2);
     //if (mcov_3D(i, i)!=0)
     //  cout<<mcov_3D_stat(i, i)<<"\t"<<mcov_3D(i, i)<<endl;
-  }
-  FILE *fcov_3D=fopen("toys/cov_3D_input.txt","r");
-  if (!fcov_3D) {
-    cout<<"cov_3D_input not found!"<<endl;
+  }*/
+  FILE *fcov_Inc=fopen("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/cov_MCXS_inc_1110.txt","r");
+  if (!fcov_Inc) {
+    cout<<"cov_inc_input not found!"<<endl;
     return 1;
   }
-  TMatrixD mcov_3D_input(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
+  TMatrixD mcov_Inc_input(pi::reco_nbins, pi::reco_nbins);
   double vv;
-  for(int i=0; i<pow(pi::reco_nbins,3); i++) {
-    for(int j=0; j<pow(pi::reco_nbins,3); j++) {
-      fscanf(fcov_3D, "%lf", &vv);
-      mcov_3D_input(i, j) = vv;
+  for(int i=0; i<pi::reco_nbins; i++) {
+    for(int j=0; j<pi::reco_nbins; j++) {
+      fscanf(fcov_Inc, "%lf", &vv);
+      mcov_Inc_input(i, j) = vv;
     }
   }
-  mcov_3D = mcov_3D + mcov_3D_input;
-  unfold_3D.SetMeasuredCov(mcov_3D);
+  //mcov_3D = mcov_3D_input;
+  unfold_Inc.SetMeasuredCov(mcov_Inc_input);
   
   TH3D *hsig3D_uf;
   TH1D *hsiginc_uf;
   TH1D *hsignal_uf;
   TH1D *hsigini_uf;
   
-  hsig3D_uf = (TH3D*)unfold_3D.Hreco();
+  /*hsig3D_uf = (TH3D*)unfold_3D.Hreco();
   hsig3D_uf->SetNameTitle("hsig3D_uf", "Unfolded 3D signal;Slice ID;Events");
   std::filebuf fb;
   fb.open(root["UnfoldTable"].asString().c_str(),std::ios::out);
   std::ostream os(&fb);
   unfold_3D.PrintTable(os);
-  fb.close();
+  fb.close();*/
   hsiginc_uf = (TH1D*)unfold_Inc.Hreco();
   hsignal_uf = (TH1D*)unfold_Int.Hreco();
   hsigini_uf = (TH1D*)unfold_Ini.Hreco();
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
   //hsigini_uf->Scale(hsiginc_uf->Integral()/hsigini_uf->Integral());
-  hsigini_uf = (TH1D*)hsig3D_uf->Project3D("x");
-  hsiginc_uf = (TH1D*)hsig3D_uf->Project3D("y");
-  hsignal_uf = (TH1D*)hsig3D_uf->Project3D("z");
+  //hsigini_uf = (TH1D*)hsig3D_uf->Project3D("x");
+  //hsiginc_uf = (TH1D*)hsig3D_uf->Project3D("y");
+  //hsignal_uf = (TH1D*)hsig3D_uf->Project3D("z");
   hsigini_uf->SetNameTitle("hsigini_uf","Unfolded initial signal;Slice ID;Events");
   hsiginc_uf->SetNameTitle("hsiginc_uf","Unfolded incident signal;Slice ID;Events");
   hsignal_uf->SetNameTitle("hsignal_uf","Unfolded interaction signal;Slice ID;Events");
@@ -568,12 +615,12 @@ int main(int argc, char** argv){
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
   
   ofstream myfile_sys_unfold;
-  myfile_sys_unfold.open ("toys/syscov_central_unfold.txt", ios::app);
+  myfile_sys_unfold.open ("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/syscov_MCXS_RooUnfold_inc_1110.txt", ios::app);
   //Ninc
   for (int i=0; i<pi::reco_nbins; ++i)
     myfile_sys_unfold<<hsiginc_uf->GetBinContent(i+1)<<"\t";
   myfile_sys_unfold<<endl;
-  //Nini
+  /*//Nini
   for (int i=0; i<pi::reco_nbins; ++i)
     myfile_sys_unfold<<hsigini_uf->GetBinContent(i+1)<<"\t";
   myfile_sys_unfold<<endl;
@@ -586,12 +633,12 @@ int main(int argc, char** argv){
     for (int j=0; j<pi::reco_nbins; ++j)
       for (int k=0; k<pi::reco_nbins; ++k)
         myfile_sys_unfold<<hsig3D_uf->GetBinContent(k+1, j+1, i+1)<<"\t";
-  myfile_sys_unfold<<endl<<endl;
+  myfile_sys_unfold<<endl<<endl;*/
   myfile_sys_unfold.close();
   
-  /*fout->Write();
+  fout->Write();
   fout->Close();
-  return 0;*/
+  return 0;
   
   TMatrixD cov_matrix_3D = unfold_3D.Ereco();
   TH2D *covariance_3D = new TH2D(cov_matrix_3D);
