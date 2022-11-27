@@ -997,6 +997,9 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
   
   Long64_t nbytes = 0, nb = 0;
   TRandom3 *r3 = new TRandom3(0);
+  TRandom3 *r_mcxs = new TRandom3(0);
+  double f_mcxs = r_mcxs->Gaus(1, 0.1);
+  cout<<"$$$f_mcxs "<<f_mcxs<<endl;
   for (Long64_t num=0; num<nentries; num++) {
     if (num%10000==0) std::cout<<num<<"/"<<nentries<<std::endl;
     Long64_t jentry = num;
@@ -1048,8 +1051,8 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
         0.80, 0.83, 0.85, 0.86, 0.90,
       };*/
       double weiarr_mc[20] = {
-        1,1,1,1,1,1,1,1,1,1,
-        1,1,1,1,1,1,1,1,1,1,
+        f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,
+        f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,
       };
       
       if (hadana.pitype == 0) { // fake data

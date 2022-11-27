@@ -454,14 +454,18 @@ int main(int argc, char** argv){
   hsig3D->Add(hpiel_3D,-1);
   hsig3D->Add(hother_3D,-1);
   
-  double central_truth[13] = {13755.6, 521.355, 4687.65, 8443.53, 10055.3, 9165.82, 7466.6, 5704.19, 4351.92, 3398.71, 2566.63, 2038.35, 5617.28};
-  //double central_datasig[13] = {102.051, 310.714, 982.064, 2608.51, 4172.62, 4875.73, 4753.92, 4030.19, 3096.8, 2391.79, 1694.35, 1212.39, 958.097}; // real data
-  double central_datasig[13] = {85.3735, 225.925, 1072.21, 2761.74, 4295.01, 5035.34, 4601.26, 3874.87, 2963.82, 2267.13, 1801.99, 1160.03, 1044.52}; // true MC
-  TVectorD vcentral_truth(13);
-  for (int i=0; i<pi::reco_nbins; ++i) {
-    vcentral_truth(i) = central_truth[i];
-    hsiginc->SetBinContent(i+1, central_datasig[i]);
-  }
+  const int reco_nbins3D = pow(pi::reco_nbins,3);
+  //double central_truth[reco_nbins3D] = {12619.3,0,0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,0,0,0,0,3,63.7984,0,0,0,0,0,0,0,0,0,0,47.2254,62.6778,0,0,0,0,0,0,0,0,0,33.9785,40.5839,58.7379,0,0,0,0,0,0,0,0,35.9773,42.7963,51.1829,28.0609,0,0,0,0,0,0,0,24.3006,31.3072,23.2588,24.8591,9.4323,0,0,0,0,0,0,9.33343,31.6074,31.4622,10.4221,6.5242,0.934514,0,0,0,0,0,22.6129,21.5267,27.603,26.2599,8.55322,7.39511,1.37333,0,0,0,3,48.1213,54.0348,39.236,30.6509,14.7971,5.97039,2.2277,3.61514,0,0,6,101.566,148.338,144.86,88.6699,36.9555,15.7319,23.4759,8.51539,4.41719,0,0,0,0,0,0,0,0,0,0,0,0,468,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,54,4168.05,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,54,3237,4324.29,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,51,2485.49,3097.55,3432.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,1749.63,2333.61,2565.43,1549.35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,21,1410.37,1751.49,1958.13,1133.56,443.661,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,1006.67,1317.27,1401.12,875.032,312.145,207.383,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15,722.342,968.469,1070.15,603.55,247.81,137.842,101.188,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,1404.98,1731.73,1862.59,1099.73,504.049,241.862,160.591,69.6013,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,857.556,1087.4,1196.98,720.545,303.528,150.842,121.297,50.0534,54.6485}; // MC truth
+  double central_truth[reco_nbins3D] = {16558.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,71.6412,0,0,0,0,0,0,0,0,0,0,0,70.3828,0,0,0,0,0,0,0,0,0,38.1555,0,0,0,0,0,0,0,0,0,0,40.4001,48.0574,57.4749,31.5105,0,0,0,0,0,0,0,27.2879,35.1558,26.1181,0,0,0,0,0,0,0,0,0,35.493,35.3299,11.7032,0,0,0,0,0,0,0,25.3927,24.173,30.9963,29.4881,0,0,0,0,0,0,0,54.0369,60.6773,44.0593,34.419,16.6161,6.70433,0,0,0,0,0,114.052,166.573,162.668,99.5702,41.4985,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,897.908,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,61.2597,4372.24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32.0605,3297.1,4167.05,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,47.7562,2692.64,3152.71,3567.88,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,25.7251,1889.8,2461.51,2809.74,1772.24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20.0316,1643.68,1909.4,2210.23,1293.24,612.961,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1180.83,1560.71,1663.24,952.884,323.231,244.888,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13.5387,770.538,1094.8,1335.06,768.724,241.049,163.292,79.4288,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1146.18,1815.74,2297.27,1355.97,605,368.408,197.899,47.0622,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,707.788,555.23,1056.82,887.475,334.908,158.523,157.946,140.319,59.9514}; // data unfolded (iterated)
+  double central_datasig[reco_nbins3D] = {102.188,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7.86334,1.35575,0,0,0,0,0,0,0,0,0,4.65634,3.87494,0,0,0,0,0,0,0,0,0,3.8442,3.85163,4.45631,0,0,0,0,0,0,0,0,1.53215,4.60658,3.24738,1.15254,0,0,0,0,0,0,0,1.28249,2.20855,2.18762,2.25887,1.2099,0,0,0,0,0,0,10.4693,5.80001,4.44475,3.31591,1.42079,0,0,0,0,0,0,8.94783,18.2658,12.0404,9.09564,1.29002,0,0,0,0,0,0,2.80312,3.30549,4.36473,5.32057,2.18515,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,310.714,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,147.318,834.746,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,81.9655,2066.59,450.734,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,104.483,1828.19,1778.72,452.705,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,65.5469,1311.37,1681.16,1561.45,244.045,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,39.9205,1031.36,1335.9,1396.95,842.675,96.5756,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5.79838,848.525,1073.88,1170.54,692.045,208.212,22.0357,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32.1614,635.665,780.309,860.417,544.473,196.018,20.1658,2.13673,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6.41122,783.072,1390.98,1579.53,1020.4,392.251,64.8325,9.13673,2.13673,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12.9656,16.6283,301.131,358.069,167.541,55.1432,11.4102,8.41019,8.82038}; // data - bkg
+  TVectorD vcentral_truth(reco_nbins3D);
+  for (int i=0; i<pi::reco_nbins; ++i)
+    for (int j=0; j<pi::reco_nbins; ++j)
+      for (int k=0; k<pi::reco_nbins; ++k) {
+        int idx = i*pow(pi::reco_nbins,2) + j*pi::reco_nbins + k;
+        vcentral_truth(idx) = central_truth[idx];
+        hsig3D->SetBinContent(k+1, j+1, i+1, central_datasig[idx]);
+      }
   // use Cholesky decomposition to generate correlated toys
   /*FILE *fcholsqrt_Inc=fopen("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/cholsqrt_MCXS_inc_1110.txt","r");
   if (!fcholsqrt_Inc) {
@@ -488,7 +492,7 @@ int main(int argc, char** argv){
   }*/
   // unfolding
   RooUnfoldResponse *response_SliceID_3D = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
-  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 0);
+  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 1);
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
   RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 10);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
@@ -497,9 +501,9 @@ int main(int argc, char** argv){
   RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 10);
   
   TH3D *hmeas_MC = (TH3D*)response_SliceID_3D->Hmeasured();
-  //hsigini = (TH1D*)hsig3D->Project3D("x");
-  //hsiginc = (TH1D*)hsig3D->Project3D("y");
-  //hsignal = (TH1D*)hsig3D->Project3D("z");
+  hsigini = (TH1D*)hsig3D->Project3D("x");
+  hsiginc = (TH1D*)hsig3D->Project3D("y");
+  hsignal = (TH1D*)hsig3D->Project3D("z");
   hsigini->SetNameTitle("hsigini","All pion initial;Slice ID;Events");
   hsiginc->SetNameTitle("hsiginc","All pion incident;Slice ID;Events");
   hsignal->SetNameTitle("hsignal","Pion interaction signal;Slice ID;Events");
@@ -508,44 +512,54 @@ int main(int argc, char** argv){
   double Nmc = hmeas_MC->Integral();
   double Eweight = Ndata/Nmc;
 
-  TH1D *htruth_inc = (TH1D*)response_SliceID_Inc->Htruth(); // to normalize R matrix
-  TH2D *hresponse_inc = (TH2D*)response_SliceID_Inc->Hresponse();
-  TMatrixD mR_inc(pi::reco_nbins, pi::reco_nbins);
-  for (int i=1; i<=pi::reco_nbins; i++) {
-    double factor = 1/htruth_inc->GetBinContent(i);
-    for (int j=1; j<=pi::reco_nbins; j++) {
-      double tmp = hresponse_inc->GetBinContent(j, i);
-      mR_inc(j-1, i-1) = tmp*factor;
+  TH3D *htruth_3D = (TH3D*)response_SliceID_3D->Htruth(); // to normalize R matrix
+  TH2D *hresponse_3D = (TH2D*)response_SliceID_3D->Hresponse();
+  TMatrixD mR_3D(pow(pi::reco_nbins, 3), pow(pi::reco_nbins, 3));
+  for (int i=0; i<pi::reco_nbins; i++) {
+    for (int j=0; j<pi::reco_nbins; j++) {
+      for (int k=0; k<pi::reco_nbins; k++) {
+        double factor = 1/htruth_3D->GetBinContent(k+1, j+1, i+1);
+        for (int l=0; l<pow(pi::reco_nbins, 3); l++) {
+          int idx = i*pow(pi::reco_nbins,2) + j*pi::reco_nbins + k;
+          double tmp = hresponse_3D->GetBinContent(l+1, idx+1);
+          if (tmp != 0)
+            mR_3D(l, idx) = tmp*factor;
+        }
+      }
     }
   }
-  TVectorD vmeas_inc(pi::reco_nbins);
-  vmeas_inc = mR_inc * vcentral_truth;
-  ofstream myfile_sys;
-  myfile_sys.open ("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/syscov_MCXS_inc_1110.txt", ios::app);
-  //Ninc
-  for (int i=0; i<pi::reco_nbins; ++i) {
-    myfile_sys<<vmeas_inc(i) - hsiginc->GetBinContent(i+1)<<"\t";
+  TVectorD vmeas_3D(pow(pi::reco_nbins, 3));
+  vmeas_3D = mR_3D * vcentral_truth;
+  if (false) { // toy
+    ofstream myfile_sys;
+    myfile_sys.open ("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/syscov_MCXS_1127.txt", ios::app);
+    /*//Ninc
+     for (int i=0; i<pi::reco_nbins; ++i) {
+     myfile_sys<<vmeas_inc(i) - hsiginc->GetBinContent(i+1)<<"\t";
+     }
+     myfile_sys<<endl;
+     //Nini
+     for (int i=0; i<pi::reco_nbins; ++i)
+     myfile_sys<<hmeas_MC->ProjectionX()->GetBinContent(i+1)*Eweight - hsig3D->ProjectionX()->GetBinContent(i+1)<<"\t";
+     myfile_sys<<endl;
+     //Nint
+     for (int i=0; i<pi::reco_nbins; ++i)
+     myfile_sys<<hmeas_MC->ProjectionZ()->GetBinContent(i+1)*Eweight - hsig3D->ProjectionZ()->GetBinContent(i+1)<<"\t";
+     myfile_sys<<endl;*/
+    //3D
+    for (int i=0; i<pi::reco_nbins; ++i)
+      for (int j=0; j<pi::reco_nbins; ++j)
+        for (int k=0; k<pi::reco_nbins; ++k) {
+          int idx = i*pow(pi::reco_nbins,2) + j*pi::reco_nbins + k;
+          myfile_sys<<vmeas_3D(idx) - hsig3D->GetBinContent(k+1, j+1, i+1)<<"\t";
+        }
+    myfile_sys<<endl<<endl;
+    myfile_sys.close();
+    
+    /*fout->Write();
+     fout->Close();
+     return 0;*/
   }
-  myfile_sys<<endl;
-  /*//Nini
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_sys<<hmeas_MC->ProjectionX()->GetBinContent(i+1)*Eweight - hsig3D->ProjectionX()->GetBinContent(i+1)<<"\t";
-  myfile_sys<<endl;
-  //Nint
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_sys<<hmeas_MC->ProjectionZ()->GetBinContent(i+1)*Eweight - hsig3D->ProjectionZ()->GetBinContent(i+1)<<"\t";
-  myfile_sys<<endl;
-  //3D
-  for (int i=0; i<pi::reco_nbins; ++i)
-    for (int j=0; j<pi::reco_nbins; ++j)
-      for (int k=0; k<pi::reco_nbins; ++k)
-        myfile_sys<<hmeas_MC->GetBinContent(k+1, j+1, i+1)*Eweight - hsig3D->GetBinContent(k+1, j+1, i+1)<<"\t";
-  myfile_sys<<endl<<endl;*/
-  myfile_sys.close();
-  
-  /*fout->Write();
-  fout->Close();
-  return 0;*/
   
   TH1D *hval_siginc_reco = (TH1D*)fmc->Get("h_recosliceid_pion_cuts");
   TH1D *hval_signal_reco = (TH1D*)fmc->Get("h_recosliceid_pioninelastic_cuts");
@@ -571,76 +585,95 @@ int main(int argc, char** argv){
     //if (mcov_3D(i, i)!=0)
     //  cout<<mcov_3D_stat(i, i)<<"\t"<<mcov_3D(i, i)<<endl;
   }*/
-  FILE *fcov_Inc=fopen("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/cov_MCXS_inc_1110.txt","r");
-  if (!fcov_Inc) {
-    cout<<"cov_inc_input not found!"<<endl;
-    return 1;
-  }
-  TMatrixD mcov_Inc_input(pi::reco_nbins, pi::reco_nbins);
-  double vv;
-  for(int i=0; i<pi::reco_nbins; i++) {
-    for(int j=0; j<pi::reco_nbins; j++) {
-      fscanf(fcov_Inc, "%lf", &vv);
-      mcov_Inc_input(i, j) = vv;
+  if (false) { // has_cov_input
+    FILE *fcov_3D=fopen("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/cov_MCXS_1127.txt","r");
+    if (!fcov_3D) {
+      cout<<"cov_3D_input not found!"<<endl;
+      return 1;
     }
+    TMatrixD mcov_3D_input(pow(pi::reco_nbins, 3), pow(pi::reco_nbins, 3));
+    double vv;
+    for(int i=0; i<pow(pi::reco_nbins, 3); i++) {
+      for(int j=0; j<pow(pi::reco_nbins, 3); j++) {
+        fscanf(fcov_3D, "%lf", &vv);
+        mcov_3D_input(i, j) = vv;
+      }
+    }
+    //mcov_3D = mcov_3D_input;
+    unfold_3D.SetMeasuredCov(mcov_3D_input);
   }
-  //mcov_3D = mcov_3D_input;
-  unfold_Inc.SetMeasuredCov(mcov_Inc_input);
   
   TH3D *hsig3D_uf;
   TH1D *hsiginc_uf;
   TH1D *hsignal_uf;
   TH1D *hsigini_uf;
   
-  /*hsig3D_uf = (TH3D*)unfold_3D.Hreco();
+  hsig3D_uf = (TH3D*)unfold_3D.Hreco();
   hsig3D_uf->SetNameTitle("hsig3D_uf", "Unfolded 3D signal;Slice ID;Events");
   std::filebuf fb;
   fb.open(root["UnfoldTable"].asString().c_str(),std::ios::out);
   std::ostream os(&fb);
   unfold_3D.PrintTable(os);
-  fb.close();*/
+  fb.close();
   hsiginc_uf = (TH1D*)unfold_Inc.Hreco();
   hsignal_uf = (TH1D*)unfold_Int.Hreco();
   hsigini_uf = (TH1D*)unfold_Ini.Hreco();
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
   //hsigini_uf->Scale(hsiginc_uf->Integral()/hsigini_uf->Integral());
-  //hsigini_uf = (TH1D*)hsig3D_uf->Project3D("x");
-  //hsiginc_uf = (TH1D*)hsig3D_uf->Project3D("y");
-  //hsignal_uf = (TH1D*)hsig3D_uf->Project3D("z");
+  hsigini_uf = (TH1D*)hsig3D_uf->Project3D("x");
+  hsiginc_uf = (TH1D*)hsig3D_uf->Project3D("y");
+  hsignal_uf = (TH1D*)hsig3D_uf->Project3D("z");
   hsigini_uf->SetNameTitle("hsigini_uf","Unfolded initial signal;Slice ID;Events");
   hsiginc_uf->SetNameTitle("hsiginc_uf","Unfolded incident signal;Slice ID;Events");
   hsignal_uf->SetNameTitle("hsignal_uf","Unfolded interaction signal;Slice ID;Events");
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
   
-  ofstream myfile_sys_unfold;
-  myfile_sys_unfold.open ("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/syscov_MCXS_RooUnfold_inc_1110.txt", ios::app);
-  //Ninc
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_sys_unfold<<hsiginc_uf->GetBinContent(i+1)<<"\t";
-  myfile_sys_unfold<<endl;
-  /*//Nini
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_sys_unfold<<hsigini_uf->GetBinContent(i+1)<<"\t";
-  myfile_sys_unfold<<endl;
-  //Nint
-  for (int i=0; i<pi::reco_nbins; ++i)
-    myfile_sys_unfold<<hsignal_uf->GetBinContent(i+1)<<"\t";
-  myfile_sys_unfold<<endl;
-  //3D
-  for (int i=0; i<pi::reco_nbins; ++i)
-    for (int j=0; j<pi::reco_nbins; ++j)
-      for (int k=0; k<pi::reco_nbins; ++k)
-        myfile_sys_unfold<<hsig3D_uf->GetBinContent(k+1, j+1, i+1)<<"\t";
-  myfile_sys_unfold<<endl<<endl;*/
-  myfile_sys_unfold.close();
-  
-  fout->Write();
-  fout->Close();
-  return 0;
+  if (false) { // toy
+    ofstream myfile_sys_unfold;
+    myfile_sys_unfold.open ("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/syscov_MCXS_RooUnfold_1127.txt", ios::app);
+    /*//Ninc
+     for (int i=0; i<pi::reco_nbins; ++i)
+     myfile_sys_unfold<<hsiginc_uf->GetBinContent(i+1)<<"\t";
+     myfile_sys_unfold<<endl;
+     //Nini
+     for (int i=0; i<pi::reco_nbins; ++i)
+     myfile_sys_unfold<<hsigini_uf->GetBinContent(i+1)<<"\t";
+     myfile_sys_unfold<<endl;
+     //Nint
+     for (int i=0; i<pi::reco_nbins; ++i)
+     myfile_sys_unfold<<hsignal_uf->GetBinContent(i+1)<<"\t";
+     myfile_sys_unfold<<endl;*/
+    //3D
+    for (int i=0; i<pi::reco_nbins; ++i)
+      for (int j=0; j<pi::reco_nbins; ++j)
+        for (int k=0; k<pi::reco_nbins; ++k) {
+          myfile_sys_unfold<<hsig3D_uf->GetBinContent(k+1, j+1, i+1)<<"\t";
+        }
+    myfile_sys_unfold<<endl<<endl;
+    myfile_sys_unfold.close();
+    
+    fout->Write();
+    fout->Close();
+    return 0;
+  }
   
   TMatrixD cov_matrix_3D = unfold_3D.Ereco();
+  if (false) { // has_cov_input after unfolding
+    FILE *fcov_3D=fopen("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/cov_MCXS_RooUnfold_1127.txt","r");
+    if (!fcov_3D) {
+      cout<<"cov_3D_RooUnfold not found!"<<endl;
+      return 1;
+    }
+    double vv;
+    for(int i=0; i<pow(pi::reco_nbins, 3); i++) {
+      for(int j=0; j<pow(pi::reco_nbins, 3); j++) {
+        fscanf(fcov_3D, "%lf", &vv);
+        cov_matrix_3D(i, j) = vv;
+      }
+    }
+  }
   TH2D *covariance_3D = new TH2D(cov_matrix_3D);
   covariance_3D->Write("covariance_3D");
   TH2D *correlation_3D = (TH2D*)covariance_3D->Clone();
