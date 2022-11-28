@@ -7,7 +7,7 @@
 #include "EventType.h"
 #include "TProfile.h"
 
-double CalWeight(const anavar & evt, const int &partype);
+double CalWeight(const anavar & evt, const int &partype, double rdm_radius, double rdm_angle);
 double CalBkgW(const anavar & evt, double mu_weight=1., double p_weight=1., double spi_weight=1.);
 double CalG4RW_ori(const anavar & evt, const double w1=1., const double w2=1.);
 double CalG4RW(const anavar & evt, double weight[]);

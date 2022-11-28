@@ -997,9 +997,11 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
   
   Long64_t nbytes = 0, nb = 0;
   TRandom3 *r3 = new TRandom3(0);
-  TRandom3 *r_mcxs = new TRandom3(0);
-  double f_mcxs = r_mcxs->Gaus(1, 0.1);
-  cout<<"$$$f_mcxs "<<f_mcxs<<endl;
+  TRandom3 *r_reweiP = new TRandom3(0);
+  double rdm_radius = r_reweiP->Gaus(0, 1);
+  double rdm_angle = r_reweiP->Uniform(2*TMath::Pi());
+  cout<<"$$$rdm_radius "<<rdm_radius<<endl;
+  cout<<"$$$rdm_angle "<<rdm_angle<<endl;
   for (Long64_t num=0; num<nentries; num++) {
     if (num%10000==0) std::cout<<num<<"/"<<nentries<<std::endl;
     Long64_t jentry = num;
@@ -1029,7 +1031,7 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
       if (!hadana.PassAPA3Cut(evt)) continue;*/
     }
     
-    double weight = CalWeight(evt, hadana.pitype); // muon reweight; momentum reweight (to reconcile real data and MC)
+    double weight = CalWeight(evt, hadana.pitype, rdm_radius, rdm_angle); // muon reweight; momentum reweight (to reconcile real data and MC)
     double g4rw = 1; // geant4reweight (to fake data for test; it turns out it should also be applied to true MC to make unfolding reliable)
     double bkgw = 1; // bkg fraction variation (to fake data for test)
     
@@ -1051,8 +1053,8 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
         0.80, 0.83, 0.85, 0.86, 0.90,
       };*/
       double weiarr_mc[20] = {
-        f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,
-        f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,f_mcxs,
+        1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,
       };
       
       if (hadana.pitype == 0) { // fake data

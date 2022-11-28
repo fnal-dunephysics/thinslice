@@ -493,6 +493,8 @@ int main(int argc, char** argv){
   // unfolding
   RooUnfoldResponse *response_SliceID_3D = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
   RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 1);
+  RooUnfoldResponse *response_SliceID_3D4 = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
+  RooUnfoldBayes unfold_3D4 (response_SliceID_3D4, hsig3D, 4);
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
   RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 10);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
@@ -530,9 +532,9 @@ int main(int argc, char** argv){
   }
   TVectorD vmeas_3D(pow(pi::reco_nbins, 3));
   vmeas_3D = mR_3D * vcentral_truth;
-  if (false) { // toy
+  if (true) { // toy
     ofstream myfile_sys;
-    myfile_sys.open ("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/syscov_MCXS_1127.txt", ios::app);
+    myfile_sys.open ("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/syscov_reweiP_1127.txt", ios::app);
     /*//Ninc
      for (int i=0; i<pi::reco_nbins; ++i) {
      myfile_sys<<vmeas_inc(i) - hsiginc->GetBinContent(i+1)<<"\t";
@@ -586,7 +588,7 @@ int main(int argc, char** argv){
     //  cout<<mcov_3D_stat(i, i)<<"\t"<<mcov_3D(i, i)<<endl;
   }*/
   if (false) { // has_cov_input
-    FILE *fcov_3D=fopen("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/cov_MCXS_1127.txt","r");
+    FILE *fcov_3D=fopen("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/cov_reweiP_1127.txt","r");
     if (!fcov_3D) {
       cout<<"cov_3D_input not found!"<<endl;
       return 1;
@@ -610,6 +612,7 @@ int main(int argc, char** argv){
   
   hsig3D_uf = (TH3D*)unfold_3D.Hreco();
   hsig3D_uf->SetNameTitle("hsig3D_uf", "Unfolded 3D signal;Slice ID;Events");
+  TH3D *hsig3D_uf4 = (TH3D*)unfold_3D4.Hreco();
   std::filebuf fb;
   fb.open(root["UnfoldTable"].asString().c_str(),std::ios::out);
   std::ostream os(&fb);
@@ -630,9 +633,9 @@ int main(int argc, char** argv){
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
   
-  if (false) { // toy
+  if (true) { // toy
     ofstream myfile_sys_unfold;
-    myfile_sys_unfold.open ("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/syscov_MCXS_RooUnfold_1127.txt", ios::app);
+    myfile_sys_unfold.open ("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/syscov_reweiP_RooUnfold_1127.txt", ios::app);
     /*//Ninc
      for (int i=0; i<pi::reco_nbins; ++i)
      myfile_sys_unfold<<hsiginc_uf->GetBinContent(i+1)<<"\t";
@@ -654,6 +657,16 @@ int main(int argc, char** argv){
     myfile_sys_unfold<<endl<<endl;
     myfile_sys_unfold.close();
     
+    ofstream myfile_sys_unfold4;
+    myfile_sys_unfold4.open ("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/syscov_reweiP_RooUnfold_11274.txt", ios::app);
+    for (int i=0; i<pi::reco_nbins; ++i)
+      for (int j=0; j<pi::reco_nbins; ++j)
+        for (int k=0; k<pi::reco_nbins; ++k) {
+          myfile_sys_unfold4<<hsig3D_uf4->GetBinContent(k+1, j+1, i+1)<<"\t";
+        }
+    myfile_sys_unfold4<<endl<<endl;
+    myfile_sys_unfold4.close();
+    
     fout->Write();
     fout->Close();
     return 0;
@@ -661,7 +674,7 @@ int main(int argc, char** argv){
   
   TMatrixD cov_matrix_3D = unfold_3D.Ereco();
   if (false) { // has_cov_input after unfolding
-    FILE *fcov_3D=fopen("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/cov_MCXS_RooUnfold_1127.txt","r");
+    FILE *fcov_3D=fopen("/dune/app/users/yinrui/Wiener-SVD-Unfolding/toys/cov_reweiP_RooUnfold_1127.txt","r");
     if (!fcov_3D) {
       cout<<"cov_3D_RooUnfold not found!"<<endl;
       return 1;
