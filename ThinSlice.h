@@ -58,6 +58,7 @@ class ThinSlice {
   TH1D *h_recosliceid_pion_cuts;
   TH1D *h_recoinisliceid_pion_cuts;
   TH1D *h_recosliceid_pioninelastic_cuts;
+  TH3D *h_truesliceid_3D;
 
   double true_interactions[pi::true_nbins];
   double true_incidents[pi::true_nbins];

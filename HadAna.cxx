@@ -86,7 +86,7 @@ int HadAna::GetPiParType(const anavar& evt){
   if (!evt.MC){
     return pi::kData;
   }
-  else if (r3->Rndm()>0.5){ // divide half of MC as fake data
+  else if (r33->Rndm()>0.5){ // divide half of MC as fake data
     return pi::kData;
   }
   else if (!evt.reco_beam_true_byE_matched){ // the true beam track is not selected

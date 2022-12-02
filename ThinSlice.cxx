@@ -44,6 +44,7 @@ void ThinSlice::BookHistograms(){
   h_recosliceid_pion_cuts = new TH1D("h_recosliceid_pion_cuts","h_recosliceid_pion_cuts;Reco SliceID", pi::reco_nbins, pi::reco_bins);
   h_recoinisliceid_pion_cuts = new TH1D("h_recoinisliceid_pion_cuts","h_recoinisliceid_pion_cuts;Reco SliceID", pi::reco_nbins, pi::reco_bins);
   h_recosliceid_pioninelastic_cuts = new TH1D("h_recosliceid_pioninelastic_cuts","h_recosliceid_pioninelastic_cuts;Reco SliceID", pi::reco_nbins, pi::reco_bins);
+  h_truesliceid_3D = new TH3D("h_truesliceid_3D","h_truesliceid_3D;True SliceID;True SliceID;True SliceID", pi::true_nbins, pi::true_bins, pi::true_nbins, pi::true_bins, pi::true_nbins, pi::true_bins);
 
   h_truesliceid_pion_all->Sumw2();
   h_trueinisliceid_pion_all->Sumw2();
@@ -594,6 +595,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
         h_truesliceid_pion_all->Fill(true_sliceID, weight*g4rw);
         h_trueinisliceid_pion_all->Fill(true_ini_sliceID, weight*g4rw);
         h_truesliceid_pioninelastic_all->Fill(true_int_sliceID, weight*g4rw);
+        h_truesliceid_3D->Fill(true_ini_sliceID, true_sliceID, true_int_sliceID, weight*g4rw);
       }
       else{
         uf.eff_den_Int->Fill(true_int_sliceID, weight*g4rw);
@@ -997,11 +999,6 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
   
   Long64_t nbytes = 0, nb = 0;
   TRandom3 *r3 = new TRandom3(0);
-  TRandom3 *r_reweiP = new TRandom3(0);
-  double rdm_radius = r_reweiP->Gaus(0, 1);
-  double rdm_angle = r_reweiP->Uniform(2*TMath::Pi());
-  cout<<"$$$rdm_radius "<<rdm_radius<<endl;
-  cout<<"$$$rdm_angle "<<rdm_angle<<endl;
   for (Long64_t num=0; num<nentries; num++) {
     if (num%10000==0) std::cout<<num<<"/"<<nentries<<std::endl;
     Long64_t jentry = num;
@@ -1031,7 +1028,7 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
       if (!hadana.PassAPA3Cut(evt)) continue;*/
     }
     
-    double weight = CalWeight(evt, hadana.pitype, rdm_radius, rdm_angle); // muon reweight; momentum reweight (to reconcile real data and MC)
+    double weight = CalWeight(evt, hadana.pitype); // muon reweight; momentum reweight (to reconcile real data and MC)
     double g4rw = 1; // geant4reweight (to fake data for test; it turns out it should also be applied to true MC to make unfolding reliable)
     double bkgw = 1; // bkg fraction variation (to fake data for test)
     
