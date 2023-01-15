@@ -67,8 +67,11 @@
   add_executable(RunCalcXS CalcXS.cxx)
   target_link_libraries(RunCalcXS Event)
 
+  add_executable(forUnfold forUnfold.cxx)
+  target_link_libraries(forUnfold Event)
+
   add_executable(RunBBStudies BBStudies.cxx)
   target_link_libraries(RunBBStudies Event)
 
-  install(TARGETS RunCrossSection BackgroundFit RunProtonInel RunEffEval RunCalcXS RunBBStudies  DESTINATION bin)
+  install(TARGETS RunCrossSection BackgroundFit RunProtonInel RunEffEval RunCalcXS forUnfold RunBBStudies  DESTINATION bin)
   install(TARGETS Event DESTINATION lib)

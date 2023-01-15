@@ -44,7 +44,6 @@ void ThinSlice::BookHistograms(){
   h_recosliceid_pion_cuts = new TH1D("h_recosliceid_pion_cuts","h_recosliceid_pion_cuts;Reco SliceID", pi::reco_nbins, pi::reco_bins);
   h_recoinisliceid_pion_cuts = new TH1D("h_recoinisliceid_pion_cuts","h_recoinisliceid_pion_cuts;Reco SliceID", pi::reco_nbins, pi::reco_bins);
   h_recosliceid_pioninelastic_cuts = new TH1D("h_recosliceid_pioninelastic_cuts","h_recosliceid_pioninelastic_cuts;Reco SliceID", pi::reco_nbins, pi::reco_bins);
-  h_truesliceid_3D = new TH3D("h_truesliceid_3D","h_truesliceid_3D;True SliceID;True SliceID;True SliceID", pi::true_nbins, pi::true_bins, pi::true_nbins, pi::true_bins, pi::true_nbins, pi::true_bins);
 
   h_truesliceid_pion_all->Sumw2();
   h_trueinisliceid_pion_all->Sumw2();
@@ -246,8 +245,8 @@ void ThinSlice::BookHistograms(){
   h_upstream_Eloss->Sumw2();
   h_upstream_Eloss_mu = new TH1D("h_upstream_Eloss_mu","h_upstream_Eloss_mu;MeV", 100, -100, 100);
   h_upstream_Eloss_mu->Sumw2();
-  h_upstream_Eloss_vs_true_Eff = new TH2D("h_upstream_Eloss_vs_true_Eff","h_upstream_Eloss_vs_true_Eff;MeV;MeV", 100, 600, 1100, 100, -100, 100);
-  h_upstream_Eloss_vs_Einst = new TH2D("h_upstream_Eloss_vs_Einst","h_upstream_Eloss_vs_Einst;MeV;MeV", 100, 600, 1100, 100, -100, 100);
+  h_upstream_Eloss_vs_true_Eff = new TH2D("h_upstream_Eloss_vs_true_Eff","h_upstream_Eloss_vs_true_Eff;MeV;MeV", 100, 600, 1100, 120, -120, 120);
+  h_upstream_Eloss_vs_Einst = new TH2D("h_upstream_Eloss_vs_Einst","h_upstream_Eloss_vs_Einst;MeV;MeV", 100, 600, 1100, 120, -120, 120);
   h_diff_startKE_vs_Einst = new TH2D("h_diff_startKE_vs_Einst","h_diff_startKE_vs_Einst;MeV;MeV", 100, 600, 1100, 100, -100, 100);
   h_true_upstream_Eloss = new TH2D("h_true_upstream_Eloss","h_true_upstream_Eloss;MeV;MeV", 100, 600, 1100, 100, -100, 100);
   h_diff_Eint = new TH1D("h_diff_Eint","h_diff_Eint;MeV", 100, -100, 100);
@@ -304,12 +303,12 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
   else {//not using all track reconstruction
     if (evt.MC){
       if (ff_energy_true > -999999) { // entered TPC
-        if (evt.true_beam_PDG == 211 && evt.reco_beam_true_byE_matched) {
+        if (evt.true_beam_PDG == 211 && evt.reco_beam_true_byE_matched && hadana.PassBeamScraperCut(evt)) {
           h_beam_inst_KE->Fill(beam_inst_KE);
           h_true_ffKE->Fill(ff_energy_true);
           h_upstream_Eloss->Fill(beam_inst_KE - ff_energy_true);
-          h_upstream_Eloss_vs_true_Eff->Fill(ff_energy_true, beam_inst_KE - ff_energy_true);
-          h_upstream_Eloss_vs_Einst->Fill(beam_inst_KE, beam_inst_KE - ff_energy_true);
+          h_upstream_Eloss_vs_true_Eff->Fill(ff_energy_true, beam_inst_KE - ff_energy_true, weight);
+          h_upstream_Eloss_vs_Einst->Fill(beam_inst_KE, beam_inst_KE - ff_energy_true, weight);
           double true_beam_startKE = sqrt(pow(evt.true_beam_startP*1000,2)+pow(pimass,2)) - pimass;
           h_diff_startKE_vs_Einst->Fill(beam_inst_KE, beam_inst_KE - true_beam_startKE);
           h_true_upstream_Eloss->Fill(ff_energy_true, true_beam_startKE - ff_energy_true);
@@ -461,7 +460,13 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
 
     if (!evt.reco_beam_calo_wire->empty()){
       if (hadana.reco_trklen>0) {
-        ff_energy_reco = beam_inst_KE - 13.;
+        //ff_energy_reco = beam_inst_KE - 13.;
+        double EdepEloss = 95.8 - 0.408*beam_inst_KE + 0.000347*pow(beam_inst_KE,2); // fir errors: 95.8 +- 16.4, -0.408 +- 0.038, 0.000347 +- 0.000021
+        if (EdepEloss>1000) { // very few events have too large beam momentum
+          cout<<"$$ "<<EdepEloss<<endl;
+          EdepEloss = 1000;
+        }
+        ff_energy_reco = beam_inst_KE - EdepEloss;
         if (isTestSample)
           ff_energy_reco += rdm_gaus;
       }
@@ -595,7 +600,6 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
         h_truesliceid_pion_all->Fill(true_sliceID, weight*g4rw);
         h_trueinisliceid_pion_all->Fill(true_ini_sliceID, weight*g4rw);
         h_truesliceid_pioninelastic_all->Fill(true_int_sliceID, weight*g4rw);
-        h_truesliceid_3D->Fill(true_ini_sliceID, true_sliceID, true_int_sliceID, weight*g4rw);
       }
       else{
         uf.eff_den_Int->Fill(true_int_sliceID, weight*g4rw);

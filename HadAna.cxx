@@ -86,7 +86,7 @@ int HadAna::GetPiParType(const anavar& evt){
   if (!evt.MC){
     return pi::kData;
   }
-  else if (r33->Rndm()>0.5){ // divide half of MC as fake data
+  else if (false){//(r3->Rndm()>0.5){ // divide half of MC as fake data
     return pi::kData;
   }
   else if (!evt.reco_beam_true_byE_matched){ // the true beam track is not selected
@@ -170,6 +170,17 @@ bool HadAna::PassPandoraSliceCut(const anavar& evt) const{ // whether recognized
   else return (evt.reco_beam_type == pandora_slice_pdg);
 }
 
+bool HadAna::PassBeamScraperCut(const anavar& evt) const{
+  double dxy;
+  if (evt.MC)
+    dxy = pow( (evt.beam_inst_X-beam_startX_mc_inst)/beam_startX_rms_mc_inst, 2) + pow( (evt.beam_inst_Y-beam_startY_mc_inst)/beam_startY_rms_mc_inst, 2);
+  else
+    dxy = pow( (evt.beam_inst_X-beam_startX_data_inst)/beam_startX_rms_data_inst, 2) + pow( (evt.beam_inst_Y-beam_startY_data_inst)/beam_startY_rms_data_inst, 2);
+  if (dxy > 4.5)
+    return false;
+  else
+    return true;
+}
 bool HadAna::PassBeamQualityCut(const anavar& evt, bool has_angle_cut, bool has_beam_cut) const{ // cut on beam entrance location and beam angle
 
   /*if (beamcut_dx_min<beamcut_dx_max){
@@ -208,13 +219,7 @@ bool HadAna::PassBeamQualityCut(const anavar& evt, bool has_angle_cut, bool has_
   }
   
   if (has_beam_cut) {
-    double dxy;
-    if (evt.MC)
-      dxy = pow( (evt.beam_inst_X-beam_startX_mc_inst)/beam_startX_rms_mc_inst, 2) + pow( (evt.beam_inst_Y-beam_startY_mc_inst)/beam_startY_rms_mc_inst, 2);
-    else
-      dxy = pow( (evt.beam_inst_X-beam_startX_data_inst)/beam_startX_rms_data_inst, 2) + pow( (evt.beam_inst_Y-beam_startY_data_inst)/beam_startY_rms_data_inst, 2);
-    if (dxy > 4.5)
-      return false;
+    return PassBeamScraperCut(evt);
   }
 
   return true;

@@ -42,6 +42,7 @@ class HadAna{
   void SetPandoraSlicePDG(int pdg);
 
   bool PassPandoraSliceCut(const anavar& evt) const;
+  bool PassBeamScraperCut(const anavar& evt) const;
   bool PassBeamQualityCut(const anavar& evt, bool has_angle_cut = true, bool has_beam_cut = true) const;
   bool PassAPA3Cut(const anavar& evt) const;
   bool PassCaloSizeCut(const anavar& evt) const;
