@@ -465,7 +465,7 @@ int main(int argc, char** argv){
         int idx = i*pow(pi::reco_nbins,2) + j*pi::reco_nbins + k;
         //vcentral_truth(idx) = central_truth[idx];
         hsig3D->SetBinContent(k+1, j+1, i+1, central_datasig[idx]);
-        hsig3D->SetBinError(k+1, j+1, i+1, hdata_3D->GetBinError(k+1, j+1, i+1));
+        hsig3D->SetBinError(k+1, j+1, i+1, hdata_3D->GetBinError(k+1, j+1, i+1)); // exclude bkg sys error
       }
   // use Cholesky decomposition to generate correlated toys
   /*FILE *fcholsqrt_Inc=fopen("../../thinslice_sys_nominal/build/toys/cholsqrt_MCXS_inc_1110.txt","r");
@@ -513,9 +513,9 @@ int main(int argc, char** argv){
   
   double Ndata = hsig3D->Integral();
   double Nmc = hmeas_MC->Integral();
-  /*double Eweight = Ndata/Nmc;
+  double Eweight = Ndata/Nmc;
 
-  TH3D *htruth_3D = (TH3D*)response_SliceID_3D->Htruth(); // to normalize R matrix
+  /*TH3D *htruth_3D = (TH3D*)response_SliceID_3D->Htruth(); // to normalize R matrix
   TH2D *hresponse_3D = (TH2D*)response_SliceID_3D->Hresponse();
   TMatrixD mR_3D(pow(pi::reco_nbins, 3), pow(pi::reco_nbins, 3));
   for (int i=0; i<pi::reco_nbins; i++) {
@@ -566,16 +566,21 @@ int main(int argc, char** argv){
   hval_trueint->Scale(Ndata/Nfakedata);
   hval_trueini->Scale(Ndata/Nfakedata);
 
-  /*TMatrixD mcov_3D_stat(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
-  TMatrixD mcov_3D(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
-  mcov_3D_stat = unfold_3D.GetMeasuredCov();
-  TVectorD Emeas_MC = response_SliceID_3D->Emeasured();
-  cout<<"Ndata_sig: "<<Ndata<<"; Nmc_sig: "<<Nmc<<"; Nfakedata_sig: "<<Nfakedata<<endl;
-  for(int i=0; i<pow(pi::reco_nbins,3); i++) {
-    mcov_3D(i, i) = mcov_3D_stat(i, i) + pow(Emeas_MC(i)*Eweight, 2);
-    //if (mcov_3D(i, i)!=0)
-    //  cout<<mcov_3D_stat(i, i)<<"\t"<<mcov_3D(i, i)<<endl;
-  }*/
+  // include MC stat error
+  bool include_MCstat = false;
+  if (include_MCstat) {
+    TMatrixD mcov_3D_stat(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
+    TMatrixD mcov_3D(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
+    mcov_3D_stat = unfold_3D.GetMeasuredCov();
+    TVectorD Emeas_MC = response_SliceID_3D->Emeasured();
+    cout<<"Ndata_sig: "<<Ndata<<"; Nmc_sig: "<<Nmc<<"; Nfakedata_sig: "<<Nfakedata<<endl;
+    for(int i=0; i<pow(pi::reco_nbins,3); i++) {
+      mcov_3D(i, i) = mcov_3D_stat(i, i) + pow(Emeas_MC(i)*Eweight, 2);
+      //if (mcov_3D(i, i)!=0)
+      //  cout<<mcov_3D_stat(i, i)<<"\t"<<mcov_3D(i, i)<<endl;
+      unfold_3D.SetMeasuredCov(mcov_3D);
+    }
+  }
   if (false) { // has_cov_input
     FILE *fcov_3D=fopen("../../thinslice_sys_nominal/build/toys/cov_nominal_0115.txt","r"); // input covariance
     if (!fcov_3D) {
@@ -635,7 +640,7 @@ int main(int argc, char** argv){
     myfile_sys_unfold.close();
     
     ofstream myfile_sys_unfold2;
-    myfile_sys_unfold2.open ("../../thinslice_sys_nominal/build/toys/syscov_RooUnfold_nominal_0115.txt", ios::app); //output toys
+    myfile_sys_unfold2.open ("../../thinslice_sys_nominal/build/toys/syscov_RooUnfold_nominal_0115_2.txt", ios::app); //output toys
     for (int i=0; i<pi::reco_nbins; ++i)
       for (int j=0; j<pi::reco_nbins; ++j)
         for (int k=0; k<pi::reco_nbins; ++k) {
@@ -649,8 +654,10 @@ int main(int argc, char** argv){
     return 0;
   }
   
-  TMatrixD cov_matrix_3D = unfold_3D.Ereco();
-  if (false) { // has_cov_input after unfolding
+  TMatrixD cov_matrix_3D(pow(pi::reco_nbins, 3), pow(pi::reco_nbins, 3));
+  cov_matrix_3D = unfold_3D.Ereco();
+  bool has_external_cov = false;
+  if (has_external_cov) { // has_external_cov after unfolding
     FILE *fcov_3D=fopen("../../thinslice_sys_nominal/build/toys/cov_RooUnfold_nominal_0115.txt","r"); //output covariance
     if (!fcov_3D) {
       cout<<"cov_3D_RooUnfold not found!"<<endl;
@@ -660,10 +667,11 @@ int main(int argc, char** argv){
     for(int i=0; i<pow(pi::reco_nbins, 3); i++) {
       for(int j=0; j<pow(pi::reco_nbins, 3); j++) {
         fscanf(fcov_3D, "%lf", &vv);
-        cov_matrix_3D(i, j) = vv;
+        cov_matrix_3D(i, j) += vv;
       }
     }
   }
+  
   TH2D *covariance_3D = new TH2D(cov_matrix_3D);
   covariance_3D->Write("covariance_3D");
   TH2D *correlation_3D = (TH2D*)covariance_3D->Clone();
