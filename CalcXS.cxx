@@ -460,7 +460,8 @@ int main(int argc, char** argv){
   hsig3D->Add(hpiel_3D,-1);
   hsig3D->Add(hother_3D,-1);
   
-  const int reco_nbins3D = pow(pi::reco_nbins,3);
+  const int reco_nbins3D = pi::reco_nbins3D;
+  const int true_nbins3D = pi::true_nbins3D;
   double central_datasig[reco_nbins3D] = {41.0708,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1.68426,0,0,0,0,0,0,0,0,0,0,5.93295,3.24624,0,0,0,0,0,0,0,0,0,8.91404,3.60095,1.07531,0,0,0,0,0,0,0,0,3.1897,4.73233,4.31457,1.25746,0,0,0,0,0,0,0,4.07467,6.36021,2.12795,1.70263,0,0,0,0,0,0,0,2.30315,7.02867,3.25404,2.73375,0.710337,0,0,0,0,0,0,5.50353,3.94857,6.09099,2.28615,0,0,0,0,0,0,0,11.8293,18.8412,10.1564,4.81078,0,0,0,0,0,0,0,1.40144,5.77928,7.98471,4.41632,1.77615,0.583961,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,157.828,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,31.0058,761.973,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35.1708,2168.08,577.559,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,36.5369,1954.96,2226.48,517.454,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,26.4788,1445.16,2051.63,1560.15,202.416,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3.36103,1153.98,1697.15,1400.53,505.525,32.8944,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1.26203,865.993,1283.91,1171.79,425.373,76.928,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-2.98093,711.046,969.519,816.92,352.32,68.9363,5.78502,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1.37209,849.608,1654.87,1570.48,630.057,132.189,18.3109,5.28728,2.09576,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13.3916,38.0636,278.587,187.588,88.2262,6.08636,10.6703,7.19152,6.38304}; // data - bkg
   TVectorD vcentral_truth(reco_nbins3D);
   for (int i=0; i<pi::reco_nbins; ++i)
@@ -468,8 +469,8 @@ int main(int argc, char** argv){
       for (int k=0; k<pi::reco_nbins; ++k) {
         int idx = i*pow(pi::reco_nbins,2) + j*pi::reco_nbins + k;
         //vcentral_truth(idx) = central_truth[idx];
-        hsig3D->SetBinContent(k+1, j+1, i+1, central_datasig[idx]);
-        hsig3D->SetBinError(k+1, j+1, i+1, hdata_3D->GetBinError(k+1, j+1, i+1)); // exclude bkg sys error
+        //hsig3D->SetBinContent(k+1, j+1, i+1, central_datasig[idx]);
+        //hsig3D->SetBinError(k+1, j+1, i+1, hdata_3D->GetBinError(k+1, j+1, i+1)); // exclude bkg sys error
       }
   // use Cholesky decomposition to generate correlated toys
   /*FILE *fcholsqrt_Inc=fopen("../../thinslice_sys_nominal/build/toys/cholsqrt_MCXS_inc_1110.txt","r");
@@ -495,9 +496,79 @@ int main(int argc, char** argv){
   for (int i=1; i<=pi::reco_nbins; i++) {
     hsiginc->SetBinContent(i, rdmss(i-1) + hsiginc->GetBinContent(i));
   }*/
-  // unfolding
+  
+  
   RooUnfoldResponse *response_SliceID_3D = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
-  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 4);
+  RooUnfoldResponse *response_SliceID_1D = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D");
+  TH3D *hmeas_3D = (TH3D*)response_SliceID_3D->Hmeasured();
+  TH3D *htruth_3D = (TH3D*)response_SliceID_3D->Htruth();
+  int nmeas_3D = 0; // number of non-empty bins of measure spectrum
+  int ntruth_3D = 0; // number of non-empty bins of truth spectrum
+  int idx_meas1D[reco_nbins3D]; // indices of non-empty bins of measure spectrum (0 if emtpy)
+  int idx_truth1D[true_nbins3D]; // indices of non-empty bins of truth spectrum (0 if emtpy)
+  for (int i=0; i<pi::reco_nbins; ++i)
+    for (int j=0; j<pi::reco_nbins; ++j)
+      for (int k=0; k<pi::reco_nbins; ++k) {
+        int idx = i*pow(pi::reco_nbins,2) + j*pi::reco_nbins + k;
+        idx_meas1D[idx] = 0;
+        if (hmeas_3D->GetBinContent(k+1, j+1, i+1)!=0) {
+          ++nmeas_3D;
+          idx_meas1D[idx] = nmeas_3D;
+        }
+        //cout<<idx_meas1D[idx]<<",";
+      }
+  //cout<<endl;
+  for (int i=0; i<pi::true_nbins; ++i)
+    for (int j=0; j<pi::true_nbins; ++j)
+      for (int k=0; k<pi::true_nbins; ++k) {
+        int idx = i*pow(pi::true_nbins,2) + j*pi::true_nbins + k;
+        idx_truth1D[idx] = 0;
+        if (htruth_3D->GetBinContent(k+1, j+1, i+1)!=0) {
+          ++ntruth_3D;
+          idx_truth1D[idx] = ntruth_3D;
+        }
+        //cout<<idx_truth1D[idx]<<",";
+      }
+  //cout<<endl;
+  /*int nmeas_dt = 0;
+  int idx_meas1D_dt[pi::reco_nbins][pi::reco_nbins][pi::reco_nbins];
+  for (int i=0; i<pi::reco_nbins; ++i)
+    for (int j=0; j<pi::reco_nbins; ++j)
+      for (int k=0; k<pi::reco_nbins; ++k) {
+        if (hsig3D->GetBinContent(k+1, j+1, i+1)!=0) {
+          ++nmeas_dt;
+          idx_meas1D_dt[k+1][j+1][i+1] = nmeas_dt;
+          cout<<hmeas_3D->GetBinContent(k+1, j+1, i+1)<<"\t"<<hsig3D->GetBinContent(k+1, j+1, i+1)<<endl;
+        }
+      }
+  cout<<nmeas_dt<<endl; // 88
+  cout<<nmeas_3D<<endl; // 86
+  cout<<ntruth_3D<<endl; // 106
+  return 0;*/
+  TH1D *hmeas_1D = (TH1D*)response_SliceID_1D->Hmeasured();
+  TH1D *htruth_1D = (TH1D*)response_SliceID_1D->Htruth();
+  TH1D* hsig1D = new TH1D("hsig1D", "hsig1D", nmeas_3D, 0, nmeas_3D);
+  for (int i=0; i<pi::reco_nbins; ++i)
+    for (int j=0; j<pi::reco_nbins; ++j)
+      for (int k=0; k<pi::reco_nbins; ++k) {
+        int idx = i*pow(pi::reco_nbins,2) + j*pi::reco_nbins + k;
+        if (hsig3D->GetBinContent(k+1, j+1, i+1)!=0) {
+          if (idx_meas1D[idx] != 0) {
+            hsig1D->SetBinContent(idx_meas1D[idx], hsig3D->GetBinContent(k+1, j+1, i+1));
+            hsig1D->SetBinError(idx_meas1D[idx], hsig3D->GetBinError(k+1, j+1, i+1));
+          }
+          else {
+            cout<<"Warning: this bin in data is emtpy in MC: "<<hmeas_3D->GetBinContent(k+1, j+1, i+1)<<"\t"<<hsig3D->GetBinContent(k+1, j+1, i+1)<<"\t"<<hdata_3D->GetBinContent(k+1, j+1, i+1)<<"\t"<<hmc_3D->GetBinContent(k+1, j+1, i+1)<<endl;
+          }
+        }
+        else {
+          if (idx_meas1D[idx] != 0) cout<<"Warning: this bin in MC is emtpy in data: "<<hmeas_3D->GetBinContent(k+1, j+1, i+1)<<"\t"<<hsig3D->GetBinContent(k+1, j+1, i+1)<<endl;
+        }
+      }
+  
+  
+  // unfolding
+  RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 0);
   RooUnfoldResponse *response_SliceID_3D2 = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
   RooUnfoldBayes unfold_3D2 (response_SliceID_3D2, hsig3D, 0);
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
@@ -506,8 +577,8 @@ int main(int argc, char** argv){
   RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 10);
   RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
   RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 10);
+  RooUnfoldBayes unfold_1D (response_SliceID_1D, hsig1D, 10);
   
-  TH3D *hmeas_3D = (TH3D*)response_SliceID_3D->Hmeasured();
   hsigini = (TH1D*)hsig3D->Project3D("x");
   hsiginc = (TH1D*)hsig3D->Project3D("y");
   hsignal = (TH1D*)hsig3D->Project3D("z");
@@ -519,13 +590,12 @@ int main(int argc, char** argv){
   double Nmc = hmeas_3D->Integral();
   double Eweight = Ndata/Nmc;
 
-  TH3D *htruth_3D = (TH3D*)response_SliceID_3D->Htruth(); // to normalize R matrix
   /*TH2D *hresponse_3D = (TH2D*)response_SliceID_3D->Hresponse();
   TMatrixD mR_3D(pow(pi::reco_nbins, 3), pow(pi::reco_nbins, 3));
   for (int i=0; i<pi::reco_nbins; i++) {
     for (int j=0; j<pi::reco_nbins; j++) {
       for (int k=0; k<pi::reco_nbins; k++) {
-        double factor = 1/htruth_3D->GetBinContent(k+1, j+1, i+1);
+        double factor = 1/htruth_3D->GetBinContent(k+1, j+1, i+1); // to normalize R matrix
         for (int l=0; l<pow(pi::reco_nbins, 3); l++) {
           int idx = i*pow(pi::reco_nbins,2) + j*pi::reco_nbins + k;
           double tmp = hresponse_3D->GetBinContent(l+1, idx+1);
@@ -607,9 +677,23 @@ int main(int argc, char** argv){
   TH1D *hsiginc_uf;
   TH1D *hsignal_uf;
   TH1D *hsigini_uf;
+  TH1D *hsig1D_uf;
   
+  hsig1D_uf = (TH1D*)unfold_1D.Hreco();
+  hsig1D_uf->SetNameTitle("hsig1D_uf", "Unfolded 1D signal;Slice ID;Events");
   hsig3D_uf = (TH3D*)unfold_3D.Hreco();
   hsig3D_uf->SetNameTitle("hsig3D_uf", "Unfolded 3D signal;Slice ID;Events");
+  // 1D index back to 3D
+  for (int i=0; i<pi::true_nbins; ++i)
+    for (int j=0; j<pi::true_nbins; ++j)
+      for (int k=0; k<pi::true_nbins; ++k) {
+        int idx = i*pow(pi::true_nbins,2) + j*pi::true_nbins + k;
+        hsig3D_uf->SetBinContent(k+1, j+1, i+1, 0);
+        if (idx_truth1D[idx] != 0) {
+          hsig3D_uf->SetBinContent(k+1, j+1, i+1, hsig1D_uf->GetBinContent(idx_truth1D[idx]));
+          hsig3D_uf->SetBinError(k+1, j+1, i+1, hsig1D_uf->GetBinError(idx_truth1D[idx]));
+        }
+      }
   TH3D *hsig3D_uf2 = (TH3D*)unfold_3D2.Hreco();
   std::filebuf fb;
   fb.open(root["UnfoldTable"].asString().c_str(),std::ios::out);
@@ -635,9 +719,9 @@ int main(int argc, char** argv){
     ofstream myfile_sys_unfold;
     myfile_sys_unfold.open ("../../thinslice_sys_nominal/build/toys/syscov_RooUnfold_nominal_0115.txt", ios::app); //output toys
     //3D
-    for (int i=0; i<pi::reco_nbins; ++i)
-      for (int j=0; j<pi::reco_nbins; ++j)
-        for (int k=0; k<pi::reco_nbins; ++k) {
+    for (int i=0; i<pi::true_nbins; ++i)
+      for (int j=0; j<pi::true_nbins; ++j)
+        for (int k=0; k<pi::true_nbins; ++k) {
           myfile_sys_unfold<<hsig3D_uf->GetBinContent(k+1, j+1, i+1)<<"\t";
         }
     myfile_sys_unfold<<endl<<endl;
@@ -645,9 +729,9 @@ int main(int argc, char** argv){
     
     ofstream myfile_sys_unfold2;
     myfile_sys_unfold2.open ("../../thinslice_sys_nominal/build/toys/syscov_RooUnfold_nominal_0115_2.txt", ios::app); //output toys
-    for (int i=0; i<pi::reco_nbins; ++i)
-      for (int j=0; j<pi::reco_nbins; ++j)
-        for (int k=0; k<pi::reco_nbins; ++k) {
+    for (int i=0; i<pi::true_nbins; ++i)
+      for (int j=0; j<pi::true_nbins; ++j)
+        for (int k=0; k<pi::true_nbins; ++k) {
           myfile_sys_unfold2<<hsig3D_uf2->GetBinContent(k+1, j+1, i+1)<<"\t";
         }
     myfile_sys_unfold2<<endl<<endl;
@@ -657,9 +741,17 @@ int main(int argc, char** argv){
     fout->Close();
     return 0;
   }
-  
-  TMatrixD cov_matrix_3D(pow(pi::reco_nbins, 3), pow(pi::reco_nbins, 3));
+  // 1D index back to 3D (covariance matrix)
+  TMatrixD cov_matrix_1D = unfold_1D.Ereco();
+  TMatrixD cov_matrix_3D(pi::true_nbins3D, pi::true_nbins3D);
   cov_matrix_3D = unfold_3D.Ereco();
+  for (int i=0; i<pi::true_nbins3D; ++i)
+    for (int j=0; j<pi::true_nbins3D; ++j) {
+      cov_matrix_3D(i, j) = 0;
+      if (idx_truth1D[i]!=0 && idx_truth1D[j]!=0)
+        cov_matrix_3D(i, j) = cov_matrix_1D(idx_truth1D[i]-1, idx_truth1D[j]-1);
+    }
+  
   bool has_external_cov = false;
   if (has_external_cov) { // has_external_cov after unfolding
     FILE *fcov_3D=fopen("../../thinslice_sys_nominal/build/toys/cov_RooUnfold_nominal_0115.txt","r"); //output covariance
@@ -668,45 +760,119 @@ int main(int argc, char** argv){
       return 1;
     }
     double vv;
-    for(int i=0; i<pow(pi::reco_nbins, 3); i++) {
-      for(int j=0; j<pow(pi::reco_nbins, 3); j++) {
+    for(int i=0; i<pi::true_nbins3D; i++) {
+      for(int j=0; j<pi::true_nbins3D; j++) {
         fscanf(fcov_3D, "%lf", &vv);
         cov_matrix_3D(i, j) += vv;
       }
     }
   }
   
-  TH1D* h1measdata = new TH1D("h1measdata", "h1measdata", pow(pi::reco_nbins,3), 0, pow(pi::reco_nbins,3));
-  TH1D* h1unfdata = new TH1D("h1unfdata", "h1unfdata", pow(pi::reco_nbins,3), 0, pow(pi::reco_nbins,3));
-  TH1D* h1measMC = new TH1D("h1measMC", "h1measMC", pow(pi::reco_nbins,3), 0, pow(pi::reco_nbins,3));
-  TH1D* h1truthMC = new TH1D("h1truthMC", "h1truthMC", pow(pi::reco_nbins,3), 0, pow(pi::reco_nbins,3));
+  TH1D* h1measdata = new TH1D("h1measdata", "h1measdata", pi::reco_nbins3D, 0, pi::reco_nbins3D);
+  TH1D* h1unfdata = new TH1D("h1unfdata", "h1unfdata", pi::true_nbins3D, 0, pi::true_nbins3D);
+  TH1D* h1measMC = new TH1D("h1measMC", "h1measMC", pi::reco_nbins3D, 0, pi::reco_nbins3D);
+  TH1D* h1truthMC = new TH1D("h1truthMC", "h1truthMC", pi::true_nbins3D, 0, pi::true_nbins3D);
   for (int i=0; i<pi::reco_nbins; ++i)
     for (int j=0; j<pi::reco_nbins; ++j)
       for (int k=0; k<pi::reco_nbins; ++k) {
         int idx = i*pow(pi::reco_nbins,2) + j*pi::reco_nbins + k;
-        h1measdata->SetBinContent(idx+1, hsig3D->GetBinContent(k+1, j+1, i+1));
-        h1unfdata->SetBinContent(idx+1, hsig3D_uf->GetBinContent(k+1, j+1, i+1));
         h1measMC->SetBinContent(idx+1, hmeas_3D->GetBinContent(k+1, j+1, i+1));
+        h1measdata->SetBinContent(idx+1, hsig3D->GetBinContent(k+1, j+1, i+1));
+        /*if (idx_meas1D[idx] != 0) {
+          h1measMC_1D->SetBinContent(idx_meas1D[idx], hmeas_3D->GetBinContent(k+1, j+1, i+1));
+          h1measdata_1D->SetBinContent(idx_meas1D[idx], hsig3D->GetBinContent(k+1, j+1, i+1));
+        }*/
+      }
+  for (int i=0; i<pi::true_nbins; ++i)
+    for (int j=0; j<pi::true_nbins; ++j)
+      for (int k=0; k<pi::true_nbins; ++k) {
+        int idx = i*pow(pi::true_nbins,2) + j*pi::true_nbins + k;
         h1truthMC->SetBinContent(idx+1, htruth_3D->GetBinContent(k+1, j+1, i+1));
+        h1unfdata->SetBinContent(idx+1, hsig3D_uf->GetBinContent(k+1, j+1, i+1));
+        /*if (idx_truth1D[idx] != 0) {
+          h1truthMC_1D->SetBinContent(idx_truth1D[idx], htruth_3D->GetBinContent(k+1, j+1, i+1));
+          h1unfdata_1D->SetBinContent(idx_truth1D[idx], hsig3D_uf->GetBinContent(k+1, j+1, i+1));
+        }*/
       }
   h1measdata->Write("h1measdata");
   h1unfdata->Write("h1unfdata");
   h1measMC->Write("h1measMC");
   h1truthMC->Write("h1truthMC");
-  TMatrixD mcov_3D_meas(pow(pi::reco_nbins,3), pow(pi::reco_nbins,3));
+  TMatrixD mcov_3D_meas(pi::reco_nbins3D, pi::reco_nbins3D);
   mcov_3D_meas = unfold_3D.GetMeasuredCov();
   TH2D* covinput_3D = new TH2D(mcov_3D_meas);
   covinput_3D->Write("covinput_3D");
   
+  TH1D* h1measdata_1D = new TH1D("h1measdata_1D", "h1measdata_1D", nmeas_3D, 0, nmeas_3D);
+  TH1D* h1unfdata_1D = new TH1D("h1unfdata_1D", "h1unfdata_1D", ntruth_3D, 0, ntruth_3D);
+  TH1D* h1measMC_1D = new TH1D("h1measMC_1D", "h1measMC_1D", nmeas_3D, 0, nmeas_3D);
+  TH1D* h1truthMC_1D = new TH1D("h1truthMC_1D", "h1truthMC_1D", ntruth_3D, 0, ntruth_3D);
+  TH1D* h1seltruthMC_1D = new TH1D("h1seltruthMC_1D", "h1seltruthMC_1D", ntruth_3D, 0, ntruth_3D);
+  for (int i=0; i<nmeas_3D; ++i) {
+    h1measMC_1D->SetBinContent(i+1, response_SliceID_1D->Hmeasured()->GetBinContent(i+1));
+    h1measdata_1D->SetBinContent(i+1, hsig1D->GetBinContent(i+1));
+  }
+  for (int i=0; i<ntruth_3D; ++i) {
+    h1truthMC_1D->SetBinContent(i+1, response_SliceID_1D->Htruth()->GetBinContent(i+1));
+    h1seltruthMC_1D->SetBinContent(i+1, response_SliceID_1D->Hresponse()->ProjectionY()->GetBinContent(i+1));
+    h1unfdata_1D->SetBinContent(i+1, hsig1D_uf->GetBinContent(i+1));
+  }
+  h1measdata_1D->Write("h1measdata_1D");
+  h1unfdata_1D->Write("h1unfdata_1D");
+  h1measMC_1D->Write("h1measMC_1D");
+  h1truthMC_1D->Write("h1truthMC_1D");
+  h1seltruthMC_1D->Write("h1seltruthMC_1D");
+  TH2D* covinput_1D = new TH2D(unfold_1D.GetMeasuredCov());
+  covinput_1D->Write("covinput_1D");
+  TH2D *covariance_1D = new TH2D(cov_matrix_1D);
+  covariance_1D->Write("covariance_1D");
+  
+  for (int i=0; i<pi::reco_nbins; ++i)
+    for (int j=0; j<pi::reco_nbins; ++j)
+      for (int k=0; k<pi::reco_nbins; ++k) {
+        int idx = i*pow(pi::reco_nbins,2) + j*pi::reco_nbins + k;
+        if (hmeas_3D->GetBinContent(k+1, j+1, i+1)!=0) { // print out 3D <-> 1D map
+          cout<<idx_meas1D[idx]<<"\t"<<k<<"\t"<<j<<"\t"<<i<<"\t\t"<<h1measMC_1D->GetBinContent(idx_meas1D[idx])<<"\t"<<h1measdata_1D->GetBinContent(idx_meas1D[idx])<<endl;
+        }
+      }
+  cout<<endl;
+  for (int i=0; i<pi::true_nbins; ++i)
+    for (int j=0; j<pi::true_nbins; ++j)
+      for (int k=0; k<pi::true_nbins; ++k) {
+        int idx = i*pow(pi::true_nbins,2) + j*pi::true_nbins + k;
+        if (htruth_3D->GetBinContent(k+1, j+1, i+1)!=0) { // print out 3D <-> 1D map
+          cout<<idx_truth1D[idx]<<"\t"<<k<<"\t"<<j<<"\t"<<i<<"\t\t"<<h1truthMC_1D->GetBinContent(idx_truth1D[idx])<<"\t"<<h1unfdata_1D->GetBinContent(idx_truth1D[idx])<<endl;
+        }
+      }
+  cout<<endl;
+  
   TH1D* h1measdata_ini = new TH1D("h1measdata_ini", "h1measdata_ini", pi::reco_nbins, 0, pi::reco_nbins);
-  TH1D* h1unfdata_ini = new TH1D("h1unfdata_ini", "h1unfdata_ini", pi::reco_nbins, 0, pi::reco_nbins);
+  TH1D* h1unfdata_ini = new TH1D("h1unfdata_ini", "h1unfdata_ini", pi::true_nbins, 0, pi::true_nbins);
   TH1D* h1measMC_ini = new TH1D("h1measMC_ini", "h1measMC_ini", pi::reco_nbins, 0, pi::reco_nbins);
-  TH1D* h1truthMC_ini = new TH1D("h1truthMC_ini", "h1truthMC_ini", pi::reco_nbins, 0, pi::reco_nbins);
+  TH1D* h1truthMC_ini = new TH1D("h1truthMC_ini", "h1truthMC_ini", pi::true_nbins, 0, pi::true_nbins);
+  TH1D* h1measdata_inc = new TH1D("h1measdata_inc", "h1measdata_inc", pi::reco_nbins, 0, pi::reco_nbins);
+  TH1D* h1unfdata_inc = new TH1D("h1unfdata_inc", "h1unfdata_inc", pi::true_nbins, 0, pi::true_nbins);
+  TH1D* h1measMC_inc = new TH1D("h1measMC_inc", "h1measMC_inc", pi::reco_nbins, 0, pi::reco_nbins);
+  TH1D* h1truthMC_inc = new TH1D("h1truthMC_inc", "h1truthMC_inc", pi::true_nbins, 0, pi::true_nbins);
+  TH1D* h1measdata_int = new TH1D("h1measdata_int", "h1measdata_int", pi::reco_nbins, 0, pi::reco_nbins);
+  TH1D* h1unfdata_int = new TH1D("h1unfdata_int", "h1unfdata_int", pi::true_nbins, 0, pi::true_nbins);
+  TH1D* h1measMC_int = new TH1D("h1measMC_int", "h1measMC_int", pi::reco_nbins, 0, pi::reco_nbins);
+  TH1D* h1truthMC_int = new TH1D("h1truthMC_int", "h1truthMC_int", pi::true_nbins, 0, pi::true_nbins);
   for (int i=0; i<pi::reco_nbins; ++i) {
     h1measdata_ini->SetBinContent(i+1, hsigini->GetBinContent(i+1));
-    h1unfdata_ini->SetBinContent(i+1, hsigini_uf->GetBinContent(i+1));
     h1measMC_ini->SetBinContent(i+1, response_SliceID_Ini->Hmeasured()->GetBinContent(i+1));
+    h1measdata_inc->SetBinContent(i+1, hsiginc->GetBinContent(i+1));
+    h1measMC_inc->SetBinContent(i+1, response_SliceID_Inc->Hmeasured()->GetBinContent(i+1));
+    h1measdata_int->SetBinContent(i+1, hsignal->GetBinContent(i+1));
+    h1measMC_int->SetBinContent(i+1, response_SliceID_Int->Hmeasured()->GetBinContent(i+1));
+  }
+  for (int i=0; i<pi::true_nbins; ++i) {
+    h1unfdata_ini->SetBinContent(i+1, hsigini_uf->GetBinContent(i+1));
     h1truthMC_ini->SetBinContent(i+1, response_SliceID_Ini->Htruth()->GetBinContent(i+1));
+    h1unfdata_inc->SetBinContent(i+1, hsiginc_uf->GetBinContent(i+1));
+    h1truthMC_inc->SetBinContent(i+1, response_SliceID_Inc->Htruth()->GetBinContent(i+1));
+    h1unfdata_int->SetBinContent(i+1, hsignal_uf->GetBinContent(i+1));
+    h1truthMC_int->SetBinContent(i+1, response_SliceID_Int->Htruth()->GetBinContent(i+1));
   }
   h1measdata_ini->Write("h1measdata_ini");
   h1unfdata_ini->Write("h1unfdata_ini");
@@ -714,34 +880,12 @@ int main(int argc, char** argv){
   h1truthMC_ini->Write("h1truthMC_ini");
   TH2D* covinput_ini = new TH2D(unfold_Ini.GetMeasuredCov());
   covinput_ini->Write("covinput_ini");
-  
-  TH1D* h1measdata_inc = new TH1D("h1measdata_inc", "h1measdata_inc", pi::reco_nbins, 0, pi::reco_nbins);
-  TH1D* h1unfdata_inc = new TH1D("h1unfdata_inc", "h1unfdata_inc", pi::reco_nbins, 0, pi::reco_nbins);
-  TH1D* h1measMC_inc = new TH1D("h1measMC_inc", "h1measMC_inc", pi::reco_nbins, 0, pi::reco_nbins);
-  TH1D* h1truthMC_inc = new TH1D("h1truthMC_inc", "h1truthMC_inc", pi::reco_nbins, 0, pi::reco_nbins);
-  for (int i=0; i<pi::reco_nbins; ++i) {
-    h1measdata_inc->SetBinContent(i+1, hsiginc->GetBinContent(i+1));
-    h1unfdata_inc->SetBinContent(i+1, hsiginc_uf->GetBinContent(i+1));
-    h1measMC_inc->SetBinContent(i+1, response_SliceID_Inc->Hmeasured()->GetBinContent(i+1));
-    h1truthMC_inc->SetBinContent(i+1, response_SliceID_Inc->Htruth()->GetBinContent(i+1));
-  }
   h1measdata_inc->Write("h1measdata_inc");
   h1unfdata_inc->Write("h1unfdata_inc");
   h1measMC_inc->Write("h1measMC_inc");
   h1truthMC_inc->Write("h1truthMC_inc");
   TH2D* covinput_inc = new TH2D(unfold_Inc.GetMeasuredCov());
   covinput_inc->Write("covinput_inc");
-  
-  TH1D* h1measdata_int = new TH1D("h1measdata_int", "h1measdata_int", pi::reco_nbins, 0, pi::reco_nbins);
-  TH1D* h1unfdata_int = new TH1D("h1unfdata_int", "h1unfdata_int", pi::reco_nbins, 0, pi::reco_nbins);
-  TH1D* h1measMC_int = new TH1D("h1measMC_int", "h1measMC_int", pi::reco_nbins, 0, pi::reco_nbins);
-  TH1D* h1truthMC_int = new TH1D("h1truthMC_int", "h1truthMC_int", pi::reco_nbins, 0, pi::reco_nbins);
-  for (int i=0; i<pi::reco_nbins; ++i) {
-    h1measdata_int->SetBinContent(i+1, hsignal->GetBinContent(i+1));
-    h1unfdata_int->SetBinContent(i+1, hsignal_uf->GetBinContent(i+1));
-    h1measMC_int->SetBinContent(i+1, response_SliceID_Int->Hmeasured()->GetBinContent(i+1));
-    h1truthMC_int->SetBinContent(i+1, response_SliceID_Int->Htruth()->GetBinContent(i+1));
-  }
   h1measdata_int->Write("h1measdata_int");
   h1unfdata_int->Write("h1unfdata_int");
   h1measMC_int->Write("h1measMC_int");

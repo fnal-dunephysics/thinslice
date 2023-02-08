@@ -14,6 +14,8 @@ namespace pi{
 
   const int reco_nbins = 11; // with an unphysical underflow
   const int true_nbins = 11;
+  const int reco_nbins3D = reco_nbins*reco_nbins*reco_nbins;
+  const int true_nbins3D = true_nbins*true_nbins*true_nbins;
   //const double reco_bins[reco_nbins+1] = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
   const double reco_bins[reco_nbins+1] = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   //const double reco_bins[reco_nbins+1] = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};

@@ -16,6 +16,7 @@ class Unfold {
   RooUnfoldResponse response_SliceID_Inc;  //Incident
   RooUnfoldResponse response_SliceID_Ini;  //Initial
   RooUnfoldResponse response_SliceID_3D;  //3D Initial vs Incident vs Interacting
+  RooUnfoldResponse response_SliceID_1D;  //compact of unemtpy bins of 3D sparse response matrix
 
   TH1D *eff_num_Int; //Interaction efficiency numerator
   TH1D *eff_den_Int; //Interaction efficiency denominator
