@@ -7,6 +7,7 @@ Unfold::Unfold(TH3D* hist_reco, TH3D* hist_true)
   , response_SliceID_Ini(hist_reco->Project3D("x"), hist_true->Project3D("x"))
   , response_SliceID_3D(hist_reco, hist_true)
   , response_SliceID_1D(79,0,79, 105,0,105)
+  , response_SliceID_1D_noeff(79,0,79, 105,0,105)
 {
 
   response_SliceID_Int.UseOverflow(false);
@@ -14,6 +15,7 @@ Unfold::Unfold(TH3D* hist_reco, TH3D* hist_true)
   response_SliceID_Ini.UseOverflow(false);
   response_SliceID_3D.UseOverflow(false);
   response_SliceID_1D.UseOverflow(false);
+  response_SliceID_1D_noeff.UseOverflow(false);
 
   eff_num_Int = new TH1D("eff_num_Int", "eff_num_Int", pi::true_nbins, pi::true_bins);
   eff_den_Int = new TH1D("eff_den_Int", "eff_den_Int", pi::true_nbins, pi::true_bins);
@@ -104,10 +106,14 @@ void Unfold::SaveHistograms(){
   TH2D *h1D = (TH2D*)response_SliceID_1D.Hresponse();
   h1D->SetTitle("1D; Reco Slice ID; True Slice ID");
   h1D->Write("hresponse_SliceID_1D");
+  TH2D *h1D_noeff = (TH2D*)response_SliceID_1D_noeff.Hresponse();
+  h1D_noeff->SetTitle("1D; Reco Slice ID; True Slice ID");
+  h1D_noeff->Write("hresponse_SliceID_1D_noeff");
 
   response_SliceID_Int.Write("response_SliceID_Int");
   response_SliceID_Inc.Write("response_SliceID_Inc");
   response_SliceID_Ini.Write("response_SliceID_Ini");
   response_SliceID_3D.Write("response_SliceID_3D");
   response_SliceID_1D.Write("response_SliceID_1D");
+  response_SliceID_1D_noeff.Write("response_SliceID_1D_noeff");
 }

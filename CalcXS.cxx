@@ -499,13 +499,16 @@ int main(int argc, char** argv){
   
   
   RooUnfoldResponse *response_SliceID_3D = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
-  RooUnfoldResponse *response_SliceID_1D = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D");
+  RooUnfoldResponse *response_SliceID_1D_eff = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D"); // should be the same with 3D excluding empty bins
+  RooUnfoldResponse *response_SliceID_1D = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
   TH3D *hmeas_3D = (TH3D*)response_SliceID_3D->Hmeasured();
   TH3D *htruth_3D = (TH3D*)response_SliceID_3D->Htruth();
   int nmeas_3D = 0; // number of non-empty bins of measure spectrum
   int ntruth_3D = 0; // number of non-empty bins of truth spectrum
+  int ntruth_3D_eff = 0; // number of non-empty bins of truth spectrum including tiny bins
   int idx_meas1D[reco_nbins3D]; // indices of non-empty bins of measure spectrum (0 if emtpy)
   int idx_truth1D[true_nbins3D]; // indices of non-empty bins of truth spectrum (0 if emtpy)
+  int idx_truth1D_eff[true_nbins3D]; // indices of non-empty bins of truth spectrum (0 if emtpy)
   for (int i=0; i<pi::reco_nbins; ++i)
     for (int j=0; j<pi::reco_nbins; ++j)
       for (int k=0; k<pi::reco_nbins; ++k) {
@@ -515,21 +518,40 @@ int main(int argc, char** argv){
           ++nmeas_3D;
           idx_meas1D[idx] = nmeas_3D;
         }
-        //cout<<idx_meas1D[idx]<<",";
+        cout<<idx_meas1D[idx]<<",";
       }
-  //cout<<endl;
+  cout<<endl;
+  for (int i=0; i<pi::true_nbins; ++i)
+    for (int j=0; j<pi::true_nbins; ++j)
+      for (int k=0; k<pi::true_nbins; ++k) {
+        int idx = i*pow(pi::true_nbins,2) + j*pi::true_nbins + k;
+        idx_truth1D_eff[idx] = 0;
+        if (htruth_3D->GetBinContent(k+1, j+1, i+1)!=0) {
+          ++ntruth_3D_eff;
+          idx_truth1D_eff[idx] = ntruth_3D_eff;
+        }
+        cout<<idx_truth1D_eff[idx]<<",";
+      }
+  cout<<endl;
+  TH1D *htruth_1D = (TH1D*)response_SliceID_1D->Htruth();
+  TH1D *htruth_1D_eff = (TH1D*)response_SliceID_1D_eff->Htruth();
+  double eff1D[ntruth_3D_eff];
+  for (int i=1;i<=ntruth_3D_eff;++i) eff1D[i-1] = htruth_1D->GetBinContent(i)/htruth_1D_eff->GetBinContent(i);
+  //eff1D = {0.00986798,0,0,0.0222041,0,0.0191202,0.0521255,0,0,0.110889,0.0254234,0.0181585,0.0351556,0.0782013,0.0771751,0.0399252,0,0,0,0.13343,0.06179,0.096454,0,0,0.201811,0.140998,0.101281,0.0720633,0,0,0,0,0.0878781,0.0579772,0.0946022,0.0351521,0.0766265,0.178665,0,0,0,0.134462,0.187227,0.135899,0.121898,0.126813,0,0,0,0,0.230769,0.666667,0.210014,0.5,0.59481,0.161341,0.588235,0.688751,0.598386,0.168825,0.6,0.71612,0.700204,0.597549,0.177631,0.571429,0.71505,0.722723,0.668319,0.554158,0.127931,0,0.756531,0.7524,0.695452,0.602508,0.337168,0.0308479,0.8,0.718756,0.716518,0.683866,0.642291,0.464901,0.112423,0.00976884,0,0.629916,0.726249,0.719209,0.668244,0.431872,0.13628,0.0409745,0.0634207,0,0.118215,0.225619,0.308048,0.356286,0.404898,0.12399,0.0247327,0.059936,0.109793};
   for (int i=0; i<pi::true_nbins; ++i)
     for (int j=0; j<pi::true_nbins; ++j)
       for (int k=0; k<pi::true_nbins; ++k) {
         int idx = i*pow(pi::true_nbins,2) + j*pi::true_nbins + k;
         idx_truth1D[idx] = 0;
-        if (htruth_3D->GetBinContent(k+1, j+1, i+1)!=0) {
-          ++ntruth_3D;
-          idx_truth1D[idx] = ntruth_3D;
+        if (idx_truth1D_eff[idx] != 0) {
+          if (eff1D[idx_truth1D_eff[idx]-1]!=0 && eff1D[idx_truth1D_eff[idx]-1]*htruth_3D->GetBinContent(k+1, j+1, i+1)>20) { // edit here condition (bins for 1D unfolding)
+            ++ntruth_3D;
+            idx_truth1D[idx] = ntruth_3D;
+          }
         }
-        //cout<<idx_truth1D[idx]<<",";
+        cout<<idx_truth1D[idx]<<",";
       }
-  //cout<<endl;
+  cout<<endl;
   /*int nmeas_dt = 0;
   int idx_meas1D_dt[pi::reco_nbins][pi::reco_nbins][pi::reco_nbins];
   for (int i=0; i<pi::reco_nbins; ++i)
@@ -546,7 +568,6 @@ int main(int argc, char** argv){
   cout<<ntruth_3D<<endl; // 106
   return 0;*/
   TH1D *hmeas_1D = (TH1D*)response_SliceID_1D->Hmeasured();
-  TH1D *htruth_1D = (TH1D*)response_SliceID_1D->Htruth();
   TH1D* hsig1D = new TH1D("hsig1D", "hsig1D", nmeas_3D, 0, nmeas_3D);
   for (int i=0; i<pi::reco_nbins; ++i)
     for (int j=0; j<pi::reco_nbins; ++j)
@@ -679,7 +700,49 @@ int main(int argc, char** argv){
   TH1D *hsigini_uf;
   TH1D *hsig1D_uf;
   
+  for (int i=0; i<true_nbins3D; ++i) {
+    if (idx_truth1D_eff[i]!=0) {
+      if (idx_truth1D[i]==0) {
+        if (eff1D[idx_truth1D_eff[i]-1] != 0) {
+          cout<<"*** Check here "<<idx_truth1D_eff[i]<<endl;
+          eff1D[idx_truth1D_eff[i]-1] = 0;
+        }
+      }
+    }
+  }
   hsig1D_uf = (TH1D*)unfold_1D.Hreco();
+  TH1D* h1measdata_1D = new TH1D("h1measdata_1D", "h1measdata_1D", nmeas_3D, 0, nmeas_3D);
+  TH1D* h1unfdata_1D = new TH1D("h1unfdata_1D", "h1unfdata_1D", ntruth_3D_eff, 0, ntruth_3D_eff);
+  TH1D* h1measMC_1D = new TH1D("h1measMC_1D", "h1measMC_1D", nmeas_3D, 0, nmeas_3D);
+  TH1D* h1truthMC_1D = new TH1D("h1truthMC_1D", "h1truthMC_1D", ntruth_3D_eff, 0, ntruth_3D_eff);
+  TH1D* h1seltruthMC_1D = new TH1D("h1seltruthMC_1D", "h1seltruthMC_1D", ntruth_3D_eff, 0, ntruth_3D_eff);
+  for (int i=0; i<nmeas_3D; ++i) {
+    h1measMC_1D->SetBinContent(i+1, response_SliceID_1D->Hmeasured()->GetBinContent(i+1));
+    h1measdata_1D->SetBinContent(i+1, hsig1D->GetBinContent(i+1));
+  }
+  for (int i=0; i<ntruth_3D_eff; ++i) {
+    h1truthMC_1D->SetBinContent(i+1, response_SliceID_1D_eff->Htruth()->GetBinContent(i+1));
+    h1seltruthMC_1D->SetBinContent(i+1, response_SliceID_1D->Htruth()->GetBinContent(i+1));//->Hresponse()->ProjectionY()->GetBinContent(i+1));
+    h1unfdata_1D->SetBinContent(i+1, hsig1D_uf->GetBinContent(i+1));
+  }
+  h1measdata_1D->Write("h1measdata_1D");
+  h1unfdata_1D->Write("h1unfdata_1D");
+  h1measMC_1D->Write("h1measMC_1D");
+  h1truthMC_1D->Write("h1truthMC_1D");
+  h1seltruthMC_1D->Write("h1seltruthMC_1D");
+  TH2D* covinput_1D = new TH2D(unfold_1D.GetMeasuredCov());
+  covinput_1D->Write("covinput_1D");
+  TMatrixD cov_matrix_1D = unfold_1D.Ereco();
+  TH2D *covariance_1D = new TH2D(cov_matrix_1D);
+  covariance_1D->Write("covariance_1D");
+  for (int i=0; i<ntruth_3D_eff; ++i) {
+    if (eff1D[i] != 0) {
+      hsig1D_uf->SetBinContent(i+1, hsig1D_uf->GetBinContent(i+1)/eff1D[i]);
+    }
+    else {
+      hsig1D_uf->SetBinContent(i+1, response_SliceID_1D_eff->Htruth()->GetBinContent(i+1)*Eweight);
+    }
+  }
   hsig1D_uf->SetNameTitle("hsig1D_uf", "Unfolded 1D signal;Slice ID;Events");
   hsig3D_uf = (TH3D*)unfold_3D.Hreco();
   hsig3D_uf->SetNameTitle("hsig3D_uf", "Unfolded 3D signal;Slice ID;Events");
@@ -689,9 +752,9 @@ int main(int argc, char** argv){
       for (int k=0; k<pi::true_nbins; ++k) {
         int idx = i*pow(pi::true_nbins,2) + j*pi::true_nbins + k;
         hsig3D_uf->SetBinContent(k+1, j+1, i+1, 0);
-        if (idx_truth1D[idx] != 0) {
-          hsig3D_uf->SetBinContent(k+1, j+1, i+1, hsig1D_uf->GetBinContent(idx_truth1D[idx]));
-          hsig3D_uf->SetBinError(k+1, j+1, i+1, hsig1D_uf->GetBinError(idx_truth1D[idx]));
+        if (idx_truth1D_eff[idx] != 0) {
+          hsig3D_uf->SetBinContent(k+1, j+1, i+1, hsig1D_uf->GetBinContent(idx_truth1D_eff[idx]));
+          hsig3D_uf->SetBinError(k+1, j+1, i+1, hsig1D_uf->GetBinError(idx_truth1D_eff[idx]));
         }
       }
   TH3D *hsig3D_uf2 = (TH3D*)unfold_3D2.Hreco();
@@ -742,14 +805,23 @@ int main(int argc, char** argv){
     return 0;
   }
   // 1D index back to 3D (covariance matrix)
-  TMatrixD cov_matrix_1D = unfold_1D.Ereco();
+  for (int i=0; i<ntruth_3D_eff; ++i)
+    for (int j=0; j<ntruth_3D_eff; ++j) {
+      if (eff1D[i] != 0 && eff1D[j] != 0) {
+        cov_matrix_1D(i, j) /= (eff1D[i]*eff1D[j]);
+      }
+      else if (i == j) {
+        cov_matrix_1D(i, j) = response_SliceID_1D_eff->Htruth()->GetBinContent(i+1)*Eweight; // simply estimate as Poisson error
+      }
+      else cov_matrix_1D(i, j) = 0;
+    }
   TMatrixD cov_matrix_3D(pi::true_nbins3D, pi::true_nbins3D);
   cov_matrix_3D = unfold_3D.Ereco();
   for (int i=0; i<pi::true_nbins3D; ++i)
     for (int j=0; j<pi::true_nbins3D; ++j) {
       cov_matrix_3D(i, j) = 0;
-      if (idx_truth1D[i]!=0 && idx_truth1D[j]!=0)
-        cov_matrix_3D(i, j) = cov_matrix_1D(idx_truth1D[i]-1, idx_truth1D[j]-1);
+      if (idx_truth1D_eff[i]!=0 && idx_truth1D_eff[j]!=0)
+        cov_matrix_3D(i, j) = cov_matrix_1D(idx_truth1D_eff[i]-1, idx_truth1D_eff[j]-1);
     }
   
   bool has_external_cov = false;
@@ -803,29 +875,7 @@ int main(int argc, char** argv){
   TH2D* covinput_3D = new TH2D(mcov_3D_meas);
   covinput_3D->Write("covinput_3D");
   
-  TH1D* h1measdata_1D = new TH1D("h1measdata_1D", "h1measdata_1D", nmeas_3D, 0, nmeas_3D);
-  TH1D* h1unfdata_1D = new TH1D("h1unfdata_1D", "h1unfdata_1D", ntruth_3D, 0, ntruth_3D);
-  TH1D* h1measMC_1D = new TH1D("h1measMC_1D", "h1measMC_1D", nmeas_3D, 0, nmeas_3D);
-  TH1D* h1truthMC_1D = new TH1D("h1truthMC_1D", "h1truthMC_1D", ntruth_3D, 0, ntruth_3D);
-  TH1D* h1seltruthMC_1D = new TH1D("h1seltruthMC_1D", "h1seltruthMC_1D", ntruth_3D, 0, ntruth_3D);
-  for (int i=0; i<nmeas_3D; ++i) {
-    h1measMC_1D->SetBinContent(i+1, response_SliceID_1D->Hmeasured()->GetBinContent(i+1));
-    h1measdata_1D->SetBinContent(i+1, hsig1D->GetBinContent(i+1));
-  }
-  for (int i=0; i<ntruth_3D; ++i) {
-    h1truthMC_1D->SetBinContent(i+1, response_SliceID_1D->Htruth()->GetBinContent(i+1));
-    h1seltruthMC_1D->SetBinContent(i+1, response_SliceID_1D->Hresponse()->ProjectionY()->GetBinContent(i+1));
-    h1unfdata_1D->SetBinContent(i+1, hsig1D_uf->GetBinContent(i+1));
-  }
-  h1measdata_1D->Write("h1measdata_1D");
-  h1unfdata_1D->Write("h1unfdata_1D");
-  h1measMC_1D->Write("h1measMC_1D");
-  h1truthMC_1D->Write("h1truthMC_1D");
-  h1seltruthMC_1D->Write("h1seltruthMC_1D");
-  TH2D* covinput_1D = new TH2D(unfold_1D.GetMeasuredCov());
-  covinput_1D->Write("covinput_1D");
-  TH2D *covariance_1D = new TH2D(cov_matrix_1D);
-  covariance_1D->Write("covariance_1D");
+  
   
   for (int i=0; i<pi::reco_nbins; ++i)
     for (int j=0; j<pi::reco_nbins; ++j)
@@ -841,7 +891,7 @@ int main(int argc, char** argv){
       for (int k=0; k<pi::true_nbins; ++k) {
         int idx = i*pow(pi::true_nbins,2) + j*pi::true_nbins + k;
         if (htruth_3D->GetBinContent(k+1, j+1, i+1)!=0) { // print out 3D <-> 1D map
-          cout<<idx_truth1D[idx]<<"\t"<<k<<"\t"<<j<<"\t"<<i<<"\t\t"<<h1truthMC_1D->GetBinContent(idx_truth1D[idx])<<"\t"<<h1unfdata_1D->GetBinContent(idx_truth1D[idx])<<endl;
+          cout<<idx_truth1D_eff[idx]<<"\t"<<k<<"\t"<<j<<"\t"<<i<<"\t\t"<<h1truthMC_1D->GetBinContent(idx_truth1D_eff[idx])<<"\t"<<hsig1D_uf->GetBinContent(idx_truth1D_eff[idx])<<endl;
         }
       }
   cout<<endl;
