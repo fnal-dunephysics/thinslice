@@ -237,6 +237,12 @@ void ThinSlice::BookHistograms(){
   h_test2->Sumw2();
   h_test3 = new TH1D("h_test3","h_test3;MeV", 100, -300, 300);
   h_test3->Sumw2();
+  h_diff_Ebeam = new TH1D("h_diff_Ebeam","h_diff_Ebeam;MeV", 100, -300, 300);
+  h_diff_Ebeam->Sumw2();
+  h_diff_Eloss = new TH1D("h_diff_Eloss","h_diff_Eloss;MeV", 100, -300, 300);
+  h_diff_Eloss->Sumw2();
+  h_diff_Edepo = new TH1D("h_diff_Edepo","h_diff_Edepo;MeV", 100, -300, 300);
+  h_diff_Edepo->Sumw2();
   h_beam_inst_KE = new TH1D("h_beam_inst_KE","h_beam_inst_KE;MeV", 100, 0, 2000);
   h_beam_inst_KE->Sumw2();
   h_true_ffKE = new TH1D("h_true_ffKE","h_true_ffKE;MeV", 100, 0, 2000);
@@ -353,6 +359,15 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
         double int_energy_true_trklen = bb.KEAtLength(ff_energy_true, hadana.true_trklen);
         h_diff_Eint->Fill(int_energy_true_trklen - int_energy_true);
         h_diff_Eint_vs_true_Eint->Fill(int_energy_true, int_energy_true_trklen - int_energy_true);
+        
+        if (evt.true_beam_PDG == 211 && evt.reco_beam_true_byE_matched) {
+          double true_beam_startKE = sqrt(pow(evt.true_beam_startP*1000,2)+pow(pimass,2)) - pimass;
+          h_diff_Ebeam->Fill( beam_inst_KE - true_beam_startKE );
+          double reco_Eloss = (95.8 - 0.408*beam_inst_KE + 0.000347*pow(beam_inst_KE,2));
+          h_diff_Eloss->Fill( reco_Eloss - (true_beam_startKE - ff_energy_true) );
+          double ff_energy_reco = beam_inst_KE - reco_Eloss;
+          h_diff_Edepo->Fill( (ff_energy_reco - bb.KEAtLength(ff_energy_reco, hadana.reco_trklen)) - (ff_energy_true - int_energy_true) );
+        }
       }
       if (isTestSample) {
         ff_energy_true += rdm_gaus;
@@ -584,7 +599,7 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
     double int_E_calo = (*evt.reco_beam_incidentEnergies)[0]-13-hadana.energy_calorimetry_SCE;
     h_test1->Fill(int_E_leng-int_energy_true);
     h_test2->Fill(int_E_calo-int_energy_true);
-    h_test3->Fill(int_E_leng-int_E_calo);
+    h_test3->Fill(95.8 - 0.408*beam_inst_KE + 0.000347*pow(beam_inst_KE,2) - (sqrt(pow(evt.true_beam_startP*1000,2)+pow(pimass,2)) - pimass - ini_energy_true));
   }
   // Fill slice ID histograms
   if (evt.MC){

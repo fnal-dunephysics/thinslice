@@ -165,6 +165,7 @@ class ThinSlice {
   TH1D *h_trklen_noint;
   TH1D *h_trklen_noint_mu;
   TH1D *h_test1, *h_test2, *h_test3;
+  TH1D *h_diff_Ebeam, *h_diff_Eloss, *h_diff_Edepo;
   
 
   std::string fOutputFileName;
