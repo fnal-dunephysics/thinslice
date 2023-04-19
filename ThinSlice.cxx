@@ -157,7 +157,7 @@ void ThinSlice::BookHistograms(){
       hdeltax_inst[i][j]->Sumw2();
       hdeltay_inst[i][j] = new TH1D(Form("hdeltay_inst_%d_%d",i,j), Form("deltay_inst, %s, %s;#Deltay_inst/#sigma_{y}", pi::cutName[i], pi::intTypeName[j]), 100, 405, 440);
       hdeltay_inst[i][j]->Sumw2();
-      hxy_inst[i][j] = new TH2D(Form("hxy_inst_%d_%d",i,j), Form("%s, %s;x (cm);y (cm)", pi::cutName[i], pi::intTypeName[j]), 100, -45, -15, 100, 405, 440);
+      hxy_inst[i][j] = new TH2D(Form("hxy_inst_%d_%d",i,j), Form("%s, %s;x (cm);y (cm)", pi::cutName[i], pi::intTypeName[j]), 100, -45, -15, 100, 390, 450);
 
       hdeltaz[i][j] = new TH1D(Form("hdeltaz_%d_%d",i,j), Form("deltaz, %s, %s;#Deltaz/#sigma_{z}", pi::cutName[i], pi::intTypeName[j]), 100, -10, 10);
       hdeltaz[i][j]->Sumw2();

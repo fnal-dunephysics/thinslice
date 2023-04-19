@@ -9,7 +9,7 @@ namespace pi{
 
   const char intTypeName[nIntTypes+1][100] = {"Data",
                                               "PiInel",
-                                              "PiElas",
+                                              "PiDecay",
                                               "Muon",
                                               "misID:cosmic",
                                               "misID:p",

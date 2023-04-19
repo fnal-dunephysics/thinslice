@@ -32,7 +32,7 @@ void save_results(vector<double> vslice, vector<double> vcorr, vector<double> vc
   gr_corr->GetXaxis()->SetTitle("Slice");
   gr_corr->GetXaxis()->SetLimits(-1, pi::reco_nbins);
   gr_corr->GetYaxis()->SetTitle("Scale factor");
-  //gr_corr->GetYaxis()->SetRangeUser(0, 3);
+  gr_corr->GetYaxis()->SetRangeUser(0, 5);
   gr_corr->Draw("AP");
   TLine *line = new TLine(-1, par, pi::reco_nbins, par);
   line->SetLineColor(kRed);

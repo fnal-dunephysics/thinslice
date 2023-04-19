@@ -29,12 +29,14 @@ TFile *fcosmics;
 void PrintEvents(string name){
 
   TH1D *hdata[pi::nCuts];
+  TH1D *hcosmics[pi::nCuts];
   TH1D *hmc[pi::nCuts][pi::nIntTypes+1];
   for (int i = 0; i < pi::nCuts; ++i){
     for (int j = 0; j < pi::nIntTypes+1; ++j){
       hmc[i][j] = (TH1D*)fmc->Get(Form("%s_%d_%d",name.c_str(),i,j));
     }
     hdata[i] = (TH1D*)fdata->Get(Form("%s_%d_%d",name.c_str(),i,0));
+    hcosmics[i] = (TH1D*)fcosmics->Get(Form("%s_%d_%d",name.c_str(),i,0));
   }
   
   for (int i = 0; i<pi::nCuts; ++i){
@@ -43,6 +45,7 @@ void PrintEvents(string name){
     for (int j =0; j<pi::nIntTypes+1; ++j){
       if (j==0){
         cout<<pi::intTypeName[j]<<" "<<hdata[i]->Integral()<<endl;
+        cout<<"Cosmics"<<" "<<hcosmics[i]->Integral()<<endl;
       }
       else{
         cout<<pi::intTypeName[j]<<" "<<hmc[i][j]->Integral()<<endl;
@@ -129,7 +132,7 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
   leg->SetFillStyle(0);
   leg->SetNColumns(3);
   leg->AddEntry(hdata[cut],Form("%s %.0f",pi::intTypeName[0],hdata[cut]->Integral()),"ple");
-  leg->AddEntry((TObject*)0,Form("TotalMC %.0f",htotmc->Integral()),"");
+  leg->AddEntry((TObject*)0,Form("TruthMC %.0f",htotmc->Integral()),"");
   for (int i = 0; i<pi::nIntTypes; ++i){
     leg->AddEntry(hmc[cut][i+1], Form("%s %.0f",pi::intTypeName[i+1],hmc[cut][i+1]->Integral()), "f");
   }
@@ -255,7 +258,7 @@ void plot1dslice(string name, int cut, string xtitle, string ytitle){
     //leg->SetFillStyle(0);
     leg->SetNColumns(3);
     leg->AddEntry(hdata[j][cut],Form("%s %.0f",pi::intTypeName[0],hdata[j][cut]->Integral()),"ple");
-    leg->AddEntry((TObject*)0,Form("TotalMC %.0f",htotmc->Integral()),"");
+    leg->AddEntry((TObject*)0,Form("TruthMC %.0f",htotmc->Integral()),"");
     for (int i = 0; i<pi::nIntTypes; ++i){
       leg->AddEntry(hmc[j][cut][i+1], Form("%s %.0f",pi::intTypeName[i+1],hmc[j][cut][i+1]->Integral()), "f");
     }

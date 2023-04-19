@@ -4,7 +4,7 @@ void plotXS(){
 
   gStyle->SetOptStat(0);
 
-  TFile *file = TFile::Open("../../build/XS.root");
+  TFile *file = TFile::Open("../../build/XSMC.root");
   
   TH1D *h_sel_data = (TH1D*)file->Get("hdata");
   TH1D *h_sel_sig_int = (TH1D*)file->Get("hsignal");
@@ -31,7 +31,7 @@ void plotXS(){
   TGraphErrors *gr_ina_t = (TGraphErrors*)file->Get("gr_ina_t");
   TGraphErrors *gr_truexs = (TGraphErrors*)file->Get("gr_truexs");
   TGraphErrors *gr_recoxs = (TGraphErrors*)file->Get("gr_recoxs");
-  TFile *file_stat = TFile::Open("../../build/XS.root"); // data stat only: XS_datastat.root
+  TFile *file_stat = TFile::Open("../../build/XSMC.root"); // data stat only: XS_datastat.root
   TGraphErrors *gr_recoxs_stat = (TGraphErrors*)file_stat->Get("gr_recoxs");
   
   /*for (int i=0; i<pi::nthinslices; ++i){
@@ -310,8 +310,8 @@ void plotXS(){
   gr_recoxs->Draw("ape");
   gr_truexs->SetMarkerColor(3);
   gr_truexs->SetLineColor(3);
-  gr_truexs->RemovePoint(pi::true_nbins-2);
-  gr_truexs->RemovePoint(0);
+  //gr_truexs->RemovePoint(pi::true_nbins-2);
+  //gr_truexs->RemovePoint(0);
   gr_truexs->Draw("pe");
   total_inel_KE->SetLineColor(2);
   gr_recoxs_stat->RemovePoint(pi::true_nbins-2);
