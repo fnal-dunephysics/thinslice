@@ -13,8 +13,8 @@ class HadAna{
  public: 
 
   HadAna();
-  TRandom3 *r3 = new TRandom3(8);
-  TRandom3 *r33 = new TRandom3(0);
+  TRandom3 *r3;
+  TRandom3 *r33;
   void InitPi();
 
   void InitP();

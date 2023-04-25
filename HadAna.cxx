@@ -12,7 +12,9 @@ HadAna::HadAna(){
 }
 
 void HadAna::InitPi(){
-
+  r3 = new TRandom3(1);
+  r33 = new TRandom3(0);
+  
   AddTruePDG(-13);
   AddTruePDG(13);
   AddTruePDG(211);

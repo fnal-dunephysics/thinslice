@@ -24,11 +24,11 @@ void plotXS(){
   TGraphErrors *gr_inc = (TGraphErrors*)file->Get("gr_inc");
   TGraphErrors *gr_int = (TGraphErrors*)file->Get("gr_int");
   TGraphErrors *gr_ini = (TGraphErrors*)file->Get("gr_ini");
-  TGraphErrors *gr_ina = (TGraphErrors*)file->Get("gr_ina");
+  //TGraphErrors *gr_ina = (TGraphErrors*)file->Get("gr_ina");
   TGraphErrors *gr_inc_t = (TGraphErrors*)file->Get("gr_inc_t");
   TGraphErrors *gr_int_t = (TGraphErrors*)file->Get("gr_int_t");
   TGraphErrors *gr_ini_t = (TGraphErrors*)file->Get("gr_ini_t");
-  TGraphErrors *gr_ina_t = (TGraphErrors*)file->Get("gr_ina_t");
+  //TGraphErrors *gr_ina_t = (TGraphErrors*)file->Get("gr_ina_t");
   TGraphErrors *gr_truexs = (TGraphErrors*)file->Get("gr_truexs");
   TGraphErrors *gr_recoxs = (TGraphErrors*)file->Get("gr_recoxs");
   TFile *file_stat = TFile::Open("../../build/XSMC.root"); // data stat only: XS_datastat.root
@@ -39,6 +39,11 @@ void plotXS(){
     //cout<<hval_sel_sig_int_uf->GetBinContent(i+2)<<",";
   }*/
   
+  double Ndata_sig = h_sel_sig_int->Integral();
+  double Nfake_sig_t = hval_sel_sig_int->Integral();
+  double Ndata_unf = h_sel_sig_int_uf->Integral();
+  double Nfake_unf_t = hval_sel_sig_int_uf->Integral();
+  cout<<"### Ndata_sig: "<<Ndata_sig<<"; Nfake_sig_t: "<<Nfake_sig_t<<"; Ndata_unf: "<<Ndata_unf<<"; Nfake_unf_t: "<<Nfake_unf_t<<endl;
   // incident (all pion)
   TCanvas *c1 = new TCanvas("c1","c1");
   h_sel_data_inc->SetTitle("All Pions;Reco SliceID;Events");
@@ -48,7 +53,7 @@ void plotXS(){
   h_sel_sig_inc->SetMarkerColor(3);
   h_sel_sig_inc->DrawCopy("same");
   hval_sel_sig_inc->SetLineColor(2);
-  //hval_sel_sig_inc->Scale(h_sel_sig_inc->Integral()/hval_sel_sig_inc->Integral());
+  hval_sel_sig_inc->Scale(Ndata_sig/Nfake_sig_t);
   hval_sel_sig_inc->Draw("same hist");
   TLegend *leg1 = new TLegend(0.5,0.15,0.8,0.45);
   leg1->SetFillStyle(0);
@@ -67,7 +72,7 @@ void plotXS(){
   h_sel_sig_inc->DrawCopy("same");
   hval_sel_sig_inc_uf->SetLineColor(2);
   hval_sel_sig_inc_uf->SetMarkerColor(2);
-  //hval_sel_sig_inc_uf->Scale(h_sel_sig_inc_uf->Integral()/hval_sel_sig_inc_uf->Integral());
+  hval_sel_sig_inc_uf->Scale(Ndata_unf/Nfake_unf_t);
   hval_sel_sig_inc_uf->Draw("same hist");
   TLegend *leg2 = new TLegend(0.5,0.6,0.8,0.9);
   leg2->SetFillStyle(0);
@@ -85,7 +90,7 @@ void plotXS(){
   h_sel_sig_int->SetMarkerColor(3);
   h_sel_sig_int->DrawCopy("same");
   hval_sel_sig_int->SetLineColor(2);
-  //hval_sel_sig_int->Scale(h_sel_sig_int->Integral()/hval_sel_sig_int->Integral());
+  hval_sel_sig_int->Scale(Ndata_sig/Nfake_sig_t);
   hval_sel_sig_int->Draw("same hist");
   TLegend *leg3 = new TLegend(0.5,0.15,0.8,0.45);
   leg3->SetFillStyle(0);
@@ -104,7 +109,7 @@ void plotXS(){
   h_sel_sig_int->DrawCopy("same");
   hval_sel_sig_int_uf->SetLineColor(2);
   hval_sel_sig_int_uf->SetMarkerColor(2);
-  //hval_sel_sig_int_uf->Scale(h_sel_sig_int_uf->Integral()/hval_sel_sig_int_uf->Integral());
+  hval_sel_sig_int_uf->Scale(Ndata_unf/Nfake_unf_t);
   hval_sel_sig_int_uf->Draw("same hist");
   TLegend *leg4 = new TLegend(0.5,0.6,0.8,0.9);
   leg4->SetFillStyle(0);
@@ -122,7 +127,7 @@ void plotXS(){
   h_sel_sig_ini->SetMarkerColor(3);
   h_sel_sig_ini->DrawCopy("same");
   hval_sel_sig_ini->SetLineColor(2);
-  //hval_sel_sig_ini->Scale(h_sel_sig_ini->Integral()/hval_sel_sig_ini->Integral());
+  hval_sel_sig_ini->Scale(Ndata_sig/Nfake_sig_t);
   hval_sel_sig_ini->Draw("same hist");
   TLegend *leg5 = new TLegend(0.5,0.6,0.8,0.9);
   leg5->SetFillStyle(0);
@@ -141,7 +146,7 @@ void plotXS(){
   h_sel_sig_ini->DrawCopy("same");
   hval_sel_sig_ini_uf->SetLineColor(2);
   hval_sel_sig_ini_uf->SetMarkerColor(2);
-  //hval_sel_sig_ini_uf->Scale(h_sel_sig_ini_uf->Integral()/hval_sel_sig_ini_uf->Integral());
+  hval_sel_sig_ini_uf->Scale(Ndata_unf/Nfake_unf_t);
   hval_sel_sig_ini_uf->Draw("same hist");
   TLegend *leg6 = new TLegend(0.5,0.6,0.8,0.9);
   leg6->SetFillStyle(0);
@@ -153,6 +158,7 @@ void plotXS(){
     cout<<h_sel_sig_ini_uf->GetBinContent(i)<<"\t"<<h_sel_sig_ini_uf->GetBinError(i)<<endl;
   }*/
 
+  double scalefact = h_sel_sig_int_uf->Integral(2,-1)/hval_sel_sig_int_uf->Integral(2,-1); // do not consider the unphysical bin
   // incident histogram
   TCanvas *c7 = new TCanvas("c7","c7");
   gr_inc->SetTitle("");
@@ -162,6 +168,7 @@ void plotXS(){
   gr_inc->GetXaxis()->SetRangeUser(0, 21);
   gr_inc->SetMinimum(0);
   //gr_inc->Draw("ape");
+  //gr_inc_t->Scale(scalefact);
   gr_inc_t->SetLineWidth(2);
   gr_inc_t->SetLineColor(3);
   gr_inc_t->SetMarkerColor(3);
@@ -169,6 +176,8 @@ void plotXS(){
   TGraphErrors *gr_incE = (TGraphErrors*)gr_inc->Clone("gr_incE");
   TGraphErrors *gr_incE_t = (TGraphErrors*)gr_inc_t->Clone("gr_incE_t");
   for (int i=0; i<pi::true_nbins-1; i++) {
+    gr_inc_t->SetPointY(i, gr_inc_t->GetPointY(i)*scalefact);
+    gr_inc_t->SetPointError(i, gr_inc_t->GetErrorX(i), gr_inc_t->GetErrorY(i)*scalefact);
     double binw = gr_truexs->GetErrorX(i)*2;
     gr_incE->SetPoint(i, gr_truexs->GetPointX(i), gr_inc->GetPointY(i)/binw);
     gr_incE->SetPointError(i, binw/2, gr_inc->GetErrorY(i)/binw);
@@ -193,6 +202,7 @@ void plotXS(){
   gr_int->GetXaxis()->SetRangeUser(0, 21);
   gr_int->SetMinimum(0);
   //gr_int->Draw("ape");
+  //gr_int_t->Scale(scalefact);
   gr_int_t->SetLineWidth(2);
   gr_int_t->SetLineColor(3);
   gr_int_t->SetMarkerColor(3);
@@ -200,6 +210,8 @@ void plotXS(){
   TGraphErrors *gr_intE = (TGraphErrors*)gr_int->Clone("gr_intE");
   TGraphErrors *gr_intE_t = (TGraphErrors*)gr_int_t->Clone("gr_intE_t");
   for (int i=0; i<pi::true_nbins-1; i++) {
+    gr_int_t->SetPointY(i, gr_int_t->GetPointY(i)*scalefact);
+    gr_int_t->SetPointError(i, gr_int_t->GetErrorX(i), gr_int_t->GetErrorY(i)*scalefact);
     double binw = gr_truexs->GetErrorX(i)*2;
     gr_intE->SetPoint(i, gr_truexs->GetPointX(i), gr_int->GetPointY(i)/binw);
     gr_intE->SetPointError(i, binw/2, gr_int->GetErrorY(i)/binw);
@@ -224,6 +236,7 @@ void plotXS(){
   gr_ini->GetXaxis()->SetRangeUser(0, 21);
   gr_ini->SetMinimum(0);
   //gr_ini->Draw("ape");
+  //gr_ini_t->Scale(scalefact);
   gr_ini_t->SetLineWidth(2);
   gr_ini_t->SetLineColor(3);
   gr_ini_t->SetMarkerColor(3);
@@ -231,6 +244,8 @@ void plotXS(){
   TGraphErrors *gr_iniE = (TGraphErrors*)gr_ini->Clone("gr_iniE");
   TGraphErrors *gr_iniE_t = (TGraphErrors*)gr_ini_t->Clone("gr_iniE_t");
   for (int i=0; i<pi::true_nbins-1; i++) {
+    gr_ini_t->SetPointY(i, gr_ini_t->GetPointY(i)*scalefact);
+    gr_ini_t->SetPointError(i, gr_ini_t->GetErrorX(i), gr_ini_t->GetErrorY(i)*scalefact);
     double binw = gr_truexs->GetErrorX(i)*2;
     gr_iniE->SetPoint(i, gr_truexs->GetPointX(i), gr_ini->GetPointY(i)/binw);
     gr_iniE->SetPointError(i, binw/2, gr_ini->GetErrorY(i)/binw);
@@ -296,6 +311,7 @@ void plotXS(){
   TFile f2("../../files/exclusive_xsec.root");
   TGraph *total_inel_KE = (TGraph*)f2.Get("total_inel_KE");
 
+  bool showplot = false; // set true to remove the first and last bins in XS plot
   TCanvas *c10 = new TCanvas("c10", "c10", 1200, 500);
   gr_recoxs->SetTitle("Pion Inelastic Cross Section");
   gr_recoxs->GetXaxis()->SetTitle("Pion Kinetic Energy (MeV)");
@@ -305,17 +321,19 @@ void plotXS(){
   gr_recoxs->SetLineWidth(2);
   gr_recoxs->SetMarkerColor(4);
   gr_recoxs->SetLineColor(4);
-  gr_recoxs->RemovePoint(pi::true_nbins-2); // the last is used as overflow
-  gr_recoxs->RemovePoint(0); // the first is used as underflow
+  if (showplot) {
+    gr_recoxs->RemovePoint(pi::true_nbins-2); // the last is used as overflow
+    gr_recoxs->RemovePoint(0); // the first is used as underflow
+    gr_truexs->RemovePoint(pi::true_nbins-2);
+    gr_truexs->RemovePoint(0);
+    gr_recoxs_stat->RemovePoint(pi::true_nbins-2);
+    gr_recoxs_stat->RemovePoint(0);
+  }
   gr_recoxs->Draw("ape");
   gr_truexs->SetMarkerColor(3);
   gr_truexs->SetLineColor(3);
-  //gr_truexs->RemovePoint(pi::true_nbins-2);
-  //gr_truexs->RemovePoint(0);
   gr_truexs->Draw("pe");
   total_inel_KE->SetLineColor(2);
-  gr_recoxs_stat->RemovePoint(pi::true_nbins-2);
-  gr_recoxs_stat->RemovePoint(0);
   gr_recoxs_stat->Draw("pe");
   
   /*for (int i=0;i<total_inel_KE->GetN();i++) {
@@ -326,23 +344,24 @@ void plotXS(){
   }*/
   double chi2 = 0;
   int nbins = 0;
-  cout<<"KE\tData XS\t\tData XS_err\t\tMC XS\t\tMC XS_err\tXS_curve\tChi2"<<endl;
-  for (int i=1; i<pi::true_nbins-2; ++i) {
-    double KE = (pi::true_KE[i+1]+pi::true_KE[i])/2;
+  cout<<"KE[]\t\tData XS\t\tData XS_err\t\tFake XS\t\tFake XS_err\tXS_curve\tChi2"<<endl;
+  for (int i=0; i<pi::true_nbins-1; ++i) {
+    int j = i;
+    if (showplot) j = i+1;
+    double KE = (pi::true_KE[j+1]+pi::true_KE[j])/2;
     double xs_curve = total_inel_KE->Eval(KE);
-    double xs_MC = gr_truexs->GetPointY(i-1);
-    double xserr_MC = gr_truexs->GetErrorY(i-1);
-    double xs_data = gr_recoxs->GetPointY(i-1);
-    double xserr_data = gr_recoxs->GetErrorY(i-1);
+    double xs_MC = gr_truexs->GetPointY(i);
+    double xserr_MC = gr_truexs->GetErrorY(i);
+    double xs_data = gr_recoxs->GetPointY(i);
+    double xserr_data = gr_recoxs->GetErrorY(i);
     double c2 = 0;
-    if (true) {
-      c2 = pow( (xs_data-xs_MC)/sqrt(pow(xserr_data,2)+pow(xserr_MC,2)) , 2);
-      chi2 += c2;
-      ++nbins;
-    }
-    cout<<KE<<"\t"<<xs_data<<"\t\t"<<xserr_data<<"\t\t\t"<<xs_MC<<"\t\t"<<xserr_MC<<"\t\t"<<xs_curve<<"\t\t"<<c2<<endl;
+    c2 = pow( (xs_data-xs_MC) / sqrt( pow(xserr_data,2) + pow(xserr_MC,2) ) ,2);
+    chi2 += c2;
+    ++nbins;
+    cout<<"["<<pi::true_KE[j+1]<<","<<pi::true_KE[j]<<"]\t"<<xs_data<<"\t\t"<<xserr_data<<"\t\t\t"<<xs_MC<<"\t\t"<<xserr_MC<<"\t\t"<<xs_curve<<"\t\t"<<c2<<endl;
+    if (showplot && i>=pi::true_nbins-4) break;
   }
-  cout<<"Chi2/Ndf = "<<chi2<<"/"<<nbins<<" = "<<chi2/nbins<<endl;
+  cout<<"Chi2/Ndf = "<<chi2<<"/"<<nbins<<" = "<<chi2/nbins<<"    (Covariance matrices not used)"<<endl;
   
   total_inel_KE->Draw("L");
   TLegend *leg10 = new TLegend(0.15,0.2,0.5,0.4);
