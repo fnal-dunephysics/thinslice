@@ -502,7 +502,7 @@ int main(int argc, char** argv){
         //hsig3D->SetBinContent(k+1, j+1, i+1, central_datasig[idx]);
         //hsig3D->SetBinError(k+1, j+1, i+1, hdata_3D->GetBinError(k+1, j+1, i+1)); // exclude bkg sys error
       }
-  // use Cholesky decomposition to generate correlated toys
+  /// use Cholesky decomposition to generate sample of histogram with bin correlations
   /*FILE *fcholsqrt_Inc=fopen("../../thinslice_sys_nominal/build/toys/cholsqrt_MCXS_inc_1110.txt","r");
   if (!fcholsqrt_Inc) {
     cout<<"cholsqrt_inc_MCXS not found!"<<endl;
@@ -531,6 +531,7 @@ int main(int argc, char** argv){
   RooUnfoldResponse *response_SliceID_3D = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
   RooUnfoldResponse *response_SliceID_1D_eff = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D"); // should be the same with 3D excluding empty bins
   RooUnfoldResponse *response_SliceID_1D = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
+  RooUnfoldResponse *response_SliceID_1D_2 = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
   TH3D *hmeas_3D = (TH3D*)response_SliceID_3D->Hmeasured();
   TH3D *htruth_3D = (TH3D*)response_SliceID_3D->Htruth();
   
@@ -543,8 +544,8 @@ int main(int argc, char** argv){
   int idx_truth1D[true_nbins3D]; // indices of non-empty bins of truth spectrum (0 if emtpy)
   int idx_truth1D_eff[true_nbins3D]; // indices of non-empty bins of truth spectrum (0 if emtpy)
   
-  bool get_1Didx = false; /// true in the case when you have whole MC as truth MC, and get the non-empty indices; false if you already pasted the tmp idx below from whole MC and ready for fake or real data study
-  if (get_1Didx) {
+  bool get_1Didx = false; /// true in the case when you have whole MC as truth MC, and get the non-empty indices; false when you already pasted the tmp idx below from whole MC and ready for fake or real data study
+  if (get_1Didx) { /// when you have whole MC as truth MC, and get the non-empty indices
     cout<<"### idx_meas1D"<<endl;
     for (int i=0; i<pi::reco_nbins; ++i)
       for (int j=0; j<pi::reco_nbins; ++j)
@@ -569,10 +570,14 @@ int main(int argc, char** argv){
           }
           cout<<idx_truth1D_eff[idx]<<",";
         }
+    cout<<endl;
+    fout->Write();
+    fout->Close();
+    return 0;
   }
-  else {
-    int tmp_idx_meas1D[pi::reco_nbins3D]={1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,3,4,0,0,0,0,0,0,0,0,0,5,6,7,0,0,0,0,0,0,0,0,8,9,10,0,0,0,0,0,0,0,0,11,12,13,0,0,0,0,0,0,0,0,14,15,16,0,0,0,0,0,0,0,0,0,17,18,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,21,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,23,24,25,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,26,27,28,29,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,31,32,33,34,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35,36,37,38,39,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,41,42,43,44,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,45,46,47,48,49,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,50,51,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,52,53,0,0,0,0,0,0,0};
-    int tmp_idx_truth1D[pi::true_nbins3D]={1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,3,4,0,0,0,0,0,0,0,0,0,0,5,6,0,0,0,0,0,0,0,0,7,8,9,10,0,0,0,0,0,0,0,11,12,13,14,15,0,0,0,0,0,0,0,16,17,18,19,20,0,0,0,0,0,21,22,23,24,25,26,27,0,0,0,0,0,28,29,30,31,32,33,0,0,0,0,0,34,35,36,37,38,0,0,0,0,0,39,40,41,42,43,44,45,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,46,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,47,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,49,50,51,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,52,53,54,55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,56,57,58,59,60,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,61,62,63,64,65,66,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,67,68,69,70,71,72,73,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,75,76,77,78,79,80,81,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,82,83,84,85,86,87,88,89,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,90,91,92,93,94,0,0,0,0};
+  else { /// when you already pasted the tmp idx below from whole MC and ready for fake or real data study
+    int tmp_idx_meas1D[pi::reco_nbins3D]={1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,3,4,0,0,0,0,0,0,0,0,0,0,0,5,6,7,0,0,0,0,0,0,0,0,0,0,8,9,10,11,0,0,0,0,0,0,0,0,0,12,13,14,15,0,0,0,0,0,0,0,0,0,0,16,17,18,19,0,0,0,0,0,0,0,0,0,20,21,22,0,0,0,0,0,0,0,0,0,23,24,25,26,0,0,0,0,0,0,0,0,0,0,27,28,29,0,0,0,0,0,0,0,0,0,0,30,31,32,33,0,0,0,0,0,0,0,0,0,34,35,36,37,38,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,39,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,41,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,42,43,44,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,45,46,47,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,49,50,51,52,53,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,54,55,56,57,58,59,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,60,61,62,63,64,65,66,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,67,68,69,70,71,72,73,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,75,76,77,78,79,80,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,81,82,83,84,85,86,87,88,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,89,90,91,92,93,94,0,95,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,96,97,98,99,100,101,102,103,0,0,0};
+    int tmp_idx_truth1D[pi::true_nbins3D]={1,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,3,4,0,0,0,0,0,0,0,0,0,0,0,0,5,6,0,0,0,0,0,0,0,0,0,0,0,7,8,9,0,0,0,0,0,0,0,0,0,0,10,11,12,13,0,0,0,0,0,0,0,0,0,14,15,16,17,18,0,0,0,0,0,0,0,19,20,21,22,23,24,25,0,0,0,0,0,0,0,26,27,28,29,30,31,32,0,0,0,0,0,33,34,35,36,37,38,39,40,41,0,0,0,0,0,42,43,44,45,46,47,48,49,50,0,0,0,0,51,52,53,54,55,56,57,58,0,59,0,0,60,61,62,63,64,65,66,67,68,69,70,71,0,0,0,0,0,0,0,0,0,0,0,0,0,0,72,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,73,74,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,75,76,77,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,78,79,80,81,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,82,83,84,85,86,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,87,88,89,90,91,92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,93,94,95,96,97,98,99,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100,101,102,103,104,105,106,107,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,108,109,110,111,112,113,114,115,116,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,117,118,119,120,121,122,123,124,125,126,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,127,128,129,130,131,132,133,134,135,136,137,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,138,139,140,141,142,143,144,145,146,147,148,149};
     for (int i=0; i<pi::reco_nbins3D; ++i) {
       idx_meas1D[i] = tmp_idx_meas1D[i];
       if (idx_meas1D[i] != 0) ++nmeas_3D;
@@ -582,7 +587,7 @@ int main(int argc, char** argv){
       if (idx_truth1D_eff[i] != 0) ++ntruth_3D_eff;
     }
   }
-  //cout<<endl<<"### idx_truth1D (separate eff)"<<endl;
+  //cout<<"### idx_truth1D (separate eff)"<<endl;
   TH1D *htruth_1D = (TH1D*)response_SliceID_1D->Htruth();
   TH1D *htruth_1D_eff = (TH1D*)response_SliceID_1D_eff->Htruth();
   double eff1D[ntruth_3D_eff];
@@ -653,7 +658,9 @@ int main(int argc, char** argv){
   RooUnfoldBayes unfold_Int (response_SliceID_Int, hsignal, 10);
   RooUnfoldResponse *response_SliceID_Ini = (RooUnfoldResponse*)fmc->Get("response_SliceID_Ini");
   RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 10);
+  
   RooUnfoldBayes unfold_1D (response_SliceID_1D, hsig1D, 4);
+  RooUnfoldBayes unfold_1D_2 (response_SliceID_1D_2, hsig1D, 2);
   
   //hsigini = (TH1D*)hsig3D->Project3D("x");
   //hsiginc = (TH1D*)hsig3D->Project3D("y");
@@ -732,7 +739,7 @@ int main(int argc, char** argv){
       unfold_3D.SetMeasuredCov(mcov_3D);
     }
   }
-  if (false) { // has_cov_input
+  /*if (false) { // has_cov_input
     FILE *fcov_3D=fopen("../../thinslice_sys_nominal/build/toys/cov_nominal_0115.txt","r"); // input covariance
     if (!fcov_3D) {
       cout<<"cov_3D_input not found!"<<endl;
@@ -748,7 +755,7 @@ int main(int argc, char** argv){
     }
     //mcov_3D = mcov_3D_input;
     unfold_3D.SetMeasuredCov(mcov_3D_input);
-  }
+  }*/
   
   TH3D *hsig3D_uf;
   TH1D *hsiginc_uf;
@@ -767,6 +774,8 @@ int main(int argc, char** argv){
     }
   }
   hsig1D_uf = (TH1D*)unfold_1D.Hreco();
+  TH1D *hsig1D_uf_2 = (TH1D*)unfold_1D_2.Hreco();
+  /// define input and output histograms for external unfolding methods
   TH1D* h1measdata_1D = new TH1D("h1measdata_1D", "h1measdata_1D", nmeas_3D, 0, nmeas_3D);
   TH1D* h1unfdata_1D = new TH1D("h1unfdata_1D", "h1unfdata_1D", ntruth_3D_eff, 0, ntruth_3D_eff);
   TH1D* h1measMC_1D = new TH1D("h1measMC_1D", "h1measMC_1D", nmeas_3D, 0, nmeas_3D);
@@ -786,24 +795,56 @@ int main(int argc, char** argv){
   h1measMC_1D->Write("h1measMC_1D");
   h1truthMC_1D->Write("h1truthMC_1D");
   h1seltruthMC_1D->Write("h1seltruthMC_1D");
-  TH2D* covinput_1D = new TH2D(unfold_1D.GetMeasuredCov());
+  TH2D* covinput_1D = new TH2D(unfold_1D.GetMeasuredCov()); // input covariance matrix (should be diagonal)
   covinput_1D->Write("covinput_1D");
   TMatrixD cov_matrix_1D = unfold_1D.Ereco();
-  TH2D *covariance_1D = new TH2D(cov_matrix_1D);
-  covariance_1D->Write("covariance_1D");
   for (int i=0; i<ntruth_3D_eff; ++i) {
     if (eff1D[i] != 0) {
       hsig1D_uf->SetBinContent(i+1, hsig1D_uf->GetBinContent(i+1)/eff1D[i]);
       double bine = hsig1D_uf->GetBinError(i+1);
       hsig1D_uf->SetBinError(i+1, bine/eff1D[i]); // should estimate efficiency uncertainty using Clopper-Pearson (as a systematic)
-    }
+      
+      hsig1D_uf_2->SetBinContent(i+1, hsig1D_uf_2->GetBinContent(i+1)/eff1D[i]);
+      bine = hsig1D_uf_2->GetBinError(i+1);
+      hsig1D_uf_2->SetBinError(i+1, bine/eff1D[i]);
+    } // h1seltruthMC_1D : h1truthMC_1D == h1unfdata_1D : hsig1D_uf
     else {
       hsig1D_uf->SetBinContent(i+1, response_SliceID_1D_eff->Htruth()->GetBinContent(i+1)*Eweight);
       hsig1D_uf->SetBinError(i+1, response_SliceID_1D_eff->Htruth()->GetBinError(i+1)*Eweight);
+      
+      hsig1D_uf_2->SetBinContent(i+1, response_SliceID_1D_eff->Htruth()->GetBinContent(i+1)*Eweight);
+      hsig1D_uf_2->SetBinError(i+1, response_SliceID_1D_eff->Htruth()->GetBinError(i+1)*Eweight);
     }
   }
   hsig1D_uf->SetNameTitle("hsig1D_uf", "Unfolded 1D signal;Slice ID;Events");
-  hsig3D_uf = (TH3D*)unfold_3D.Hreco();
+  ///END  get outputs of unfolding  //////////
+  
+  
+  //////////  save toy unfolded histograms to txt for systematic evaluations  //////////
+  bool toy_study = false;
+  if (toy_study) {
+    ofstream myfile_sys_unfold;
+    myfile_sys_unfold.open ("../../thinslice_sys_nominal/build/toys/hsig1Duf_nominal_0426_iter4.txt", ios::app); //output hsig1D_uf of each toy
+    for (int i=0; i<ntruth_3D_eff; ++i) {
+      myfile_sys_unfold<<hsig1D_uf->GetBinContent(i+1)<<"\t";
+    }
+    myfile_sys_unfold<<endl<<endl;
+    myfile_sys_unfold.close();
+    
+    ofstream myfile_sys_unfold2;
+    myfile_sys_unfold2.open ("../../thinslice_sys_nominal/build/toys/hsig1Duf_nominal_0426_iter2.txt", ios::app); //output hsig1D_uf of each toy
+    for (int i=0; i<ntruth_3D_eff; ++i) {
+      myfile_sys_unfold2<<hsig1D_uf_2->GetBinContent(i+1)<<"\t";
+    }
+    myfile_sys_unfold2<<endl<<endl;
+    myfile_sys_unfold2.close();
+    
+    fout->Write();
+    fout->Close();
+    return 0;
+  }
+  
+  hsig3D_uf = (TH3D*)unfold_3D.Hreco(); // 3D unfolding (can be time-consuming)
   hsig3D_uf->SetNameTitle("hsig3D_uf", "Unfolded 3D signal;Slice ID;Events");
   // 1D index back to 3D
   for (int i=0; i<pi::true_nbins; ++i)
@@ -817,6 +858,7 @@ int main(int argc, char** argv){
         }
       }
   TH3D *hsig3D_uf2 = (TH3D*)unfold_3D2.Hreco();
+  /// save the 3D unfolded histogram as Unfold3DTable.cxx
   std::filebuf fb;
   fb.open(root["UnfoldTable"].asString().c_str(),std::ios::out);
   std::ostream os(&fb);
@@ -836,12 +878,9 @@ int main(int argc, char** argv){
   hsignal_uf->SetNameTitle("hsignal_uf","Unfolded interaction signal;Slice ID;Events");
   cout<<"hsiginc_uf: "<<hsiginc_uf->Integral()<<endl;
   cout<<"hsigini_uf: "<<hsigini_uf->Integral()<<endl;
-  ///END  get outputs of unfolding  //////////
-  
-  
-  if (false) { // toy
+  /*if (toy_study) {
     ofstream myfile_sys_unfold;
-    myfile_sys_unfold.open ("../../thinslice_sys_nominal/build/toys/syscov_RooUnfold_nominal_0115.txt", ios::app); //output toys
+    myfile_sys_unfold.open ("../../thinslice_sys_nominal/build/toys/syscov_RooUnfold_nominal_0426.txt", ios::app); //output toys
     //3D
     for (int i=0; i<pi::true_nbins; ++i)
       for (int j=0; j<pi::true_nbins; ++j)
@@ -852,7 +891,7 @@ int main(int argc, char** argv){
     myfile_sys_unfold.close();
     
     ofstream myfile_sys_unfold2;
-    myfile_sys_unfold2.open ("../../thinslice_sys_nominal/build/toys/syscov_RooUnfold_nominal_0115_2.txt", ios::app); //output toys
+    myfile_sys_unfold2.open ("../../thinslice_sys_nominal/build/toys/syscov_RooUnfold_nominal_0426_2.txt", ios::app); //output toys
     for (int i=0; i<pi::true_nbins; ++i)
       for (int j=0; j<pi::true_nbins; ++j)
         for (int k=0; k<pi::true_nbins; ++k) {
@@ -864,10 +903,11 @@ int main(int argc, char** argv){
     fout->Write();
     fout->Close();
     return 0;
-  }
+  }*/
+  ///END  save toy unfolded histograms to txt for systematic evaluations  //////////
   
   
-  //////////  covariance matrix 1D back to 3D  //////////
+  /// 1D covariance matrix (statistical only; will be updated later with external outcov)
   for (int i=0; i<ntruth_3D_eff; ++i)
     for (int j=0; j<ntruth_3D_eff; ++j) {
       if (eff1D[i] != 0 && eff1D[j] != 0) { // non-zero efficiency
@@ -880,33 +920,28 @@ int main(int argc, char** argv){
     }
   TMatrixD cov_matrix_3D(pi::true_nbins3D, pi::true_nbins3D);
   //cov_matrix_3D = unfold_3D.Ereco();
-  for (int i=0; i<pi::true_nbins3D; ++i)
-    for (int j=0; j<pi::true_nbins3D; ++j) {
-      cov_matrix_3D(i, j) = 0;
-      if (idx_truth1D_eff[i]!=0 && idx_truth1D_eff[j]!=0) { // non-empty bin
-        cov_matrix_3D(i, j) = cov_matrix_1D(idx_truth1D_eff[i]-1, idx_truth1D_eff[j]-1);
-      }
-    }
-  ///END  covariance matrix 1D back to 3D  //////////
   
   
+  //////////  update using the external covariance matrix after unfolding (derived using toys)  //////////
   bool has_external_cov = false;
   if (has_external_cov) { // has_external_cov after unfolding
-    FILE *fcov_3D=fopen("../../thinslice_sys_nominal/build/toys/cov_RooUnfold_nominal_0115.txt","r"); //output covariance
-    if (!fcov_3D) {
-      cout<<"cov_3D_RooUnfold not found!"<<endl;
+    FILE *fcov_1D=fopen("../../thinslice_sys_nominal/build/toys/outCov_nominal_0426_iter4.txt","r"); //output covariance
+    if (!fcov_1D) {
+      cout<<"*** outCov file not found!"<<endl;
       return 1;
     }
     double vv;
-    for(int i=0; i<pi::true_nbins3D; i++) {
-      for(int j=0; j<pi::true_nbins3D; j++) {
-        fscanf(fcov_3D, "%lf", &vv);
-        cov_matrix_3D(i, j) += vv;
+    for(int i=0; i<ntruth_3D_eff; i++) {
+      for(int j=0; j<ntruth_3D_eff; j++) {
+        fscanf(fcov_1D, "%lf", &vv);
+        cov_matrix_1D(i, j) += vv;
       }
     }
   }
+  ///END  update using the external covariance matrix after unfolding (derived using toys)  //////////
   
-  TH1D* h1measdata = new TH1D("h1measdata", "h1measdata", pi::reco_nbins3D, 0, pi::reco_nbins3D);
+  /// define input and output histograms for external unfolding methods (3D)
+  /*TH1D* h1measdata = new TH1D("h1measdata", "h1measdata", pi::reco_nbins3D, 0, pi::reco_nbins3D);
   TH1D* h1unfdata = new TH1D("h1unfdata", "h1unfdata", pi::true_nbins3D, 0, pi::true_nbins3D);
   TH1D* h1measMC = new TH1D("h1measMC", "h1measMC", pi::reco_nbins3D, 0, pi::reco_nbins3D);
   TH1D* h1truthMC = new TH1D("h1truthMC", "h1truthMC", pi::true_nbins3D, 0, pi::true_nbins3D);
@@ -916,10 +951,6 @@ int main(int argc, char** argv){
         int idx = i*pow(pi::reco_nbins,2) + j*pi::reco_nbins + k;
         h1measMC->SetBinContent(idx+1, hmeas_3D->GetBinContent(k+1, j+1, i+1));
         h1measdata->SetBinContent(idx+1, hsig3D->GetBinContent(k+1, j+1, i+1));
-        /*if (idx_meas1D[idx] != 0) {
-          h1measMC_1D->SetBinContent(idx_meas1D[idx], hmeas_3D->GetBinContent(k+1, j+1, i+1));
-          h1measdata_1D->SetBinContent(idx_meas1D[idx], hsig3D->GetBinContent(k+1, j+1, i+1));
-        }*/
       }
   for (int i=0; i<pi::true_nbins; ++i)
     for (int j=0; j<pi::true_nbins; ++j)
@@ -927,10 +958,6 @@ int main(int argc, char** argv){
         int idx = i*pow(pi::true_nbins,2) + j*pi::true_nbins + k;
         h1truthMC->SetBinContent(idx+1, htruth_3D->GetBinContent(k+1, j+1, i+1));
         h1unfdata->SetBinContent(idx+1, hsig3D_uf->GetBinContent(k+1, j+1, i+1));
-        /*if (idx_truth1D[idx] != 0) {
-          h1truthMC_1D->SetBinContent(idx_truth1D[idx], htruth_3D->GetBinContent(k+1, j+1, i+1));
-          h1unfdata_1D->SetBinContent(idx_truth1D[idx], hsig3D_uf->GetBinContent(k+1, j+1, i+1));
-        }*/
       }
   h1measdata->Write("h1measdata");
   h1unfdata->Write("h1unfdata");
@@ -939,9 +966,9 @@ int main(int argc, char** argv){
   TMatrixD mcov_3D_meas(pi::reco_nbins3D, pi::reco_nbins3D);
   mcov_3D_meas = unfold_3D.GetMeasuredCov();
   TH2D* covinput_3D = new TH2D(mcov_3D_meas);
-  covinput_3D->Write("covinput_3D");
+  covinput_3D->Write("covinput_3D");*/
   
-  
+  /// output indices for q3D unfolding
   cout<<"##### idx_meas1D[idx]; (k, j, i); MC_meas; data_meas"<<endl;
   for (int i=0; i<pi::reco_nbins; ++i)
     for (int j=0; j<pi::reco_nbins; ++j)
@@ -963,6 +990,8 @@ int main(int argc, char** argv){
       }
   cout<<endl;
   
+
+  //////////  define input and output histograms for external unfolding methods for ini, end, int  //////////
   TH1D* h1measdata_ini = new TH1D("h1measdata_ini", "h1measdata_ini", pi::reco_nbins, 0, pi::reco_nbins);
   TH1D* h1unfdata_ini = new TH1D("h1unfdata_ini", "h1unfdata_ini", pi::true_nbins, 0, pi::true_nbins);
   TH1D* h1measMC_ini = new TH1D("h1measMC_ini", "h1measMC_ini", pi::reco_nbins, 0, pi::reco_nbins);
@@ -1009,7 +1038,33 @@ int main(int argc, char** argv){
   h1truthMC_int->Write("h1truthMC_int");
   TH2D* covinput_int = new TH2D(unfold_Int.GetMeasuredCov());
   covinput_int->Write("covinput_int");
+  ///END  define input and output histograms for external unfolding methods for ini, end, int  //////////
+
   
+  /// output covariance matrix for q3D variable
+  TH2D *covariance_1D = new TH2D(cov_matrix_1D); // output covariance matrix
+  covariance_1D->Write("covariance_1D");
+  TH2D *correlation_1D = (TH2D*)covariance_1D->Clone();
+  vector<double> sigma_1D;
+  for (int i=1; i<=covariance_1D->GetNbinsX(); ++i) {
+    sigma_1D.push_back(sqrt(covariance_1D->GetBinContent(i,i)));
+  }
+  for (int i=1; i<=covariance_1D->GetNbinsX(); ++i) {
+    for (int j=1; j<=covariance_1D->GetNbinsY(); ++j) {
+      if (covariance_1D->GetBinContent(i,j) == 0) correlation_1D->SetBinContent(i, j, 0);
+      else correlation_1D->SetBinContent(i, j, covariance_1D->GetBinContent(i,j)/sigma_1D.at(i-1)/sigma_1D.at(j-1));
+    }
+  }
+  correlation_1D->Write("correlation_1D");
+  
+  /// transform covariance matrix from q3D to 3D
+  for (int i=0; i<pi::true_nbins3D; ++i)
+    for (int j=0; j<pi::true_nbins3D; ++j) {
+      cov_matrix_3D(i, j) = 0;
+      if (idx_truth1D_eff[i]!=0 && idx_truth1D_eff[j]!=0) { // non-empty bin
+        cov_matrix_3D(i, j) = cov_matrix_1D(idx_truth1D_eff[i]-1, idx_truth1D_eff[j]-1);
+      }
+    }
   TH2D *covariance_3D = new TH2D(cov_matrix_3D);
   covariance_3D->Write("covariance_3D");
   TH2D *correlation_3D = (TH2D*)covariance_3D->Clone();
@@ -1052,6 +1107,8 @@ int main(int argc, char** argv){
   }
   ///END  error propagation from N^3 x N^3 to 3N x 3N  //////////
   
+  
+  //////////  output covariance matrix for ini, end, int  //////////
   TMatrixD cov_matrix_inc = unfold_Inc.Ereco();
   TH2D *covariance_inc = new TH2D(cov_matrix_inc);
   covariance_inc->Write("covariance_inc");
@@ -1102,6 +1159,8 @@ int main(int argc, char** argv){
   /*TVectorD covar_diag = unfold_Inc.ErecoV();
   TH1D *cov_diag = new TH1D(covar_diag);
   cov_diag->Write("Mcov_diag");*/
+  ///END  output covariance matrix for ini, end, int  //////////
+  
   
   //////////  calculate the histograms Ninc, Nint, Nini as well as their covariance matrix  //////////
   double Ninc[pi::true_nbins-1] = {0};

@@ -6,8 +6,8 @@ Unfold::Unfold(TH3D* hist_reco, TH3D* hist_true)
   , response_SliceID_Inc(hist_reco->Project3D("x"), hist_true->Project3D("x"))
   , response_SliceID_Ini(hist_reco->Project3D("x"), hist_true->Project3D("x"))
   , response_SliceID_3D(hist_reco, hist_true)
-  , response_SliceID_1D(53,0,53, 94,0,94) // edit here for 1D unfolding
-  , response_SliceID_1D_noeff(53,0,53, 94,0,94)
+  , response_SliceID_1D(103,0,103, 149,0,149) // edit here for 1D unfolding
+  , response_SliceID_1D_noeff(103,0,103, 149,0,149)
 {
 
   response_SliceID_Int.UseOverflow(false);
