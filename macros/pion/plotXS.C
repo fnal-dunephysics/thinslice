@@ -31,8 +31,12 @@ void plotXS(){
   //TGraphErrors *gr_ina_t = (TGraphErrors*)file->Get("gr_ina_t");
   TGraphErrors *gr_truexs = (TGraphErrors*)file->Get("gr_truexs");
   TGraphErrors *gr_recoxs = (TGraphErrors*)file->Get("gr_recoxs");
-  TFile *file_stat = TFile::Open("../../build/XSMC.root"); // data stat only: XS_datastat.root
+  TFile *file_stat = TFile::Open("../../build/XSMC_0430_stat_iter4.root"); // data stat only: XS_datastat.root
   TGraphErrors *gr_recoxs_stat = (TGraphErrors*)file_stat->Get("gr_recoxs");
+  TFile *file_upp = TFile::Open("../../build/XSMC_0426_MCXSp_iter4.root"); // upp one sigma
+  TGraph *gr_recoxs_upp = (TGraph*)file_upp->Get("gr_recoxs");
+  TFile *file_low = TFile::Open("../../build/XSMC_0426_MCXSm_iter4.root"); // low one sigma
+  TGraph *gr_recoxs_low = (TGraph*)file_low->Get("gr_recoxs");
   
   /*for (int i=0; i<pi::nthinslices; ++i){
     cout<<gr_inc->GetPointY(i)<<",";
@@ -328,13 +332,24 @@ void plotXS(){
     gr_truexs->RemovePoint(0);
     gr_recoxs_stat->RemovePoint(pi::true_nbins-2);
     gr_recoxs_stat->RemovePoint(0);
+    gr_recoxs_upp->RemovePoint(pi::true_nbins-2);
+    gr_recoxs_upp->RemovePoint(0);
+    gr_recoxs_low->RemovePoint(pi::true_nbins-2);
+    gr_recoxs_low->RemovePoint(0);
   }
   gr_recoxs->Draw("ape");
   gr_truexs->SetMarkerColor(3);
   gr_truexs->SetLineColor(3);
-  gr_truexs->Draw("pe");
+  //gr_truexs->Draw("pe");
   total_inel_KE->SetLineColor(2);
+  gr_recoxs_upp->SetMarkerColor(45);
+  gr_recoxs_upp->SetLineColor(45);
+  //gr_recoxs_upp->Draw("p");
+  gr_recoxs_low->SetMarkerColor(38);
+  gr_recoxs_low->SetLineColor(38);
+  //gr_recoxs_low->Draw("p");
   gr_recoxs_stat->Draw("pe");
+  
   
   /*for (int i=0;i<total_inel_KE->GetN();i++) {
     if (total_inel_KE->GetX()[i] <= 476.44931) {
@@ -366,9 +381,9 @@ void plotXS(){
   total_inel_KE->Draw("L");
   TLegend *leg10 = new TLegend(0.15,0.2,0.5,0.4);
   leg10->SetFillStyle(0);
-  leg10->AddEntry(gr_recoxs_stat, "Data stat", "pe");
-  leg10->AddEntry(gr_recoxs, "Data total", "pe");
-  leg10->AddEntry(gr_truexs, "MC truth", "pe");
+  leg10->AddEntry(gr_recoxs_stat, "Fake data stat", "pe");
+  leg10->AddEntry(gr_recoxs, "Fake data sys: bkgsc", "pe");
+  //leg10->AddEntry(gr_truexs, "MC truth", "pe");
   leg10->AddEntry(total_inel_KE, "Geant4 input", "l");
   leg10->Draw();
 

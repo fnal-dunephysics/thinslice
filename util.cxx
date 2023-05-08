@@ -7,7 +7,7 @@
 
 using namespace std;
 
-double CalWeight(const anavar & evt, const int &partype){
+double CalWeight(const anavar & evt, const int &partype, double rdm_radius, double rdm_angle){
   double weight = 1.;
   //return weight;
   
@@ -17,6 +17,15 @@ double CalWeight(const anavar & evt, const int &partype){
   double mom_sigma0 = 0.0609;
   double mom_mu = 1.01818;
   double mom_sigma = 0.07192;
+  if (rdm_radius != 0) {
+    double oval_cx = 1.01853;
+    double oval_cy = 0.07245;
+    double oval_a = 0.00557;
+    double oval_b = 0.00309;
+    double oval_phi = 0.776;
+    mom_mu = oval_cx + rdm_radius * (oval_a*TMath::Cos(oval_phi)*TMath::Cos(rdm_angle) - oval_b*TMath::Sin(oval_phi)*TMath::Sin(rdm_angle));
+    mom_sigma = oval_cy + rdm_radius * (oval_a*TMath::Sin(oval_phi)*TMath::Cos(rdm_angle) + oval_b*TMath::Cos(oval_phi)*TMath::Sin(rdm_angle));
+  }
   double wlimit = 3;
   
   if (evt.MC) {

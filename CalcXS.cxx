@@ -72,6 +72,11 @@ int main(int argc, char** argv){
   TVectorD *sf_mu = (TVectorD*)fbkg->Get("sf_mu");
   TVectorD *sf_p = (TVectorD*)fbkg->Get("sf_p");
   TVectorD *sf_spi = (TVectorD*)fbkg->Get("sf_spi");
+  /*TRandom3 *r3 = new TRandom3(0);
+  (*sf_mu)[0] = r3->Gaus((*sf_mu)[0], (*sf_mu)[1]);
+  (*sf_p)[0] = r3->Gaus((*sf_p)[0], (*sf_p)[1]);
+  (*sf_spi)[0] = r3->Gaus((*sf_spi)[0], (*sf_spi)[1]);
+  cout<<"$$$rdm_bkgsc<<endl;*/
   cout<<"Muon scaling factor: "<<(*sf_mu)[0]<<"+-"<<(*sf_mu)[1]<<endl;
   cout<<"Proton scaling factor: "<<(*sf_p)[0]<<"+-"<<(*sf_p)[1]<<endl;
   cout<<"Pion scaling factor: "<<(*sf_spi)[0]<<"+-"<<(*sf_spi)[1]<<endl;
@@ -531,7 +536,6 @@ int main(int argc, char** argv){
   RooUnfoldResponse *response_SliceID_3D = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
   RooUnfoldResponse *response_SliceID_1D_eff = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D"); // should be the same with 3D excluding empty bins
   RooUnfoldResponse *response_SliceID_1D = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
-  RooUnfoldResponse *response_SliceID_1D_2 = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
   TH3D *hmeas_3D = (TH3D*)response_SliceID_3D->Hmeasured();
   TH3D *htruth_3D = (TH3D*)response_SliceID_3D->Htruth();
   
@@ -635,7 +639,7 @@ int main(int argc, char** argv){
         if (hsig3D->GetBinContent(k+1, j+1, i+1)!=0) {
           if (idx_meas1D[idx] != 0) {
             hsig1D->SetBinContent(idx_meas1D[idx], hsig3D->GetBinContent(k+1, j+1, i+1));
-            hsig1D->SetBinError(idx_meas1D[idx], hsig3D->GetBinError(k+1, j+1, i+1));
+            hsig1D->SetBinError(idx_meas1D[idx], hdata_3D->GetBinError(k+1, j+1, i+1)); // don't include bkg stat error
           }
           else {
             cout<<"Warning: this bin in data is emtpy in MC: (hmeas_3D, hsig3D, hdata_3D, hmc_3D)  "<<hmeas_3D->GetBinContent(k+1, j+1, i+1)<<", "<<hsig3D->GetBinContent(k+1, j+1, i+1)<<", "<<hdata_3D->GetBinContent(k+1, j+1, i+1)<<", "<<hmc_3D->GetBinContent(k+1, j+1, i+1)<<endl;
@@ -660,7 +664,24 @@ int main(int argc, char** argv){
   RooUnfoldBayes unfold_Ini (response_SliceID_Ini, hsigini, 10);
   
   RooUnfoldBayes unfold_1D (response_SliceID_1D, hsig1D, 4);
+  /// to determine the number of iterations in unfolding using toys
+  RooUnfoldResponse *response_SliceID_1D_1 = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
+  RooUnfoldBayes unfold_1D_1 (response_SliceID_1D_1, hsig1D, 1);
+  RooUnfoldResponse *response_SliceID_1D_2 = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
   RooUnfoldBayes unfold_1D_2 (response_SliceID_1D_2, hsig1D, 2);
+  RooUnfoldResponse *response_SliceID_1D_3 = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
+  RooUnfoldBayes unfold_1D_3 (response_SliceID_1D_3, hsig1D, 3);
+  RooUnfoldResponse *response_SliceID_1D_4 = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
+  RooUnfoldBayes unfold_1D_4 (response_SliceID_1D_4, hsig1D, 4);
+  RooUnfoldResponse *response_SliceID_1D_5 = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
+  RooUnfoldBayes unfold_1D_5 (response_SliceID_1D_5, hsig1D, 5);
+  RooUnfoldResponse *response_SliceID_1D_6 = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
+  RooUnfoldBayes unfold_1D_6 (response_SliceID_1D_6, hsig1D, 6);
+  RooUnfoldResponse *response_SliceID_1D_7 = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
+  RooUnfoldBayes unfold_1D_7 (response_SliceID_1D_7, hsig1D, 7);
+  RooUnfoldResponse *response_SliceID_1D_8 = (RooUnfoldResponse*)fmc->Get("response_SliceID_1D_noeff");
+  RooUnfoldBayes unfold_1D_8 (response_SliceID_1D_8, hsig1D, 8);
+  
   
   //hsigini = (TH1D*)hsig3D->Project3D("x");
   //hsiginc = (TH1D*)hsig3D->Project3D("y");
@@ -774,7 +795,26 @@ int main(int argc, char** argv){
     }
   }
   hsig1D_uf = (TH1D*)unfold_1D.Hreco();
-  TH1D *hsig1D_uf_2 = (TH1D*)unfold_1D_2.Hreco();
+  /// to determine the number of iterations in unfolding using toys
+  bool toy_study = false;
+  TH1D *hsig1D_uf_1;
+  TH1D *hsig1D_uf_2;
+  TH1D *hsig1D_uf_3;
+  TH1D *hsig1D_uf_4;
+  TH1D *hsig1D_uf_5;
+  TH1D *hsig1D_uf_6;
+  TH1D *hsig1D_uf_7;
+  TH1D *hsig1D_uf_8;
+  if (toy_study) {
+    hsig1D_uf_1 = (TH1D*)unfold_1D_1.Hreco();
+    hsig1D_uf_2 = (TH1D*)unfold_1D_2.Hreco();
+    hsig1D_uf_3 = (TH1D*)unfold_1D_3.Hreco();
+    hsig1D_uf_4 = (TH1D*)unfold_1D_4.Hreco();
+    hsig1D_uf_5 = (TH1D*)unfold_1D_5.Hreco();
+    hsig1D_uf_6 = (TH1D*)unfold_1D_6.Hreco();
+    hsig1D_uf_7 = (TH1D*)unfold_1D_7.Hreco();
+    hsig1D_uf_8 = (TH1D*)unfold_1D_8.Hreco();
+  }
   /// define input and output histograms for external unfolding methods
   TH1D* h1measdata_1D = new TH1D("h1measdata_1D", "h1measdata_1D", nmeas_3D, 0, nmeas_3D);
   TH1D* h1unfdata_1D = new TH1D("h1unfdata_1D", "h1unfdata_1D", ntruth_3D_eff, 0, ntruth_3D_eff);
@@ -798,46 +838,153 @@ int main(int argc, char** argv){
   TH2D* covinput_1D = new TH2D(unfold_1D.GetMeasuredCov()); // input covariance matrix (should be diagonal)
   covinput_1D->Write("covinput_1D");
   TMatrixD cov_matrix_1D = unfold_1D.Ereco();
+  TH1D *heff_1D = new TH1D("h1truthMC_1D", "h1truthMC_1D", ntruth_3D_eff, 0, ntruth_3D_eff);
   for (int i=0; i<ntruth_3D_eff; ++i) {
+    heff_1D->SetBinContent(i+1, eff1D[i]);
     if (eff1D[i] != 0) {
       hsig1D_uf->SetBinContent(i+1, hsig1D_uf->GetBinContent(i+1)/eff1D[i]);
       double bine = hsig1D_uf->GetBinError(i+1);
       hsig1D_uf->SetBinError(i+1, bine/eff1D[i]); // should estimate efficiency uncertainty using Clopper-Pearson (as a systematic)
-      
-      hsig1D_uf_2->SetBinContent(i+1, hsig1D_uf_2->GetBinContent(i+1)/eff1D[i]);
-      bine = hsig1D_uf_2->GetBinError(i+1);
-      hsig1D_uf_2->SetBinError(i+1, bine/eff1D[i]);
     } // h1seltruthMC_1D : h1truthMC_1D == h1unfdata_1D : hsig1D_uf
     else {
       hsig1D_uf->SetBinContent(i+1, response_SliceID_1D_eff->Htruth()->GetBinContent(i+1)*Eweight);
       hsig1D_uf->SetBinError(i+1, response_SliceID_1D_eff->Htruth()->GetBinError(i+1)*Eweight);
-      
-      hsig1D_uf_2->SetBinContent(i+1, response_SliceID_1D_eff->Htruth()->GetBinContent(i+1)*Eweight);
-      hsig1D_uf_2->SetBinError(i+1, response_SliceID_1D_eff->Htruth()->GetBinError(i+1)*Eweight);
     }
   }
   hsig1D_uf->SetNameTitle("hsig1D_uf", "Unfolded 1D signal;Slice ID;Events");
   ///END  get outputs of unfolding  //////////
-  
+
   
   //////////  save toy unfolded histograms to txt for systematic evaluations  //////////
-  bool toy_study = false;
   if (toy_study) {
-    ofstream myfile_sys_unfold;
-    myfile_sys_unfold.open ("../../thinslice_sys_nominal/build/toys/hsig1Duf_nominal_0426_iter4.txt", ios::app); //output hsig1D_uf of each toy
     for (int i=0; i<ntruth_3D_eff; ++i) {
-      myfile_sys_unfold<<hsig1D_uf->GetBinContent(i+1)<<"\t";
+      if (eff1D[i] != 0) {
+        double bine;
+        hsig1D_uf_1->SetBinContent(i+1, hsig1D_uf_1->GetBinContent(i+1)/eff1D[i]);
+        bine = hsig1D_uf_1->GetBinError(i+1);
+        hsig1D_uf_1->SetBinError(i+1, bine/eff1D[i]);
+        
+        hsig1D_uf_2->SetBinContent(i+1, hsig1D_uf_2->GetBinContent(i+1)/eff1D[i]);
+        bine = hsig1D_uf_2->GetBinError(i+1);
+        hsig1D_uf_2->SetBinError(i+1, bine/eff1D[i]);
+        
+        hsig1D_uf_3->SetBinContent(i+1, hsig1D_uf_3->GetBinContent(i+1)/eff1D[i]);
+        bine = hsig1D_uf_3->GetBinError(i+1);
+        hsig1D_uf_3->SetBinError(i+1, bine/eff1D[i]);
+        
+        hsig1D_uf_4->SetBinContent(i+1, hsig1D_uf_4->GetBinContent(i+1)/eff1D[i]);
+        bine = hsig1D_uf_4->GetBinError(i+1);
+        hsig1D_uf_4->SetBinError(i+1, bine/eff1D[i]);
+        
+        hsig1D_uf_5->SetBinContent(i+1, hsig1D_uf_5->GetBinContent(i+1)/eff1D[i]);
+        bine = hsig1D_uf_5->GetBinError(i+1);
+        hsig1D_uf_5->SetBinError(i+1, bine/eff1D[i]);
+        
+        hsig1D_uf_6->SetBinContent(i+1, hsig1D_uf_6->GetBinContent(i+1)/eff1D[i]);
+        bine = hsig1D_uf_6->GetBinError(i+1);
+        hsig1D_uf_6->SetBinError(i+1, bine/eff1D[i]);
+        
+        hsig1D_uf_7->SetBinContent(i+1, hsig1D_uf_7->GetBinContent(i+1)/eff1D[i]);
+        bine = hsig1D_uf_7->GetBinError(i+1);
+        hsig1D_uf_7->SetBinError(i+1, bine/eff1D[i]);
+        
+        hsig1D_uf_8->SetBinContent(i+1, hsig1D_uf_8->GetBinContent(i+1)/eff1D[i]);
+        bine = hsig1D_uf_8->GetBinError(i+1);
+        hsig1D_uf_8->SetBinError(i+1, bine/eff1D[i]);
+      }
+      else {
+        double binc = response_SliceID_1D_eff->Htruth()->GetBinContent(i+1)*Eweight;
+        double bine = response_SliceID_1D_eff->Htruth()->GetBinError(i+1)*Eweight;
+        hsig1D_uf_1->SetBinContent(i+1, binc);
+        hsig1D_uf_1->SetBinError(i+1, bine);
+        
+        hsig1D_uf_2->SetBinContent(i+1, binc);
+        hsig1D_uf_2->SetBinError(i+1, bine);
+        
+        hsig1D_uf_3->SetBinContent(i+1, binc);
+        hsig1D_uf_3->SetBinError(i+1, bine);
+        
+        hsig1D_uf_4->SetBinContent(i+1, binc);
+        hsig1D_uf_4->SetBinError(i+1, bine);
+        
+        hsig1D_uf_5->SetBinContent(i+1, binc);
+        hsig1D_uf_5->SetBinError(i+1, bine);
+        
+        hsig1D_uf_6->SetBinContent(i+1, binc);
+        hsig1D_uf_6->SetBinError(i+1, bine);
+        
+        hsig1D_uf_7->SetBinContent(i+1, binc);
+        hsig1D_uf_7->SetBinError(i+1, bine);
+        
+        hsig1D_uf_8->SetBinContent(i+1, binc);
+        hsig1D_uf_8->SetBinError(i+1, bine);
+      }
     }
-    myfile_sys_unfold<<endl<<endl;
-    myfile_sys_unfold.close();
     
-    ofstream myfile_sys_unfold2;
-    myfile_sys_unfold2.open ("../../thinslice_sys_nominal/build/toys/hsig1Duf_nominal_0426_iter2.txt", ios::app); //output hsig1D_uf of each toy
+    const char feat[20] = "MCstat_0430";
+    ofstream myfile_sys_unfold_1;
+    myfile_sys_unfold_1.open (Form("../../thinslice_sys_nominal/build/toys/hsig1Duf_%s_iter1.txt",feat), ios::app); //output hsig1D_uf of each toy
     for (int i=0; i<ntruth_3D_eff; ++i) {
-      myfile_sys_unfold2<<hsig1D_uf_2->GetBinContent(i+1)<<"\t";
+      myfile_sys_unfold_1<<hsig1D_uf_1->GetBinContent(i+1)<<"\t";
     }
-    myfile_sys_unfold2<<endl<<endl;
-    myfile_sys_unfold2.close();
+    myfile_sys_unfold_1<<endl<<endl;
+    myfile_sys_unfold_1.close();
+    
+    ofstream myfile_sys_unfold_2;
+    myfile_sys_unfold_2.open (Form("../../thinslice_sys_nominal/build/toys/hsig1Duf_%s_iter2.txt",feat), ios::app); //output hsig1D_uf of each toy
+    for (int i=0; i<ntruth_3D_eff; ++i) {
+      myfile_sys_unfold_2<<hsig1D_uf_2->GetBinContent(i+1)<<"\t";
+    }
+    myfile_sys_unfold_2<<endl<<endl;
+    myfile_sys_unfold_2.close();
+    
+    ofstream myfile_sys_unfold_3;
+    myfile_sys_unfold_3.open (Form("../../thinslice_sys_nominal/build/toys/hsig1Duf_%s_iter3.txt",feat), ios::app); //output hsig1D_uf of each toy
+    for (int i=0; i<ntruth_3D_eff; ++i) {
+      myfile_sys_unfold_3<<hsig1D_uf_3->GetBinContent(i+1)<<"\t";
+    }
+    myfile_sys_unfold_3<<endl<<endl;
+    myfile_sys_unfold_3.close();
+    
+    ofstream myfile_sys_unfold_4;
+    myfile_sys_unfold_4.open (Form("../../thinslice_sys_nominal/build/toys/hsig1Duf_%s_iter4.txt",feat), ios::app); //output hsig1D_uf of each toy
+    for (int i=0; i<ntruth_3D_eff; ++i) {
+      myfile_sys_unfold_4<<hsig1D_uf_4->GetBinContent(i+1)<<"\t";
+    }
+    myfile_sys_unfold_4<<endl<<endl;
+    myfile_sys_unfold_4.close();
+    
+    ofstream myfile_sys_unfold_5;
+    myfile_sys_unfold_5.open (Form("../../thinslice_sys_nominal/build/toys/hsig1Duf_%s_iter5.txt",feat), ios::app); //output hsig1D_uf of each toy
+    for (int i=0; i<ntruth_3D_eff; ++i) {
+      myfile_sys_unfold_5<<hsig1D_uf_5->GetBinContent(i+1)<<"\t";
+    }
+    myfile_sys_unfold_5<<endl<<endl;
+    myfile_sys_unfold_5.close();
+    
+    ofstream myfile_sys_unfold_6;
+    myfile_sys_unfold_6.open (Form("../../thinslice_sys_nominal/build/toys/hsig1Duf_%s_iter6.txt",feat), ios::app); //output hsig1D_uf of each toy
+    for (int i=0; i<ntruth_3D_eff; ++i) {
+      myfile_sys_unfold_6<<hsig1D_uf_6->GetBinContent(i+1)<<"\t";
+    }
+    myfile_sys_unfold_6<<endl<<endl;
+    myfile_sys_unfold_6.close();
+    
+    ofstream myfile_sys_unfold_7;
+    myfile_sys_unfold_7.open (Form("../../thinslice_sys_nominal/build/toys/hsig1Duf_%s_iter7.txt",feat), ios::app); //output hsig1D_uf of each toy
+    for (int i=0; i<ntruth_3D_eff; ++i) {
+      myfile_sys_unfold_7<<hsig1D_uf_7->GetBinContent(i+1)<<"\t";
+    }
+    myfile_sys_unfold_7<<endl<<endl;
+    myfile_sys_unfold_7.close();
+    
+    ofstream myfile_sys_unfold_8;
+    myfile_sys_unfold_8.open (Form("../../thinslice_sys_nominal/build/toys/hsig1Duf_%s_iter8.txt",feat), ios::app); //output hsig1D_uf of each toy
+    for (int i=0; i<ntruth_3D_eff; ++i) {
+      myfile_sys_unfold_8<<hsig1D_uf_8->GetBinContent(i+1)<<"\t";
+    }
+    myfile_sys_unfold_8<<endl<<endl;
+    myfile_sys_unfold_8.close();
     
     fout->Write();
     fout->Close();
@@ -925,11 +1072,13 @@ int main(int argc, char** argv){
   //////////  update using the external covariance matrix after unfolding (derived using toys)  //////////
   bool has_external_cov = false;
   if (has_external_cov) { // has_external_cov after unfolding
-    FILE *fcov_1D=fopen("../../thinslice_sys_nominal/build/toys/outCov_nominal_0426_iter4.txt","r"); //output covariance
+    const char feat[20] = "MCstat_0430_iter4";
+    FILE *fcov_1D=fopen(Form("../../thinslice_sys_nominal/build/toys/outCov_%s.txt", feat), "r"); //output covariance
     if (!fcov_1D) {
       cout<<"*** outCov file not found!"<<endl;
       return 1;
     }
+    cout<<Form("### Using external covariance matrix outCov_%s.txt", feat)<<endl;
     double vv;
     for(int i=0; i<ntruth_3D_eff; i++) {
       for(int j=0; j<ntruth_3D_eff; j++) {
@@ -1289,6 +1438,8 @@ int main(int argc, char** argv){
       else corr_matrix_XS->SetBinContent(i, j, VXS_3D->GetBinContent(i,j)/err_xs[i-1]/err_xs[j-1]);
     }
   }
+  corr_matrix_XS->GetXaxis()->SetTitle("Reco slice ID");
+  corr_matrix_XS->GetYaxis()->SetTitle("Reco slice ID");
   /// BEGIN draw correlation matrices option
   /*// (put it in the interactive ROOT)
   const Int_t NRGBs = 3;

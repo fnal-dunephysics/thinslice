@@ -276,7 +276,7 @@ void ThinSlice::BookHistograms(){
 
 }
 
-void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, double g4rw, double bkgw){
+void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, double g4rw, double bkgw, double rdm_Eshift, double rdm_Eresol){
   //hadana.ProcessEvent(evt);
   reco_sliceID = -99;
   reco_end_sliceID = -99;
@@ -295,8 +295,9 @@ void ThinSlice::ProcessEvent(const anavar & evt, Unfold & uf, double weight, dou
   //if (evt.MC && evt.event%2 == 0) isTestSample = false;
   beam_inst_P = evt.beam_inst_P;
   if (evt.MC) {
-    beam_inst_P += grdm->Gaus(-0.00726,0.022311326); // data: (1.01263, 0.0697734) MC_rew: (1.01989, 0.0661100)
+    if (isTestSample) beam_inst_P += grdm->Gaus(-0.00726, 0.022311326); // data: (1.01263, 0.0697734) MC_rew: (1.01989, 0.0661100)
     //beam_inst_P += grdm->Gaus(-0.00985,0.017756843); // data: (1.00947, 0.0727443) MC_rew: (1.01932, 0.0705438)
+    else  beam_inst_P += grdm->Gaus(-0.00726+rdm_Eshift, max(0.022311326+rdm_Eresol, 0.) );
   }
   
   double pimass = 139.57;
@@ -1057,11 +1058,19 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
   for (double ee=25; ee<=1000; ee+=25) {
     cout<<bb.meandEdx(ee)<<",";
   }
+  cout<<endl;
   
   Long64_t nbytes = 0, nb = 0;
-  TRandom3 *r3 = new TRandom3(0);
+  TRandom3 *r3 = new TRandom3(1);
+  TRandom3 *r33 = new TRandom3(0);
+  double rdm_mcxs = 1;//r33->Gaus(1, 0.15); cout<<"$$$rdm_mcxs "<<rdm_mcxs<<endl;
+  double rdm_Eresol = 0;//r33->Gaus(0, 0.01); cout<<"$$$rdm_Eresol "<<rdm_Eresol<<endl;
+  double rdm_Eshift = 0;//r33->Gaus(0, 0.02); cout<<"$$$rdm_Eshift "<<rdm_Eshift<<endl;
+  double rdm_reweiP_radius = 0;//r33->Gaus(0, 1);
+  double rdm_reweiP_angle = 0;//r33->Uniform(2*TMath::Pi()); cout<<"$$$rdm_reweiP "<<rdm_reweiP_radius<<",\t"<<rdm_reweiP_angle<<endl;
   for (Long64_t num=0; num<nentries; num++) {
     if (num%10000==0) std::cout<<num<<"/"<<nentries<<std::endl;
+    //if (r3->Rndm()>0.1) continue; // skip the event
     Long64_t jentry = num;
     if (random) jentry = TMath::FloorNint(r3->Rndm()*302141);
     //cout<<jentry<<endl;
@@ -1089,7 +1098,7 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
       if (!hadana.PassAPA3Cut(evt)) continue;*/
     }
     
-    double weight = CalWeight(evt, hadana.pitype); // muon reweight; momentum reweight (to reconcile real data and MC)
+    double weight = 1;// muon reweight; momentum reweight (to reconcile real data and MC)
     double g4rw = 1; // geant4reweight (to fake data for test; it turns out it should also be applied to true MC to make unfolding reliable)
     double bkgw = 1; // bkg fraction variation (to fake data for test)
     
@@ -1111,20 +1120,22 @@ void ThinSlice::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, b
         0.80, 0.83, 0.85, 0.86, 0.90,
       };*/
       double weiarr_mc[20] = {
-        1,1,1,1,1,1,1,1,1,1,
-        1,1,1,1,1,1,1,1,1,1,
+        rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,
+        rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,rdm_mcxs,
       };
       
       if (hadana.pitype == 0) { // fake data
+        weight = CalWeight(evt, hadana.pitype, 0, 0);
         g4rw = CalG4RW(evt, weiarr_fd);
         bkgw = CalBkgW(evt, 1., 1., 1.);
       }
       else { // true MC
+        weight = CalWeight(evt, hadana.pitype, rdm_reweiP_radius, rdm_reweiP_angle);
         g4rw = CalG4RW(evt, weiarr_mc);
         bkgw = CalBkgW(evt, 1., 1., 1.);
       }
     }
-    ProcessEvent(evt, uf, weight, g4rw, bkgw);
+    ProcessEvent(evt, uf, weight, g4rw, bkgw, rdm_Eshift, rdm_Eresol);
     weight *= g4rw;
     weight *= bkgw;
     // can change order of cuts

@@ -176,7 +176,7 @@ class ThinSlice {
   void FillSliceHist(const anavar & evt, int constraint_type, double weight=1., int cut=6);
   void SaveHistograms();
 
-  void ProcessEvent(const anavar & evt, Unfold & uf, double weight, double g4rw, double bkgw);
+  void ProcessEvent(const anavar & evt, Unfold & uf, double weight, double g4rw, double bkgw, double rdm_Eshift, double rdm_Eresol);
   void CalcXS(const Unfold & uf);
 
   void Run(anavar & evt, Unfold & uf, Long64_t nentries=-1, bool random=false, bool savetree=false);
