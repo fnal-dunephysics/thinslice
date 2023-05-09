@@ -359,7 +359,7 @@ void plotXS(){
   }*/
   double chi2 = 0;
   int nbins = 0;
-  cout<<"KE[]\t\tData XS\t\tData XS_err\t\tFake XS\t\tFake XS_err\tXS_curve\tChi2"<<endl;
+  cout<<"KE[]\t\tData XS\t\tData XS_err\t\tTruth XS\t\tTruth XS_err\tXS_curve\tChi2"<<endl;
   for (int i=0; i<pi::true_nbins-1; ++i) {
     int j = i;
     if (showplot) j = i+1;

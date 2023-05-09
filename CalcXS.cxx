@@ -654,8 +654,6 @@ int main(int argc, char** argv){
   
   //////////  get outputs of unfolding  //////////
   RooUnfoldBayes unfold_3D (response_SliceID_3D, hsig3D, 0);
-  RooUnfoldResponse *response_SliceID_3D2 = (RooUnfoldResponse*)fmc->Get("response_SliceID_3D");
-  RooUnfoldBayes unfold_3D2 (response_SliceID_3D2, hsig3D, 0);
   RooUnfoldResponse *response_SliceID_Inc = (RooUnfoldResponse*)fmc->Get("response_SliceID_Inc");
   RooUnfoldBayes unfold_Inc (response_SliceID_Inc, hsiginc, 10);
   RooUnfoldResponse *response_SliceID_Int = (RooUnfoldResponse*)fmc->Get("response_SliceID_Int");
@@ -730,13 +728,13 @@ int main(int argc, char** argv){
      return 0;
   }*/
   
-  TH1D *hval_siginc_reco = (TH1D*)fmc->Get("h_recosliceid_pion_cuts");
-  TH1D *hval_signal_reco = (TH1D*)fmc->Get("h_recosliceid_pioninelastic_cuts");
-  TH1D *hval_sigini_reco = (TH1D*)fmc->Get("h_recoinisliceid_pion_cuts");
-  TH1D *hval_trueinc = (TH1D*)fmc->Get("h_truesliceid_pion_all");
-  TH1D *hval_trueint = (TH1D*)fmc->Get("h_truesliceid_pioninelastic_all");
-  TH1D *hval_trueini = (TH1D*)fmc->Get("h_trueinisliceid_pion_all");
-  TH3D *hval_true3D = (TH3D*)fmc->Get("h_true3Dsliceid_pion_all");
+  TH1D *hval_siginc_reco = (TH1D*)fdata->Get("h_recosliceid_pion_cuts");
+  TH1D *hval_signal_reco = (TH1D*)fdata->Get("h_recosliceid_pioninelastic_cuts");
+  TH1D *hval_sigini_reco = (TH1D*)fdata->Get("h_recoinisliceid_pion_cuts");
+  TH1D *hval_trueinc = (TH1D*)fdata->Get("h_truesliceid_pion_all");
+  TH1D *hval_trueint = (TH1D*)fdata->Get("h_truesliceid_pioninelastic_all");
+  TH1D *hval_trueini = (TH1D*)fdata->Get("h_trueinisliceid_pion_all");
+  TH3D *hval_true3D = (TH3D*)fdata->Get("h_true3Dsliceid_pion_all");
   double Nfakedata = hval_siginc_reco->Integral();
   cout<<"### Nsig (Ndata-Nbkg): "<<Ndata<<"; NtruthMC: "<<Nmc<<"; Nfakedata_sig (judge by truth): "<<Nfakedata<<endl;
   //hval_siginc_reco->Scale(Ndata/Nfakedata);
@@ -838,7 +836,7 @@ int main(int argc, char** argv){
   TH2D* covinput_1D = new TH2D(unfold_1D.GetMeasuredCov()); // input covariance matrix (should be diagonal)
   covinput_1D->Write("covinput_1D");
   TMatrixD cov_matrix_1D = unfold_1D.Ereco();
-  TH1D *heff_1D = new TH1D("h1truthMC_1D", "h1truthMC_1D", ntruth_3D_eff, 0, ntruth_3D_eff);
+  TH1D *heff_1D = new TH1D("heff_1D", "heff_1D", ntruth_3D_eff, 0, ntruth_3D_eff);
   for (int i=0; i<ntruth_3D_eff; ++i) {
     heff_1D->SetBinContent(i+1, eff1D[i]);
     if (eff1D[i] != 0) {
@@ -991,8 +989,9 @@ int main(int argc, char** argv){
     return 0;
   }
   
-  hsig3D_uf = (TH3D*)unfold_3D.Hreco(); // 3D unfolding (can be time-consuming)
-  hsig3D_uf->SetNameTitle("hsig3D_uf", "Unfolded 3D signal;Slice ID;Events");
+  //hsig3D_uf = (TH3D*)unfold_3D.Hreco(); // 3D unfolding (can be time-consuming)
+  //hsig3D_uf->SetNameTitle("hsig3D_uf", "Unfolded 3D signal;Slice ID;Events");
+  hsig3D_uf = new TH3D("hsig3D_uf","Unfolded 3D signal;Slice ID;Events",pi::true_nbins,pi::true_bins,pi::true_nbins,pi::true_bins,pi::true_nbins,pi::true_bins);
   // 1D index back to 3D
   for (int i=0; i<pi::true_nbins; ++i)
     for (int j=0; j<pi::true_nbins; ++j)
@@ -1004,13 +1003,12 @@ int main(int argc, char** argv){
           hsig3D_uf->SetBinError(k+1, j+1, i+1, hsig1D_uf->GetBinError(idx_truth1D_eff[idx])); // should be the same with cov_matrix_3D below
         }
       }
-  TH3D *hsig3D_uf2 = (TH3D*)unfold_3D2.Hreco();
   /// save the 3D unfolded histogram as Unfold3DTable.cxx
-  std::filebuf fb;
+  /*std::filebuf fb;
   fb.open(root["UnfoldTable"].asString().c_str(),std::ios::out);
   std::ostream os(&fb);
   unfold_3D.PrintTable(os);
-  fb.close();
+  fb.close();*/
   hsiginc_uf = (TH1D*)unfold_Inc.Hreco();
   hsignal_uf = (TH1D*)unfold_Int.Hreco();
   hsigini_uf = (TH1D*)unfold_Ini.Hreco();
@@ -1036,17 +1034,7 @@ int main(int argc, char** argv){
         }
     myfile_sys_unfold<<endl<<endl;
     myfile_sys_unfold.close();
-    
-    ofstream myfile_sys_unfold2;
-    myfile_sys_unfold2.open ("../../thinslice_sys_nominal/build/toys/syscov_RooUnfold_nominal_0426_2.txt", ios::app); //output toys
-    for (int i=0; i<pi::true_nbins; ++i)
-      for (int j=0; j<pi::true_nbins; ++j)
-        for (int k=0; k<pi::true_nbins; ++k) {
-          myfile_sys_unfold2<<hsig3D_uf2->GetBinContent(k+1, j+1, i+1)<<"\t";
-        }
-    myfile_sys_unfold2<<endl<<endl;
-    myfile_sys_unfold2.close();
-    
+
     fout->Write();
     fout->Close();
     return 0;
@@ -1598,7 +1586,7 @@ int main(int argc, char** argv){
   TGraphErrors *gr_truexs = new TGraphErrors(pi::true_nbins-1, KE, xs_t, err_KE, err_xs_t);
   gr_truexs->SetNameTitle("gr_truexs", "Reco cross-section;Energy (MeV); Cross-section (mb)");
   gr_truexs->Write();
-  TGraphErrors *gr_truexs_allMC = (TGraphErrors*)fmc->Get("gr_truexs");
+  TGraphErrors *gr_truexs_allMC = (TGraphErrors*)fdata->Get("gr_truexs");
   gr_truexs_allMC->Write("gr_truexs_allMC");
   ///END  calculate truth histograms and cross-sections (similar to procedures for recos above)  //////////
   
