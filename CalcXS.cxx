@@ -835,6 +835,15 @@ int main(int argc, char** argv){
   h1seltruthMC_1D->Write("h1seltruthMC_1D");
   TH2D* covinput_1D = new TH2D(unfold_1D.GetMeasuredCov()); // input covariance matrix (should be diagonal)
   covinput_1D->Write("covinput_1D");
+  TH2D *corr_input_1D = (TH2D*)covinput_1D->Clone(); // correlation matrix
+  for (int i=1; i<=covinput_1D->GetNbinsX(); ++i) {
+    for (int j=1; j<=covinput_1D->GetNbinsY(); ++j) {
+      if (covinput_1D->GetBinContent(i,j) == 0) corr_input_1D->SetBinContent(i, j, 0);
+      else corr_input_1D->SetBinContent(i, j, covinput_1D->GetBinContent(i,j)/sqrt(covinput_1D->GetBinContent(i,i)*covinput_1D->GetBinContent(j,j)));
+    }
+  }
+  corr_input_1D->Write("corr_input_1D");
+  
   TMatrixD cov_matrix_1D = unfold_1D.Ereco();
   TH1D *heff_1D = new TH1D("heff_1D", "heff_1D", ntruth_3D_eff, 0, ntruth_3D_eff);
   for (int i=0; i<ntruth_3D_eff; ++i) {
@@ -1242,6 +1251,14 @@ int main(int argc, char** argv){
     tbi += pi::true_nbins;
     hsignal_uf->SetBinError(bi+1, sqrt(Vhist(tbi,tbi)));
   }
+  TH2D *corr_matrix_3N = (TH2D*)Vhist_3D->Clone(); // correlation matrix
+  for (int i=1; i<=Vhist_3D->GetNbinsX(); ++i) {
+    for (int j=1; j<=Vhist_3D->GetNbinsY(); ++j) {
+      if (Vhist_3D->GetBinContent(i,j) == 0) corr_matrix_3N->SetBinContent(i, j, 0);
+      else corr_matrix_3N->SetBinContent(i, j, Vhist_3D->GetBinContent(i,j)/sqrt(Vhist_3D->GetBinContent(i,i)*Vhist_3D->GetBinContent(j,j)));
+    }
+  }
+  corr_matrix_3N->Write("corr_matrix_3N");
   ///END  error propagation from N^3 x N^3 to 3N x 3N  //////////
   
   
@@ -1366,6 +1383,14 @@ int main(int argc, char** argv){
   for (int bi=0; bi<pi::true_nbins-1; ++bi) {
     err_inc[bi] = sqrt(VNin(bi,bi));
   }
+  TH2D *corr_matrix_Nin = (TH2D*)VNin_3D->Clone(); // correlation matrix
+  for (int i=1; i<=VNin_3D->GetNbinsX(); ++i) {
+    for (int j=1; j<=VNin_3D->GetNbinsY(); ++j) {
+      if (VNin_3D->GetBinContent(i,j) == 0) corr_matrix_Nin->SetBinContent(i, j, 0);
+      else corr_matrix_Nin->SetBinContent(i, j, VNin_3D->GetBinContent(i,j)/sqrt(VNin_3D->GetBinContent(i,i)*VNin_3D->GetBinContent(j,j)));
+    }
+  }
+  corr_matrix_Nin->Write("corr_matrix_Nin");
   
   TGraphErrors *gr_inc = new TGraphErrors(pi::true_nbins-1, SliceID, Ninc, 0, err_inc);
   gr_inc->SetNameTitle("gr_inc", "Incident number;Slice ID;Events");
@@ -1483,6 +1508,8 @@ int main(int argc, char** argv){
         int idx = i*pow(pi::true_nbins,2) + j*pi::true_nbins + k;
         cov3D_t(idx,idx) = pow(hval_true3D->GetBinError(k+1, j+1, i+1), 2);
       }
+  TH2D *covariance_3D_t = new TH2D(cov3D_t);
+  covariance_3D_t->Write("covariance_3D_t");
   
   double Ninc_t[pi::true_nbins-1] = {0};
   double Nint_t[pi::true_nbins-1] = {0};
@@ -1532,6 +1559,14 @@ int main(int argc, char** argv){
   Vhist_t.MultT(Vhist_tmp_t, mhist); // 3N*3N covariance matrix
   TH2D *Vhist_3D_t = new TH2D(Vhist_t);
   Vhist_3D_t->Write("Vhist_3D_t");
+  TH2D *corr_matrix_3N_t = (TH2D*)Vhist_3D_t->Clone(); // correlation matrix
+  for (int i=1; i<=Vhist_3D_t->GetNbinsX(); ++i) {
+    for (int j=1; j<=Vhist_3D_t->GetNbinsY(); ++j) {
+      if (Vhist_3D_t->GetBinContent(i,j) == 0) corr_matrix_3N_t->SetBinContent(i, j, 0);
+      else corr_matrix_3N_t->SetBinContent(i, j, Vhist_3D_t->GetBinContent(i,j)/sqrt(Vhist_3D_t->GetBinContent(i,i)*Vhist_3D_t->GetBinContent(j,j)));
+    }
+  }
+  corr_matrix_3N_t->Write("corr_matrix_3N_t");
   
   TMatrixD VNin_tmp_t(3*(pi::true_nbins-1), 3*pi::true_nbins);
   TMatrixD VNin_t(3*(pi::true_nbins-1), 3*(pi::true_nbins-1));
@@ -1542,6 +1577,14 @@ int main(int argc, char** argv){
   for (int bi=0; bi<pi::true_nbins-1; ++bi) {
     err_inc_t[bi] = sqrt(VNin_t(bi,bi));
   }
+  TH2D *corr_matrix_Nin_t = (TH2D*)VNin_3D_t->Clone(); // correlation matrix
+  for (int i=1; i<=VNin_3D_t->GetNbinsX(); ++i) {
+    for (int j=1; j<=VNin_3D_t->GetNbinsY(); ++j) {
+      if (VNin_3D_t->GetBinContent(i,j) == 0) corr_matrix_Nin_t->SetBinContent(i, j, 0);
+      else corr_matrix_Nin_t->SetBinContent(i, j, VNin_3D_t->GetBinContent(i,j)/sqrt(VNin_3D_t->GetBinContent(i,i)*VNin_3D_t->GetBinContent(j,j)));
+    }
+  }
+  corr_matrix_Nin_t->Write("corr_matrix_Nin_t");
   
   TGraphErrors *gr_inc_t = new TGraphErrors(pi::true_nbins-1, SliceID, Ninc_t, 0, err_inc_t);
   gr_inc_t->SetNameTitle("gr_inc_t", "Incident number;Slice ID;Events");
