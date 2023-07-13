@@ -1,6 +1,6 @@
 {
-    "datafile" : "mcprod4a.root",
-    "mcfile" : "mcprod4a.root",
+    "datafile" : "mcprod4a_proton.root",
+    "mcfile" : "mcprod4a_proton.root",
     "bkgfile" : "bkgfitsMC.root",
     "outfile" : "XSMC.root",
     "UnfoldTable" : "Unfold3DTable_MC.txt"

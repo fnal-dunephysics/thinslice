@@ -31,14 +31,14 @@ void plotXS(){
   //TGraphErrors *gr_ina_t = (TGraphErrors*)file->Get("gr_ina_t");
   TGraphErrors *gr_truexs = (TGraphErrors*)file->Get("gr_truexs");
   TGraphErrors *gr_recoxs = (TGraphErrors*)file->Get("gr_recoxs");
-  TFile *file_stat = TFile::Open("../../build/XSMC_0430_stat_iter4.root"); // data stat only: XS_datastat.root
+  TFile *file_stat = TFile::Open("../../build/XSMC.root"); // data stat only: XS_datastat.root
   TGraphErrors *gr_recoxs_stat = (TGraphErrors*)file_stat->Get("gr_recoxs");
-  TFile *file_upp = TFile::Open("../../build/XSMC_0426_MCXSp_iter4.root"); // upp one sigma
+  TFile *file_upp = TFile::Open("../../build/XSMC.root"); // upp one sigma
   TGraph *gr_recoxs_upp = (TGraph*)file_upp->Get("gr_recoxs");
-  TFile *file_low = TFile::Open("../../build/XSMC_0426_MCXSm_iter4.root"); // low one sigma
+  TFile *file_low = TFile::Open("../../build/XSMC.root"); // low one sigma
   TGraph *gr_recoxs_low = (TGraph*)file_low->Get("gr_recoxs");
   
-  /*for (int i=0; i<pi::nthinslices; ++i){
+  /*for (int i=0; i<p::nthinslices; ++i){
     cout<<gr_inc->GetPointY(i)<<",";
     //cout<<hval_sel_sig_int_uf->GetBinContent(i+2)<<",";
   }*/
@@ -179,7 +179,7 @@ void plotXS(){
   //gr_inc_t->Draw("pe");
   TGraphErrors *gr_incE = (TGraphErrors*)gr_inc->Clone("gr_incE");
   TGraphErrors *gr_incE_t = (TGraphErrors*)gr_inc_t->Clone("gr_incE_t");
-  for (int i=0; i<pi::true_nbins-1; i++) {
+  for (int i=0; i<p::true_nbins-1; i++) {
     gr_inc_t->SetPointY(i, gr_inc_t->GetPointY(i)*scalefact);
     gr_inc_t->SetPointError(i, gr_inc_t->GetErrorX(i), gr_inc_t->GetErrorY(i)*scalefact);
     double binw = gr_truexs->GetErrorX(i)*2;
@@ -213,7 +213,7 @@ void plotXS(){
   //gr_int_t->Draw("pe");
   TGraphErrors *gr_intE = (TGraphErrors*)gr_int->Clone("gr_intE");
   TGraphErrors *gr_intE_t = (TGraphErrors*)gr_int_t->Clone("gr_intE_t");
-  for (int i=0; i<pi::true_nbins-1; i++) {
+  for (int i=0; i<p::true_nbins-1; i++) {
     gr_int_t->SetPointY(i, gr_int_t->GetPointY(i)*scalefact);
     gr_int_t->SetPointError(i, gr_int_t->GetErrorX(i), gr_int_t->GetErrorY(i)*scalefact);
     double binw = gr_truexs->GetErrorX(i)*2;
@@ -247,7 +247,7 @@ void plotXS(){
   //gr_ini_t->Draw("pe");
   TGraphErrors *gr_iniE = (TGraphErrors*)gr_ini->Clone("gr_iniE");
   TGraphErrors *gr_iniE_t = (TGraphErrors*)gr_ini_t->Clone("gr_iniE_t");
-  for (int i=0; i<pi::true_nbins-1; i++) {
+  for (int i=0; i<p::true_nbins-1; i++) {
     gr_ini_t->SetPointY(i, gr_ini_t->GetPointY(i)*scalefact);
     gr_ini_t->SetPointError(i, gr_ini_t->GetErrorX(i), gr_ini_t->GetErrorY(i)*scalefact);
     double binw = gr_truexs->GetErrorX(i)*2;
@@ -280,7 +280,7 @@ void plotXS(){
   //gr_ina_t->Draw("pe");
   TGraphErrors *gr_inaE = (TGraphErrors*)gr_ina->Clone("gr_inaE");
   TGraphErrors *gr_inaE_t = (TGraphErrors*)gr_ina_t->Clone("gr_inaE_t");
-  for (int i=0; i<pi::true_nbins-1; i++) {
+  for (int i=0; i<p::true_nbins-1; i++) {
     double binw = gr_truexs->GetErrorX(i)*2;
     gr_inaE->SetPoint(i, gr_truexs->GetPointX(i), gr_ina->GetPointY(i)/binw);
     gr_inaE->SetPointError(i, binw/2, gr_ina->GetErrorY(i)/binw);
@@ -297,50 +297,50 @@ void plotXS(){
   gr_inaE_t->Draw("pe");*/
   
   // cross-section
-  /*double xs[pi::nthinslices] = {0};
-  double err_xs[pi::nthinslices] = {0};
-  double incE[pi::nthinslices] = {0};
-  double err_incE[pi::nthinslices] = {0};
+  /*double xs[p::nthinslices] = {0};
+  double err_xs[p::nthinslices] = {0};
+  double incE[p::nthinslices] = {0};
+  double err_incE[p::nthinslices] = {0};
   TGraph *xs_new = (TGraph*)file->Get("gr_recoxs");
   TGraphErrors *gr_trueincE = (TGraphErrors*)file->Get("gr_trueincE");
   TGraphErrors *gr_truexs = (TGraphErrors*)file->Get("gr_truexs");
-  for (int i = 0; i<pi::nthinslices; ++i){
+  for (int i = 0; i<p::nthinslices; ++i){
     xs[i] = xs_new->GetPointY(i);
     err_xs[i] = xs_new->GetErrorY(i);
     incE[i] = gr_trueincE->GetPointY(i);
     err_incE[i] = gr_trueincE->GetErrorY(i);
   }
-  TGraphErrors *gr_recoxs = new TGraphErrors(pi::nthinslices, incE, xs, 0, err_xs);*/
+  TGraphErrors *gr_recoxs = new TGraphErrors(p::nthinslices, incE, xs, 0, err_xs);*/
   
-  TFile f2("../../files/exclusive_xsec.root");
-  TGraph *total_inel_KE = (TGraph*)f2.Get("total_inel_KE");
+  TFile f2("../../files/proton_cross_section.root");
+  TGraph *total_inel_KE = (TGraph*)f2.Get("inel_KE");
 
-  bool showplot = false; // set true to remove the first and last bins in XS plot
+  bool showplot = true; // set true to remove the first and last bins in XS plot
   TCanvas *c10 = new TCanvas("c10", "c10", 1200, 500);
-  gr_recoxs->SetTitle("Pion Inelastic Cross Section");
-  gr_recoxs->GetXaxis()->SetTitle("Pion Kinetic Energy (MeV)");
-  gr_recoxs->GetXaxis()->SetRangeUser(0, 1000);
+  gr_recoxs->SetTitle("Proton Inelastic Cross Section");
+  gr_recoxs->GetXaxis()->SetTitle("Proton Kinetic Energy (MeV)");
+  gr_recoxs->GetXaxis()->SetRangeUser(0, 500);
   gr_recoxs->GetYaxis()->SetTitle("#sigma_{inelastic} (mb)");
   gr_recoxs->GetYaxis()->SetRangeUser(0, 1000);
   gr_recoxs->SetLineWidth(2);
   gr_recoxs->SetMarkerColor(4);
   gr_recoxs->SetLineColor(4);
   if (showplot) {
-    gr_recoxs->RemovePoint(pi::true_nbins-2); // the last is used as overflow
+    gr_recoxs->RemovePoint(p::true_nbins-2); // the last is used as overflow
     gr_recoxs->RemovePoint(0); // the first is used as underflow
-    gr_truexs->RemovePoint(pi::true_nbins-2);
+    gr_truexs->RemovePoint(p::true_nbins-2);
     gr_truexs->RemovePoint(0);
-    gr_recoxs_stat->RemovePoint(pi::true_nbins-2);
+    gr_recoxs_stat->RemovePoint(p::true_nbins-2);
     gr_recoxs_stat->RemovePoint(0);
-    gr_recoxs_upp->RemovePoint(pi::true_nbins-2);
+    gr_recoxs_upp->RemovePoint(p::true_nbins-2);
     gr_recoxs_upp->RemovePoint(0);
-    gr_recoxs_low->RemovePoint(pi::true_nbins-2);
+    gr_recoxs_low->RemovePoint(p::true_nbins-2);
     gr_recoxs_low->RemovePoint(0);
   }
   gr_recoxs->Draw("ape");
   gr_truexs->SetMarkerColor(3);
   gr_truexs->SetLineColor(3);
-  //gr_truexs->Draw("pe");
+  gr_truexs->Draw("pe");
   total_inel_KE->SetLineColor(2);
   gr_recoxs_upp->SetMarkerColor(45);
   gr_recoxs_upp->SetLineColor(45);
@@ -348,7 +348,7 @@ void plotXS(){
   gr_recoxs_low->SetMarkerColor(38);
   gr_recoxs_low->SetLineColor(38);
   //gr_recoxs_low->Draw("p");
-  gr_recoxs_stat->Draw("pe");
+  //gr_recoxs_stat->Draw("pe");
   
   
   /*for (int i=0;i<total_inel_KE->GetN();i++) {
@@ -360,10 +360,10 @@ void plotXS(){
   double chi2 = 0;
   int nbins = 0;
   cout<<"KE[]\t\tData XS\t\tData XS_err\t\tTruth XS\t\tTruth XS_err\tXS_curve\tChi2"<<endl;
-  for (int i=0; i<pi::true_nbins-1; ++i) {
+  for (int i=0; i<p::true_nbins-1; ++i) {
     int j = i;
     if (showplot) j = i+1;
-    double KE = (pi::true_KE[j+1]+pi::true_KE[j])/2;
+    double KE = (p::true_KE[j+1]+p::true_KE[j])/2;
     double xs_curve = total_inel_KE->Eval(KE);
     double xs_MC = gr_truexs->GetPointY(i);
     double xserr_MC = gr_truexs->GetErrorY(i);
@@ -373,17 +373,17 @@ void plotXS(){
     c2 = pow( (xs_data-xs_MC) / sqrt( pow(xserr_data,2) + pow(xserr_MC,2) ) ,2);
     chi2 += c2;
     ++nbins;
-    cout<<"["<<pi::true_KE[j+1]<<","<<pi::true_KE[j]<<"]\t"<<xs_data<<"\t\t"<<xserr_data<<"\t\t\t"<<xs_MC<<"\t\t"<<xserr_MC<<"\t\t"<<xs_curve<<"\t\t"<<c2<<endl;
-    if (showplot && i>=pi::true_nbins-4) break;
+    cout<<"["<<p::true_KE[j+1]<<","<<p::true_KE[j]<<"]\t"<<xs_data<<"\t\t"<<xserr_data<<"\t\t\t"<<xs_MC<<"\t\t"<<xserr_MC<<"\t\t"<<xs_curve<<"\t\t"<<c2<<endl;
+    if (showplot && i>=p::true_nbins-4) break;
   }
   cout<<"Chi2/Ndf = "<<chi2<<"/"<<nbins<<" = "<<chi2/nbins<<"    (Covariance matrices not used)"<<endl;
   
   total_inel_KE->Draw("L");
   TLegend *leg10 = new TLegend(0.15,0.2,0.5,0.4);
   leg10->SetFillStyle(0);
-  leg10->AddEntry(gr_recoxs_stat, "Fake data stat", "pe");
-  leg10->AddEntry(gr_recoxs, "Fake data sys: bkgsc", "pe");
-  //leg10->AddEntry(gr_truexs, "MC truth", "pe");
+  //leg10->AddEntry(gr_recoxs_stat, "Fake data stat", "pe");
+  leg10->AddEntry(gr_recoxs, "Fake data", "pe");
+  leg10->AddEntry(gr_truexs, "MC truth", "pe");
   leg10->AddEntry(total_inel_KE, "Geant4 input", "l");
   leg10->Draw();
 

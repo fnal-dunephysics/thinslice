@@ -4,6 +4,7 @@
 #include "EventType.h"
 #include "EventSelection.h"
 #include "SliceParams.h"
+#include "util.h"
 #include "TGraph.h"
 #include "TRandom3.h"
 
@@ -48,6 +49,7 @@ class HadAna{
   bool PassCaloSizeCut(const anavar& evt) const;
   bool PassMichelScoreCut(const anavar& evt) const;
   bool PassProtonCut() const;
+  bool PassStoppingProtonCut() const;
 
   bool PassPiCuts(const anavar& evt) const;
   bool PassPCuts(const anavar& evt) const;
@@ -61,6 +63,7 @@ class HadAna{
   double daughter_michel_score;
   double dEdx_5cm;
   double beam_dx, beam_dy, beam_dz, beam_dxy, beam_costh;
+  double chi2_stopping_proton;
   
   double true_trklen;
   double reco_trklen;

@@ -34,4 +34,7 @@ double GetThetayz(double x, double y, double z);
 
 void SetProtoDUNEStyle();
 
+// from Heng-Ye
+double chi2pid(std::vector<double> &trkdedx, std::vector<double> &trkres);
+
 #endif

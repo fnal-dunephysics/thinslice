@@ -25,6 +25,8 @@ void HadAna::InitPi(){
 }
 
 void HadAna::InitP(){
+  r3 = new TRandom3(8);
+  r33 = new TRandom3(0);
 
   AddTruePDG(2212);
 
@@ -229,8 +231,8 @@ bool HadAna::PassBeamQualityCut(const anavar& evt, bool has_angle_cut, bool has_
 
 bool HadAna::PassAPA3Cut(const anavar& evt) const{ // only use track in the first TPC
   //return true;
-  if (evt.reco_beam_calo_endZ > pi::fidvol_upp) return false;
-  //if (reco_trklen > pi::fidvol_upp) return false;
+  if (evt.reco_beam_calo_endZ > fidvol_upp) return false;
+  //if (reco_trklen > fidvol_upp) return false;
   if (reco_trklen < 30) return false;
   return true;
 }
@@ -252,6 +254,11 @@ bool HadAna::PassProtonCut() const{ // to remove proton background
   return chi2_proton > 80; //median_dEdx < 2.4;
 }
 
+bool HadAna::PassStoppingProtonCut() const{ // to remove elastic proton background
+  if (trklen_csda_proton < 0.75) return chi2_stopping_proton > 7.5;
+  else return chi2_stopping_proton > 10;
+}
+
 bool HadAna::PassPiCuts(const anavar& evt) const{
   return PassPandoraSliceCut(evt)&&
     PassCaloSizeCut(evt)&&
@@ -264,7 +271,8 @@ bool HadAna::PassPiCuts(const anavar& evt) const{
 bool HadAna::PassPCuts(const anavar& evt) const{
   return PassPandoraSliceCut(evt)&&
     PassCaloSizeCut(evt)&&
-    PassBeamQualityCut(evt);
+    PassBeamQualityCut(evt)&&
+    PassStoppingProtonCut();
 }
 
 void HadAna::ProcessEvent(const anavar& evt){
@@ -462,4 +470,6 @@ void HadAna::ProcessEvent(const anavar& evt){
     trklen_csda_proton = reco_trklen / csda_range_vs_mom_sm->Eval(evt.beam_inst_P);
   else
     trklen_csda_proton = -999;
+  
+  chi2_stopping_proton = chi2pid(*evt.reco_beam_calibrated_dEdX_SCE, *evt.reco_beam_resRange_SCE);
 }

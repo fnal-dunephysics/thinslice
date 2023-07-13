@@ -18,9 +18,9 @@ double totaldata[7] = {0,0,0,0,0,0,0};
 double totalmc[7] = {0,0,0,0,0,0,0};
 double totalcosmics[7] = {0,0,0,0,0,0,0};
 
-int colors[pi::nIntTypes] = {2, 3, 800, 7, 33, 9, 46, 28, 41};
-const int orders[pi::nIntTypes] = {0,1,2,3,4,5,6,7,8};
-double scales[pi::nIntTypes] = {1,1,1,1,1,1,1,1,1};
+int colors[p::nIntTypes] = {2, 3, 800, 7, 33, 9, 46, 28};
+const int orders[p::nIntTypes] = {0,1,2,3,4,5,6,7};
+double scales[p::nIntTypes] = {1,1,1,1,1,1,1,1};
 
 TFile *fmc;
 TFile *fdata;
@@ -28,27 +28,27 @@ TFile *fcosmics;
 
 void PrintEvents(string name){
 
-  TH1D *hdata[pi::nCuts];
-  TH1D *hcosmics[pi::nCuts];
-  TH1D *hmc[pi::nCuts][pi::nIntTypes+1];
-  for (int i = 0; i < pi::nCuts; ++i){
-    for (int j = 0; j < pi::nIntTypes+1; ++j){
+  TH1D *hdata[p::nCuts];
+  TH1D *hcosmics[p::nCuts];
+  TH1D *hmc[p::nCuts][p::nIntTypes+1];
+  for (int i = 0; i < p::nCuts; ++i){
+    for (int j = 0; j < p::nIntTypes+1; ++j){
       hmc[i][j] = (TH1D*)fmc->Get(Form("%s_%d_%d",name.c_str(),i,j));
     }
     hdata[i] = (TH1D*)fdata->Get(Form("%s_%d_%d",name.c_str(),i,0));
     hcosmics[i] = (TH1D*)fcosmics->Get(Form("%s_%d_%d",name.c_str(),i,0));
   }
   
-  for (int i = 0; i<pi::nCuts; ++i){
-    cout<<"=========="<<pi::cutName[i]<<"=========="<<endl;
+  for (int i = 0; i<p::nCuts; ++i){
+    cout<<"=========="<<p::cutName[i]<<"=========="<<endl;
     double totalmc = 0;
-    for (int j =0; j<pi::nIntTypes+1; ++j){
+    for (int j =0; j<p::nIntTypes+1; ++j){
       if (j==0){
-        cout<<pi::intTypeName[j]<<" "<<hdata[i]->Integral()<<endl;
+        cout<<p::intTypeName[j]<<" "<<hdata[i]->Integral()<<endl;
         cout<<"Cosmics"<<" "<<hcosmics[i]->Integral()<<endl;
       }
       else{
-        cout<<pi::intTypeName[j]<<" "<<hmc[i][j]->Integral()<<endl;
+        cout<<p::intTypeName[j]<<" "<<hmc[i][j]->Integral()<<endl;
         totalmc += hmc[i][j]->Integral();
       }
     }
@@ -60,14 +60,14 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
 
   static bool first = true;
 
-  TH1D *hdata[pi::nCuts];
-  TH1D *hcosmics[pi::nCuts];
-  TH1D *hmc[pi::nCuts][pi::nIntTypes+1];
-  for (int i = 0; i < pi::nCuts; ++i){
+  TH1D *hdata[p::nCuts];
+  TH1D *hcosmics[p::nCuts];
+  TH1D *hmc[p::nCuts][p::nIntTypes+1];
+  for (int i = 0; i < p::nCuts; ++i){
     totalmc[i] = 0;
     totaldata[i] = 0;
     totalcosmics[i] = 0;
-    for (int j = 0; j < pi::nIntTypes+1; ++j){
+    for (int j = 0; j < p::nIntTypes+1; ++j){
       hmc[i][j] = (TH1D*)fmc->Get(Form("%s_%d_%d",name.c_str(),i,j));
       if (j!=0 && first){
         totalmc[i] += hmc[i][j]->Integral(); //hmc[i][j] or hmc[0][j]
@@ -84,7 +84,7 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
   
   TH1D *htotmc;
   THStack *hs = new THStack(Form("hs_%d",nc),"");
-  for (int jj = 0; jj<pi::nIntTypes; ++jj){
+  for (int jj = 0; jj<p::nIntTypes; ++jj){
     int i = orders[jj];
     hmc[cut][i+1]->SetFillColor(colors[i]);
     hmc[cut][i+1]->SetLineWidth(0);
@@ -131,10 +131,10 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
 //  }
   leg->SetFillStyle(0);
   leg->SetNColumns(3);
-  leg->AddEntry(hdata[cut],Form("%s %.0f",pi::intTypeName[0],hdata[cut]->Integral()),"ple");
+  leg->AddEntry(hdata[cut],Form("%s %.0f",p::intTypeName[0],hdata[cut]->Integral()),"ple");
   leg->AddEntry((TObject*)0,Form("TruthMC %.0f",htotmc->Integral()),"");
-  for (int i = 0; i<pi::nIntTypes; ++i){
-    leg->AddEntry(hmc[cut][i+1], Form("%s %.0f",pi::intTypeName[i+1],hmc[cut][i+1]->Integral()), "f");
+  for (int i = 0; i<p::nIntTypes; ++i){
+    leg->AddEntry(hmc[cut][i+1], Form("%s %.0f",p::intTypeName[i+1],hmc[cut][i+1]->Integral()), "f");
   }
   leg->AddEntry(hcosmics[cut], Form("%s %.0f","Cosmics",hcosmics[cut]->Integral()),"l");
   leg->Draw();
@@ -190,31 +190,31 @@ void plot1d(string name, int cut, string xtitle, string ytitle){
   hpull->GetYaxis()->SetNdivisions(505);
   hpull->Draw();*/
 
-  can->Print(Form("../plots/can_%s_%d_%s.png", name.c_str(), cut, pi::cutName[cut]));
-  can->Print(Form("../plots/can_%s_%d_%s.pdf", name.c_str(), cut, pi::cutName[cut]));
+  can->Print(Form("../plots/can_%s_%d_%s.png", name.c_str(), cut, p::cutName[cut]));
+  can->Print(Form("../plots/can_%s_%d_%s.pdf", name.c_str(), cut, p::cutName[cut]));
   hs->SetMaximum(8*max);
   hs->SetMinimum(1);
   pad1->SetLogy();
-  can->Print(Form("../plots/canlog_%s_%d_%s.png", name.c_str(), cut, pi::cutName[cut]));
-  can->Print(Form("../plots/canlog_%s_%d_%s.pdf", name.c_str(), cut, pi::cutName[cut]));
+  can->Print(Form("../plots/canlog_%s_%d_%s.png", name.c_str(), cut, p::cutName[cut]));
+  can->Print(Form("../plots/canlog_%s_%d_%s.pdf", name.c_str(), cut, p::cutName[cut]));
 
   ++nc;
 }
 
 void plot1dslice(string name, int cut, string xtitle, string ytitle){
 
-  TH1D *hdata[pi::true_nbins][pi::nCuts];
-  TH1D *hmc[pi::true_nbins][pi::nCuts][pi::nIntTypes+1];
-  for (int i = 0; i < pi::nCuts; ++i){
-    for (int j = 0; j < pi::nIntTypes+1; ++j){
-      for (int k = 0; k < pi::true_nbins; ++k){
+  TH1D *hdata[p::true_nbins][p::nCuts];
+  TH1D *hmc[p::true_nbins][p::nCuts][p::nIntTypes+1];
+  for (int i = 0; i < p::nCuts; ++i){
+    for (int j = 0; j < p::nIntTypes+1; ++j){
+      for (int k = 0; k < p::true_nbins; ++k){
         hmc[k][i][j] = (TH1D*)fmc->Get(Form("%s_%d_%d_%d",name.c_str(),k,i,j));
         if (j==0) hdata[k][i] = (TH1D*)fdata->Get(Form("%s_%d_%d_%d",name.c_str(),k,i,0));
       }
     }
   }
 
-  for (int j = 0; j<pi::true_nbins; ++j){
+  for (int j = 0; j<p::true_nbins; ++j){
     TCanvas *can = new TCanvas(Form("can_%d",nc), Form("can_%d",nc), 800, 800);
     TPad *pad1 = new TPad(Form("pad1_%d",nc), Form("pad1_%d",nc), 0, 0.2, 1, 1.);
     pad1->SetBottomMargin(0.03);
@@ -225,7 +225,7 @@ void plot1dslice(string name, int cut, string xtitle, string ytitle){
     
     TH1D *htotmc;
     THStack *hs = new THStack(Form("hs_%d",nc),"");
-    for (int jj = 0; jj<pi::nIntTypes; ++jj){
+    for (int jj = 0; jj<p::nIntTypes; ++jj){
       int i = orders[jj];
       hmc[j][cut][i+1]->SetFillColor(colors[i]);
       hmc[j][cut][i+1]->SetLineWidth(0);
@@ -257,10 +257,10 @@ void plot1dslice(string name, int cut, string xtitle, string ytitle){
     //  }
     //leg->SetFillStyle(0);
     leg->SetNColumns(3);
-    leg->AddEntry(hdata[j][cut],Form("%s %.0f",pi::intTypeName[0],hdata[j][cut]->Integral()),"ple");
+    leg->AddEntry(hdata[j][cut],Form("%s %.0f",p::intTypeName[0],hdata[j][cut]->Integral()),"ple");
     leg->AddEntry((TObject*)0,Form("TruthMC %.0f",htotmc->Integral()),"");
-    for (int i = 0; i<pi::nIntTypes; ++i){
-      leg->AddEntry(hmc[j][cut][i+1], Form("%s %.0f",pi::intTypeName[i+1],hmc[j][cut][i+1]->Integral()), "f");
+    for (int i = 0; i<p::nIntTypes; ++i){
+      leg->AddEntry(hmc[j][cut][i+1], Form("%s %.0f",p::intTypeName[i+1],hmc[j][cut][i+1]->Integral()), "f");
     }
     leg->Draw();
     
@@ -310,13 +310,13 @@ void plot1dslice(string name, int cut, string xtitle, string ytitle){
     hpull->GetYaxis()->SetNdivisions(505);
     hpull->Draw();*/
     
-    can->Print(Form("../plots/can_%s_%d_%s_%02d.png", name.c_str(), cut, pi::cutName[cut], j));
-    can->Print(Form("../plots/can_%s_%d_%s_%02d.pdf", name.c_str(), cut, pi::cutName[cut], j));
+    can->Print(Form("../plots/can_%s_%d_%s_%02d.png", name.c_str(), cut, p::cutName[cut], j));
+    can->Print(Form("../plots/can_%s_%d_%s_%02d.pdf", name.c_str(), cut, p::cutName[cut], j));
     hs->SetMaximum(8*max);
     hs->SetMinimum(1);
     pad1->SetLogy();
-    can->Print(Form("../plots/canlog_%s_%d_%s_%02d.png", name.c_str(), cut, pi::cutName[cut], j));
-    can->Print(Form("../plots/canlog_%s_%d_%s_%02d.pdf", name.c_str(), cut, pi::cutName[cut], j));
+    can->Print(Form("../plots/canlog_%s_%d_%s_%02d.png", name.c_str(), cut, p::cutName[cut], j));
+    can->Print(Form("../plots/canlog_%s_%d_%s_%02d.pdf", name.c_str(), cut, p::cutName[cut], j));
     
     ++nc;
     
@@ -326,17 +326,17 @@ void plot1dslice(string name, int cut, string xtitle, string ytitle){
 
 void plot2d(string name, int cut){
 
-  TH2D *h[pi::nCuts][pi::nIntTypes+1];
-  for (int i = 0; i < pi::nCuts; ++i){
-    for (int j = 0; j < pi::nIntTypes+1; ++j){
+  TH2D *h[p::nCuts][p::nIntTypes+1];
+  for (int i = 0; i < p::nCuts; ++i){
+    for (int j = 0; j < p::nIntTypes+1; ++j){
       h[i][j] = (TH2D*)fmc->Get(Form("%s_%d_%d",name.c_str(),i,j));
     }
   }
   for (int i = 1; i<=4; ++i){
     TCanvas *can = new TCanvas(Form("can_%d",nc), Form("can_%d",nc));
     h[cut][i]->Draw("colz");
-    can->Print(Form("../plots/can_%s_%s_%s.png",name.c_str(), pi::cutName[cut], pi::intTypeName[i]));
-    can->Print(Form("../plots/can_%s_%s_%s.pdf",name.c_str(), pi::cutName[cut], pi::intTypeName[i]));
+    can->Print(Form("../plots/can_%s_%s_%s.png",name.c_str(), p::cutName[cut], p::intTypeName[i]));
+    can->Print(Form("../plots/can_%s_%s_%s.pdf",name.c_str(), p::cutName[cut], p::intTypeName[i]));
     ++nc;
   }
 }
@@ -347,12 +347,12 @@ void plot(){
   gStyle->SetOptStat(0);
   gErrorIgnoreLevel = kWarning;
 
-  fmc = TFile::Open("../../build/mcprod4a.root");
+  fmc = TFile::Open("../../build/mcprod4a_proton.root");
   //fdata = TFile::Open("../install/bin/mcprod4a.root");
-  fdata = TFile::Open("../../build/data.root");
-  fcosmics = TFile::Open("../../build/cosmics.root");
+  fdata = TFile::Open("../../build/data_proton.root");
+  fcosmics = TFile::Open("../../build/data_proton.root");
 
-  for (int i = 0; i<pi::nCuts; ++i){
+  for (int i = 0; i<p::nCuts; ++i){
     plot1d("hmediandEdx", i, "Median dE/dx (MeV/cm)", "Events");
     plot1d("hChi2_proton", i, "Chi2_p/Ndof", "Events");
     plot1d("hdaughter_michel_score", i, "Daughter Michel Score", "Events");
@@ -397,10 +397,10 @@ void plot(){
   plot1d("hdaughter_michel_score_bkg", 6, "Michel score", "Events");
   plot1d("hcostheta_bkg", 0, "Cos(theta)", "Events");
   plot1d("hcostheta_bkg", 6, "Cos(theta)", "Events");
-  plot1dslice("hmediandEdxSlice", 6, "Median dE/dx (MeV/cm)", "Events");
-  plot1dslice("hChi2_protonSlice", 6, "Chi2_p/Ndf", "Events");
-  plot1dslice("hdaughter_michel_scoreSlice", 6, "Michel score", "Events");
-  plot1dslice("hcosthetaSlice", 6, "Cos(theta)", "Events");
+  //plot1dslice("hmediandEdxSlice", 6, "Median dE/dx (MeV/cm)", "Events");
+  //plot1dslice("hChi2_protonSlice", 6, "Chi2_p/Ndf", "Events");
+  //plot1dslice("hdaughter_michel_scoreSlice", 6, "Michel score", "Events");
+  //plot1dslice("hcosthetaSlice", 6, "Cos(theta)", "Events");
 
   PrintEvents("hreco_beam_endZ_SCE");
 

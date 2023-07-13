@@ -386,3 +386,34 @@ void SetProtoDUNEStyle(){
   // Avoid too many decimal places in the axis labels
   //TGaxis::SetMaxDigits(4);
 }
+
+TFile f_pid("/dune/data/users/yinrui/HadronXSfiles/dEdxrestemplates.root");
+TProfile* dedx_range_pro = (TProfile*)f_pid.Get("dedx_range_pro");
+double chi2pid(std::vector<double> &trkdedx, std::vector<double> &trkres) { // from Heng-Ye
+        int npt = 0;
+        double chi2pro = 0;
+        for (size_t i = 0; i<trkdedx.size(); ++i){ //hits
+                //ignore the first and the last point
+                if (i==0 || i==trkdedx.size()-1) continue;
+                if (trkdedx[i]>1000) continue; //protect against large pulse height
+
+                int bin = dedx_range_pro->FindBin(trkres[i]);
+                //    std::cout<<"bin proton "<<bin<<std::endl;
+                if (bin>=1&&bin<=dedx_range_pro->GetNbinsX()){
+                        double bincpro = dedx_range_pro->GetBinContent(bin);
+                        if (bincpro<1e-6){//for 0 bin content, using neighboring bins
+                                bincpro = (dedx_range_pro->GetBinContent(bin-1)+dedx_range_pro->GetBinContent(bin+1))/2;
+                        }
+                        double binepro = dedx_range_pro->GetBinError(bin);
+                        if (binepro<1e-6){
+                                binepro = (dedx_range_pro->GetBinError(bin-1)+dedx_range_pro->GetBinError(bin+1))/2;
+                        }
+                        double errdedx = 0.04231+0.0001783*trkdedx[i]*trkdedx[i]; //resolution on dE/dx
+                        errdedx *= trkdedx[i];
+                        chi2pro += pow((trkdedx[i]-bincpro)/std::sqrt(pow(binepro,2)+pow(errdedx,2)),2);
+                        ++npt;
+                }
+        }
+        if (npt>0) return (chi2pro/npt);
+        else return 9999;
+}

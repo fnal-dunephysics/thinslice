@@ -27,18 +27,20 @@ namespace pi{
 }
 
 namespace p{
-  const unsigned int nCuts = 4;
+  const unsigned int nCuts = 5;
 
   const char cutName[nCuts][100] = {"Nocut",
                                     "PandoraSlice",
                                     "CaloSize",
-                                    "BeamQuality"};
+                                    "BeamQuality",
+                                    "StoppingProtonCut"};
 
   enum cut{
     kNocut = 0,
     kPandoraSlice,
     kCaloSize,
-    kBeamQuality
+    kBeamQuality,
+    kStoppingProtonCut
   };
 }
 
@@ -73,5 +75,9 @@ const double beam_startX_mc_inst = -28.8615;
 const double beam_startY_mc_inst = 421.662;
 const double beam_startX_rms_mc_inst = 4.551;
 const double beam_startY_rms_mc_inst = 3.90137;
+
+// fiducial volume
+const double fidvol_low = 0; //cm
+const double fidvol_upp = 220; //cm
 
 #endif

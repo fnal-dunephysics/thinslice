@@ -38,7 +38,7 @@ namespace p{
 
   const char intTypeName[nIntTypes+1][100] = {"Data",
                                               "PInel",
-                                              "PElas",
+                                              "PStop",
                                               "misID:cosmic",
                                               "misID:p",
                                               "misID:pi",
