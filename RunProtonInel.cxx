@@ -61,11 +61,11 @@ int main(int argc, char ** argv){
   mcths.SetOutputFileName(root["mcoutfile"].asString());
   mcths.Run(mcevt, uf, -1, false, false);
 
-  /*anavar dataevt(datachain);
+  anavar dataevt(datachain);
 
   ProtonInel dataths;
   dataths.SetOutputFileName(root["dataoutfile"].asString());
-  dataths.Run(dataevt, uf, -1, false, false);*/
+  dataths.Run(dataevt, uf, -1, false, false);
 
   return 0;
 

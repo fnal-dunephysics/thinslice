@@ -182,13 +182,13 @@ void ProtonInel::BookHistograms(){
       hint_trueE[i][j]->Sumw2();
       //const double xbins[25] = {-10.,0.,10.,20.,30.,40.,50.,60.,70.,80.,90.,100.,110.,120.,130.,140.,150.,160.,170.,180.,190.,200.,210.,220.,500}; // a user-defined binning
       //hreco_trklen[i][j] = new TH1D(Form("hreco_trklen_%d_%d",i,j), Form("reco_trklen, %s, %s;Track length (cm)", p::cutName[i], p::intTypeName[j]), 24, xbins);
-      hreco_trklen[i][j] = new TH1D(Form("hreco_trklen_%d_%d",i,j), Form("reco_trklen, %s, %s;Track length (cm)", p::cutName[i], p::intTypeName[j]), 51, -10, 500);
+      hreco_trklen[i][j] = new TH1D(Form("hreco_trklen_%d_%d",i,j), Form("reco_trklen, %s, %s;Track length (cm)", p::cutName[i], p::intTypeName[j]), 51, -4, 200);
       hreco_trklen[i][j]->Sumw2();
-      htrue_trklen[i][j] = new TH1D(Form("htrue_trklen_%d_%d",i,j), Form("true_trklen, %s, %s;Track length (cm)", p::cutName[i], p::intTypeName[j]), 61, -10, 600);
+      htrue_trklen[i][j] = new TH1D(Form("htrue_trklen_%d_%d",i,j), Form("true_trklen, %s, %s;Track length (cm)", p::cutName[i], p::intTypeName[j]), 51, -4, 200);
       htrue_trklen[i][j]->Sumw2();
       hdiff_trklen[i][j] = new TH1D(Form("hdiff_trklen_%d_%d",i,j), Form("diff_trklen, %s, %s;Track length (cm)", p::cutName[i], p::intTypeName[j]), 60, -600, 600);
       hdiff_trklen[i][j]->Sumw2();
-      hreco_vs_true_trklen[i][j]= new TH2D(Form("hreco_vs_true_trklen_%d_%d",i,j), Form("%s, %s;true_trklen (cm);reco_trklen (cm)", p::cutName[i], p::intTypeName[j]), 61, -10, 600, 61, -10, 600);
+      hreco_vs_true_trklen[i][j]= new TH2D(Form("hreco_vs_true_trklen_%d_%d",i,j), Form("%s, %s;true_trklen (cm);reco_trklen (cm)", p::cutName[i], p::intTypeName[j]), 51, -4, 200, 51, -4, 200);
       hbeam_score[i][j] = new TH1D(Form("hbeam_score_%d_%d",i,j), Form("Beam_score, %s, %s;Beam score", p::cutName[i], p::intTypeName[j]), 140, -0.23, 0.12);
       hbeam_score[i][j]->Sumw2();
       beam_score_vs_hreco_trklen[i][j]= new TH2D(Form("beam_score_vs_hreco_trklen_%d_%d",i,j), Form("%s, %s;reco trklen (cm);beam_score", p::cutName[i], p::intTypeName[j]), 50, -100, 400, 140, -0.23, 0.12);
@@ -252,12 +252,12 @@ void ProtonInel::BookHistograms(){
   h_beam_inst_KE->Sumw2();
   h_true_ffKE = new TH1D("h_true_ffKE","h_true_ffKE;MeV", 100, 0, 2000);
   h_true_ffKE->Sumw2();
-  h_upstream_Eloss = new TH1D("h_upstream_Eloss","h_upstream_Eloss;MeV", 100, -100, 100);
+  h_upstream_Eloss = new TH1D("h_upstream_Eloss","h_upstream_Eloss;MeV", 100, -200, 200);
   h_upstream_Eloss->Sumw2();
   h_upstream_Eloss_mu = new TH1D("h_upstream_Eloss_mu","h_upstream_Eloss_mu;MeV", 100, -100, 100);
   h_upstream_Eloss_mu->Sumw2();
-  h_upstream_Eloss_vs_true_Eff = new TH2D("h_upstream_Eloss_vs_true_Eff","h_upstream_Eloss_vs_true_Eff;MeV;MeV", 100, 600, 1100, 120, -120, 120);
-  h_upstream_Eloss_vs_Einst = new TH2D("h_upstream_Eloss_vs_Einst","h_upstream_Eloss_vs_Einst;MeV;MeV", 100, 600, 1100, 120, -120, 120);
+  h_upstream_Eloss_vs_true_Eff = new TH2D("h_upstream_Eloss_vs_true_Eff","h_upstream_Eloss_vs_true_Eff;MeV;MeV", 90, 275, 575, 150, -120, 180);
+  h_upstream_Eloss_vs_Einst = new TH2D("h_upstream_Eloss_vs_Einst","h_upstream_Eloss_vs_Einst;MeV;MeV", 90, 275, 575, 150, -120, 180);
   h_diff_startKE_vs_Einst = new TH2D("h_diff_startKE_vs_Einst","h_diff_startKE_vs_Einst;MeV;MeV", 100, 600, 1100, 100, -100, 100);
   h_true_upstream_Eloss = new TH2D("h_true_upstream_Eloss","h_true_upstream_Eloss;MeV;MeV", 100, 600, 1100, 100, -100, 100);
   h_diff_Eint = new TH1D("h_diff_Eint","h_diff_Eint;MeV", 100, -100, 100);
@@ -297,9 +297,9 @@ void ProtonInel::ProcessEvent(const anavar & evt, Unfold & uf, double weight, do
   //if (evt.MC && evt.event%2 == 0) isTestSample = false;
   beam_inst_P = evt.beam_inst_P;
   if (evt.MC) {
-    if (isTestSample) beam_inst_P += 0;//grdm->Gaus(-0.00726, 0.022311326); // data: (1.01263, 0.0697734) MC_rew: (1.01989, 0.0661100)
+    if (isTestSample) beam_inst_P += grdm->Gaus(0.00474, 0);//grdm->Gaus(-0.00726, 0.022311326); // data: (1.01263, 0.0697734) MC_rew: (1.01989, 0.0661100)
     //beam_inst_P += grdm->Gaus(-0.00985,0.017756843); // data: (1.00947, 0.0727443) MC_rew: (1.01932, 0.0705438)
-    else  beam_inst_P += 0;//grdm->Gaus(-0.00726+rdm_Eshift, max(0.022311326+rdm_Eresol, 0.) );
+    else  beam_inst_P += grdm->Gaus(0.00474, 0);//grdm->Gaus(-0.00726+rdm_Eshift, max(0.022311326+rdm_Eresol, 0.) );
   }
   
   double pimass = 139.57;
@@ -483,7 +483,7 @@ void ProtonInel::ProcessEvent(const anavar & evt, Unfold & uf, double weight, do
     if (!evt.reco_beam_calo_wire->empty()){
       if (hadana.reco_trklen>0) {
         //ff_energy_reco = beam_inst_KE - 13.;
-        double EdepEloss = 25;//95.8 - 0.408*beam_inst_KE + 0.000347*pow(beam_inst_KE,2); // fir errors: 95.8 +- 16.4, -0.408 +- 0.038, 0.000347 +- 0.000021
+        double EdepEloss = 26.9;//95.8 - 0.408*beam_inst_KE + 0.000347*pow(beam_inst_KE,2); // fir errors: 95.8 +- 16.4, -0.408 +- 0.038, 0.000347 +- 0.000021
         if (EdepEloss>1000) { // very few events have too large beam momentum
           cout<<"$$ "<<EdepEloss<<endl;
           EdepEloss = 1000;
@@ -1037,12 +1037,14 @@ void ProtonInel::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, 
   // new branches
   double tweight = 1.;
   double tratio = 0.;
+  double tratio_t = 0.;
   double reco_KE_from_trklen = -999.;
   double reco_KE = -999.;
   double true_KE_from_trklen = -999.;
   double true_KE = -999.;
   newtree->Branch("tweight", &tweight);
   newtree->Branch("tratio", &tratio);
+  newtree->Branch("tratio_t", &tratio_t);
   newtree->Branch("reco_KE_from_trklen", &reco_KE_from_trklen);
   newtree->Branch("reco_KE", &reco_KE);
   newtree->Branch("true_KE_from_trklen", &true_KE_from_trklen);
@@ -1185,10 +1187,12 @@ void ProtonInel::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, 
     double mumass = 105.66;
     double pimass = 139.57;
     double pmass = 938.272;
+    double beam_inst_KE = sqrt(pow(beam_inst_P*1000,2)+pow(pmass,2)) - pmass;
     double beam_inst_KE_mu = sqrt(pow(beam_inst_P*1000,2)+pow(mumass,2)) - mumass;
-    if (hadana.PassBeamQualityCut(evt) && evt.reco_beam_vertex_michel_score_weight_by_charge>0.6 && 1 > 0.9) {
+    if (hadana.PassBeamQualityCut(evt) && hadana.chi2_stopping_proton < 5 && hadana.trklen_csda_proton > 0.8 && 1 > 0.9) {
       fillnewtree = true;
-      tratio = hadana.reco_trklen/bb_mu.RangeFromKE(beam_inst_KE_mu - 15);
+      tratio = hadana.reco_trklen/bb.RangeFromKE(beam_inst_KE - 26.9);
+      tratio_t = hadana.true_trklen/bb.RangeFromKE(ff_energy_true);
       
       piEff_true = ff_energy_true;
       piEff_true2 = ini_energy_true;
@@ -1205,11 +1209,9 @@ void ProtonInel::Run(anavar & evt, Unfold & uf, Long64_t nentries, bool random, 
     if (fillnewtree && savetree) {
       oldtree->GetEntry(jentry);
       tweight = weight;
-      reco_KE_from_trklen = bb_mu.KEFromRangeSpline(hadana.reco_trklen);
-      double mumass = 105.66;
-      double beam_inst_KE_mu = sqrt(pow(beam_inst_P*1000,2)+pow(mumass,2)) - mumass;
-      reco_KE = beam_inst_KE_mu - 15;
-      true_KE_from_trklen = bb_mu.KEFromRangeSpline(hadana.true_trklen);
+      reco_KE_from_trklen = bb.KEFromRangeSpline(hadana.reco_trklen);
+      reco_KE = beam_inst_KE - 26.9;
+      true_KE_from_trklen = bb.KEFromRangeSpline(hadana.true_trklen);
       true_KE = hadana.true_ffKE;
       newtree->Fill();
     }

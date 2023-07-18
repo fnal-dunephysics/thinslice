@@ -44,37 +44,37 @@ namespace p{
   };
 }
 
-const double beam_startX_data = -28.3483;
-const double beam_startY_data = 424.553;
-const double beam_startZ_data = 3.19841;
-const double beam_startX_rms_data = 4.63594;
-const double beam_startY_rms_data = 5.21649;
-const double beam_startZ_rms_data = 1.2887;
+const double beam_startX_data = -28.722;
+const double beam_startY_data = 424.216;
+const double beam_startZ_data = 3.17107;
+const double beam_startX_rms_data = 3.86992;
+const double beam_startY_rms_data = 4.59281;
+const double beam_startZ_rms_data = 1.22898;
 
-const double beam_startX_mc = -30.6692;
-const double beam_startY_mc = 422.263;
-const double beam_startZ_mc = 0.1106;
-const double beam_startX_rms_mc = 5.172;
-const double beam_startY_rms_mc = 4.61689;
-const double beam_startZ_rms_mc = 0.212763;
+const double beam_startX_mc = -30.734;
+const double beam_startY_mc = 422.495;
+const double beam_startZ_mc = 0.0494442;
+const double beam_startX_rms_mc = 4.75219;
+const double beam_startY_rms_mc = 4.23009;
+const double beam_startZ_rms_mc = 0.206941;
 
-const double beam_angleX_data = 100.464;
-const double beam_angleY_data = 103.442;
-const double beam_angleZ_data = 17.6633;
+const double beam_angleX_data = 100.834;
+const double beam_angleY_data = 104.119;
+const double beam_angleZ_data = 18.2308;
 
-const double beam_angleX_mc = 101.547;
-const double beam_angleY_mc = 101.247;
-const double beam_angleZ_mc = 16.5864;
+const double beam_angleX_mc = 101.667;
+const double beam_angleY_mc = 101.14;
+const double beam_angleZ_mc = 16.5398;
 
-const double beam_startX_data_inst = -30.9033;
-const double beam_startY_data_inst = 422.406;
-const double beam_startX_rms_data_inst = 4.17987;
-const double beam_startY_rms_data_inst = 3.73181;
+const double beam_startX_data_inst = -31.2908;
+const double beam_startY_data_inst = 422.105;
+const double beam_startX_rms_data_inst = 3.79071;
+const double beam_startY_rms_data_inst = 3.43891;
 
-const double beam_startX_mc_inst = -28.8615;
-const double beam_startY_mc_inst = 421.662;
-const double beam_startX_rms_mc_inst = 4.551;
-const double beam_startY_rms_mc_inst = 3.90137;
+const double beam_startX_mc_inst = -29.0375;
+const double beam_startY_mc_inst = 421.82;
+const double beam_startX_rms_mc_inst = 4.61462;
+const double beam_startY_rms_mc_inst = 3.78259;
 
 // fiducial volume
 const double fidvol_low = 0; //cm

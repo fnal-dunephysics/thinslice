@@ -2,8 +2,8 @@
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
 
-  TFile *fmc = TFile::Open("../../build/mcprod4a.root");
-  TFile *fdata = TFile::Open("../../build/data.root");
+  TFile *fmc = TFile::Open("../../build/mcprod4a_proton.root");
+  TFile *fdata = TFile::Open("../../build/data_proton.root");
 
   TH1D *hreco_beam_angleX_SCE_data = (TH1D*)fdata->Get("hreco_beam_angleX_SCE_2_0");
   TH1D *hreco_beam_angleX_SCE_mc = (TH1D*)fmc->Get("hreco_beam_angleX_SCE_2_0");

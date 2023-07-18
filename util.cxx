@@ -11,12 +11,12 @@ double CalWeight(const anavar & evt, const int &partype, double rdm_radius, doub
   double weight = 1.;
   //return weight;
   
-  double mufrac = 1.71;
+  double mufrac = 1;//.71;
   
-  double mom_mu0 = 1.0033;
-  double mom_sigma0 = 0.0609;
-  double mom_mu = 1.01818;
-  double mom_sigma = 0.07192;
+  double mom_mu0 = 0.9940;
+  double mom_sigma0 = 0.0545;
+  double mom_mu = 0.98939;
+  double mom_sigma = 0.06394;
   if (rdm_radius != 0) {
     double oval_cx = 1.01853;
     double oval_cy = 0.07245;
