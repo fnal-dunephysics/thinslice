@@ -31,6 +31,8 @@ void plotXS(){
   //TGraphErrors *gr_ina_t = (TGraphErrors*)file->Get("gr_ina_t");
   TGraphErrors *gr_truexs = (TGraphErrors*)file->Get("gr_truexs");
   TGraphErrors *gr_recoxs = (TGraphErrors*)file->Get("gr_recoxs");
+  TH2D *cov_matrix_XS = (TH2D*)file->Get("VXS_3D");
+  TH2D *corr_matrix_XS = (TH2D*)file->Get("corr_matrix_XS");
   TFile *file_stat = TFile::Open("../../build/XSMC.root"); // data stat only: XS_datastat.root
   TGraphErrors *gr_recoxs_stat = (TGraphErrors*)file_stat->Get("gr_recoxs");
   TFile *file_upp = TFile::Open("../../build/XSMC.root"); // upp one sigma
@@ -48,9 +50,9 @@ void plotXS(){
   double Ndata_unf = h_sel_sig_int_uf->Integral();
   double Nfake_unf_t = hval_sel_sig_int_uf->Integral();
   cout<<"### Ndata_sig: "<<Ndata_sig<<"; Nfake_sig_t: "<<Nfake_sig_t<<"; Ndata_unf: "<<Ndata_unf<<"; Nfake_unf_t: "<<Nfake_unf_t<<endl;
-  // incident (all pion)
+  // incident (all proton)
   TCanvas *c1 = new TCanvas("c1","c1");
-  h_sel_data_inc->SetTitle("All Pions;Reco SliceID;Events");
+  h_sel_data_inc->SetTitle("All Protons;Reco SliceID;Events");
   h_sel_data_inc->SetMinimum(0);
   h_sel_data_inc->DrawCopy();
   h_sel_sig_inc->SetLineColor(3);
@@ -63,13 +65,13 @@ void plotXS(){
   leg1->SetFillStyle(0);
   leg1->AddEntry(h_sel_data_inc,"Selected data","ple");
   leg1->AddEntry(h_sel_sig_inc, "After bkg subtraction","ple");
-  leg1->AddEntry(hval_sel_sig_inc,"Selected true pions","l");
+  leg1->AddEntry(hval_sel_sig_inc,"Selected true protons","l");
   leg1->Draw();
 
   TCanvas *c2 = new TCanvas("c2","c2");
   h_sel_sig_inc_uf->SetLineColor(4);
   h_sel_sig_inc_uf->SetMarkerColor(4);
-  h_sel_sig_inc_uf->SetTitle("All Pions; True SliceID; Events");
+  h_sel_sig_inc_uf->SetTitle("All Protons; True SliceID; Events");
   h_sel_sig_inc_uf->SetMinimum(0);
   //h_sel_sig_inc_uf->SetMaximum(18000);
   h_sel_sig_inc_uf->Draw();
@@ -82,12 +84,12 @@ void plotXS(){
   leg2->SetFillStyle(0);
   leg2->AddEntry(h_sel_sig_inc, "Selected signal","ple");
   leg2->AddEntry(h_sel_sig_inc_uf,"After unfolding","ple");
-  leg2->AddEntry(hval_sel_sig_inc_uf,"True pions","l");
+  leg2->AddEntry(hval_sel_sig_inc_uf,"True protons","l");
   leg2->Draw();
 
-  // interaction (pion inelastic)
-  TCanvas *c3 = new TCanvas("c3","c3"); // compared to c1, only miss a few pion elastic events
-  h_sel_data->SetTitle("Pion Inelastic Scatterings;Reco SliceID;Events");
+  // interaction (proton inelastic)
+  TCanvas *c3 = new TCanvas("c3","c3"); // compared to c1, only miss a few proton elastic events
+  h_sel_data->SetTitle("Proton Inelastic Scatterings;Reco SliceID;Events");
   h_sel_data->SetMinimum(0);
   h_sel_data->Draw();
   h_sel_sig_int->SetLineColor(3);
@@ -100,13 +102,13 @@ void plotXS(){
   leg3->SetFillStyle(0);
   leg3->AddEntry(h_sel_data,"Selected data","ple");
   leg3->AddEntry(h_sel_sig_int, "After bkg subtraction","ple");
-  leg3->AddEntry(hval_sel_sig_int,"Selected true pions","l");
+  leg3->AddEntry(hval_sel_sig_int,"Selected true protons","l");
   leg3->Draw();
 
   TCanvas *c4 = new TCanvas("c4","c4");
   h_sel_sig_int_uf->SetLineColor(4);
   h_sel_sig_int_uf->SetMarkerColor(4);
-  h_sel_sig_int_uf->SetTitle("Pion Inelastic Scatterings; True SliceID; Events");
+  h_sel_sig_int_uf->SetTitle("Proton Inelastic Scatterings; True SliceID; Events");
   h_sel_sig_int_uf->SetMinimum(0);
   //h_sel_sig_int_uf->SetMaximum(18000);
   h_sel_sig_int_uf->Draw();
@@ -119,12 +121,12 @@ void plotXS(){
   leg4->SetFillStyle(0);
   leg4->AddEntry(h_sel_sig_int, "Selected signal","ple");
   leg4->AddEntry(h_sel_sig_int_uf,"After unfolding","ple");
-  leg4->AddEntry(hval_sel_sig_int_uf,"True pions","l");
+  leg4->AddEntry(hval_sel_sig_int_uf,"True protons","l");
   leg4->Draw();
   
   // start
   TCanvas *c5 = new TCanvas("c5","c5");
-  h_sel_data_ini->SetTitle("All Pions;Reco SliceID;Events");
+  h_sel_data_ini->SetTitle("All Protons;Reco SliceID;Events");
   h_sel_data_ini->SetMinimum(0);
   h_sel_data_ini->Draw();
   h_sel_sig_ini->SetLineColor(3);
@@ -137,13 +139,13 @@ void plotXS(){
   leg5->SetFillStyle(0);
   leg5->AddEntry(h_sel_data_ini,"Selected data","ple");
   leg5->AddEntry(h_sel_sig_ini, "After bkg subtraction","ple");
-  leg5->AddEntry(hval_sel_sig_ini,"Selected true pions","l");
+  leg5->AddEntry(hval_sel_sig_ini,"Selected true protons","l");
   leg5->Draw();
 
   TCanvas *c6 = new TCanvas("c6","c6");
   h_sel_sig_ini_uf->SetLineColor(4);
   h_sel_sig_ini_uf->SetMarkerColor(4);
-  h_sel_sig_ini_uf->SetTitle("All Pions; True SliceID; Events");
+  h_sel_sig_ini_uf->SetTitle("All Protons; True SliceID; Events");
   h_sel_sig_ini_uf->SetMinimum(0);
   //h_sel_sig_ini_uf->SetMaximum(20000);
   h_sel_sig_ini_uf->Draw();
@@ -156,7 +158,7 @@ void plotXS(){
   leg6->SetFillStyle(0);
   leg6->AddEntry(h_sel_sig_ini, "Selected signal","ple");
   leg6->AddEntry(h_sel_sig_ini_uf,"After unfolding","ple");
-  leg6->AddEntry(hval_sel_sig_ini_uf,"True pions","l");
+  leg6->AddEntry(hval_sel_sig_ini_uf,"True protons","l");
   leg6->Draw();
   /*for (int i=1; i<=22; ++i) {
     cout<<h_sel_sig_ini_uf->GetBinContent(i)<<"\t"<<h_sel_sig_ini_uf->GetBinError(i)<<endl;
@@ -382,10 +384,33 @@ void plotXS(){
   TLegend *leg10 = new TLegend(0.15,0.2,0.5,0.4);
   leg10->SetFillStyle(0);
   //leg10->AddEntry(gr_recoxs_stat, "Fake data stat", "pe");
-  leg10->AddEntry(gr_recoxs, "Fake data", "pe");
+  leg10->AddEntry(gr_recoxs, "Fake data measured", "pe");
   leg10->AddEntry(gr_truexs, "MC truth", "pe");
-  leg10->AddEntry(total_inel_KE, "Geant4 input", "l");
+  leg10->AddEntry(total_inel_KE, "Geant4 v4_10_6_p01c", "l");
   leg10->Draw();
+  
+  TCanvas *ccorr = new TCanvas("ccorr", "ccorr");
+  const Int_t NRGBs = 3;
+  const Int_t NCont = 200;
+  Double_t stops[NRGBs] = { 0.0, 0.5, 1.0};
+  Double_t red[NRGBs]   = { 0.0, 1.0, 1.0};
+  Double_t green[NRGBs]   = { 0.0, 1.0, 0.0};
+  Double_t blue[NRGBs]   = { 1.0, 1.0, 0.0};
+  TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+  gStyle->SetNumberContours(NCont);
+  const Double_t mymin = -1;
+  const Double_t mymax = 1;
+  Double_t levels[NCont];
+  for(int i = 1; i < NCont; i++) {
+    levels[i] = mymin + (mymax - mymin) / (NCont - 1) * (i);
+  }
+  levels[0] = -1;
+  corr_matrix_XS->SetContour((sizeof(levels)/sizeof(Double_t)), levels);
+  if (showplot) {
+    corr_matrix_XS->GetXaxis()->SetRangeUser(1, nbins+1);
+    corr_matrix_XS->GetYaxis()->SetRangeUser(1, nbins+1);
+  }
+  corr_matrix_XS->Draw("colz");
 
   gSystem->Exec("rm -rf plots");
   gSystem->Exec("mkdir plots");
@@ -399,7 +424,8 @@ void plotXS(){
   c8->Print("plots/xs_Nint.pdf");
   c9->Print("plots/xs_Nini.pdf");
   //c91->Print("plots/xs_Nina.pdf");
-  c10->Print("plots/xs_pi+inel.pdf");
+  c10->Print("plots/xs_pinel.pdf");
+  ccorr->Print("plots/corr_matrix_XS.pdf");
 
   c1->Print("plots/xs_sliceidina_reco.png");
   c2->Print("plots/xs_sliceidina_true.png");
@@ -411,6 +437,28 @@ void plotXS(){
   c8->Print("plots/xs_Nint.png");
   c9->Print("plots/xs_Nini.png");
   //c91->Print("plots/xs_Nina.png");
-  c10->Print("plots/xs_pi+inel.png");
+  c10->Print("plots/xs_pinel.png");
+  ccorr->Print("plots/corr_matrix_XS.png");
+  
+  ofstream savetotxt;
+  savetotxt.open ("plots/recoXS.txt");
+  for (int i=0; i<p::true_nbins-3; ++i) {
+    double KE = (p::true_KE[i+1]+p::true_KE[i+2])/2;
+    savetotxt<<KE<<"\t";
+  }
+  savetotxt<<endl;
+  for (int i=0; i<p::true_nbins-3; ++i) {
+    double xs_data = gr_recoxs->GetPointY(i);
+    savetotxt<<xs_data<<"\t";
+  }
+  savetotxt<<endl<<endl;
+  for (int i=1; i<p::true_nbins-2; ++i) {
+    for (int j=1; j<p::true_nbins-2; ++j) {
+      savetotxt<<cov_matrix_XS->GetBinContent(i+1,j+1)<<"\t";
+    }
+    savetotxt<<endl;
+  }
+  savetotxt<<endl;
+  savetotxt.close();
 }
   
